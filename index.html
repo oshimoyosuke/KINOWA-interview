@@ -985,11 +985,11 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 
     <!-- 候補者データ集積 -->
     <div id="t-db" class="tabpane">
-      <div class="tip"><b>候補者データの集積</b>。「候補者データに保存」を押すと、この端末のブラウザに蓄積され一覧化されます（同じ氏名＋面接日は上書き）。下の<b>スプレッドシート連携</b>を設定すると、保存時にGoogleスプレッドシートにも自動で送信され、複数の面接官のデータを1か所に集約できます。</div>
+      <div class="tip"><b>候補者データの集積</b>。「候補者データに保存」を押すと、この端末のブラウザに蓄積され一覧化されると同時に、<b>Googleスプレッドシートにも自動送信</b>されます（連携URLは設定済み）。複数の面接官のデータが1か所に集約されます。</div>
 
       <div class="card">
         <h3><span class="num">⇅</span>スプレッドシート連携（任意）</h3>
-        <div class="axis-desc">Google Apps ScriptのWebアプリURLを登録すると、「候補者データに保存」時にスプレッドシートへ自動送信します。設定方法は配布の手順書（GAS_setup.md）を参照。URLはこの端末にのみ保存されます。</div>
+        <div class="axis-desc">連携URLは<b>コードに埋め込み済み</b>です。この画面を開いた全端末で、保存時にスプレッドシートへ自動送信されます。URLを変更したい場合のみ、下の欄を書き換えて「URLを保存」を押してください。</div>
         <div class="ff-line" style="flex-wrap:wrap">
           <input id="gas-url" class="ff-inline" placeholder="https://script.google.com/macros/s/……/exec" style="flex:1;min-width:280px">
           <button class="btn btn-ghost" onclick="saveGasUrl()">URLを保存</button>
@@ -1930,14 +1930,16 @@ function syncMbtiGrid(){
 }
 
 /* ===== スプレッドシート連携（GAS Webアプリ） ===== */
-function getGasUrl(){try{return localStorage.getItem('kinowa_gas_url')||'';}catch(_){return '';}}
+/* コードに埋め込んだ既定URL（全端末で連携済みになる）。画面の設定欄で上書き可能。 */
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
+function getGasUrl(){try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function saveGasUrl(){
   const v=(document.getElementById('gas-url').value||'').trim();
   try{localStorage.setItem('kinowa_gas_url',v);}catch(_){}
   const s=document.getElementById('gas-status');
   if(s)s.textContent=v?'✓ URLを保存しました。以後、候補者データ保存時にスプレッドシートへ送信します。':'URLを空にしました（送信は行いません）。';
 }
-function loadGasUrl(){const i=document.getElementById('gas-url');if(i)i.value=getGasUrl();}
+function loadGasUrl(){const i=document.getElementById('gas-url');if(i)i.value=getGasUrl();const s=document.getElementById('gas-status');if(s)s.textContent='✓ 連携URLが設定済みです（コードに埋め込み済み）。「候補者データに保存」でスプレッドシートに送信されます。';}
 /* GASへ送信。no-corsのため結果は受け取れない（送信のみ） */
 function syncToSheet(rec){
   const url=getGasUrl();if(!url)return;
