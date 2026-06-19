@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINOWA 採用面接システム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111111; --paper:#fbfaf7; --line:#111111; --line-soft:#dcd8cf;
+  --sub:#6b675e; --bg:#fbfaf7;
+  --mint:#00c389; --teal:#00a3b4; --mint-l:#e7f9f1;
+  --grad:linear-gradient(120deg,#00c389,#00a3b4);
+  --warn:#d97706; --gold:#00a3b4;
+  --green:#00a3b4; --green-d:#0c7d6f; --green-l:#e7f9f1; /* legacy alias */
+  --hard:5px 5px 0 #111111; --hard-sm:3px 3px 0 #111111;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;
+  color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* header */
+header{background:var(--paper);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:50}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;max-width:1100px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:11px;font-weight:400;font-size:1.5rem;letter-spacing:0;font-family:"Instrument Serif",serif}
+.logo .mark{width:34px;height:34px;border-radius:50%;background:var(--grad);
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:1rem;font-family:"Chivo",sans-serif}
+.mode-switch{display:flex;background:transparent;border:2px solid var(--ink);border-radius:0;padding:0}
+.mode-switch button{border:0;background:transparent;padding:9px 16px;border-radius:0;font-weight:700;
+  font-size:.88rem;cursor:pointer;color:var(--ink);transition:.15s}
+.mode-switch button+button{border-left:2px solid var(--ink)}
+.mode-switch button.active{background:var(--ink);color:#fff}
+
+/* meta bar */
+.metabar{background:var(--paper);border-bottom:2px solid var(--ink)}
+.metabar .wrap{display:flex;gap:16px;flex-wrap:wrap;padding:14px 20px;align-items:center}
+.metabar label{font-size:.74rem;color:var(--ink);display:block;margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.metabar input,.metabar select{border:1.5px solid var(--ink);border-radius:0;padding:7px 10px;font-size:.9rem;font-family:inherit;background:#fff}
+.metabar input:focus,.metabar select:focus{outline:none;box-shadow:var(--hard-sm)}
+.metabar .fld{flex:1;min-width:130px}
+
+.page{display:none;padding:28px 0 80px}
+.page.active{display:block}
+
+/* tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.tabs button{border:2px solid var(--ink);background:#fff;padding:9px 16px;font-weight:700;font-size:.88rem;
+  cursor:pointer;color:var(--ink);border-radius:0;transition:.12s}
+.tabs button:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.tabs button.active{background:var(--ink);color:#fff}
+.tabpane{display:none}.tabpane.active{display:block;animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* cards */
+.card{background:#fff;border:2px solid var(--ink);border-radius:0;padding:24px;margin-bottom:20px;box-shadow:var(--hard)}
+.card h3{font-size:1.15rem;color:var(--ink);display:flex;align-items:center;gap:11px;margin-bottom:6px;font-family:"Instrument Serif",serif;font-weight:400}
+.card h3 .num{width:30px;height:30px;border-radius:0;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-size:.8rem;font-weight:800;font-family:"Chivo",sans-serif;flex-shrink:0}
+.card .axis-desc{font-size:.85rem;color:var(--sub);margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid var(--line-soft)}
+.q{margin-bottom:18px}
+.q .qt{font-weight:700;font-size:.95rem;margin-bottom:8px;display:flex;gap:8px}
+.q .qt::before{content:"Q";color:var(--teal);font-weight:900;font-family:"Chivo",sans-serif}
+.ep-q{margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line-soft)}
+.ep-q:last-child{border-bottom:none}
+.ep-q .qt{font-weight:600;font-size:.92rem;margin-bottom:0;align-items:baseline}
+.q textarea{width:100%;border:1.5px solid var(--ink);border-radius:0;padding:10px 12px;
+  font-family:inherit;font-size:.92rem;resize:vertical;min-height:64px;line-height:1.6;background:#fff}
+.q textarea:focus{outline:none;box-shadow:var(--hard-sm)}
+
+/* binary choice question */
+.biq{margin-bottom:18px;padding-bottom:16px;border-bottom:1.5px solid var(--line-soft)}
+.biq:last-of-type{border-bottom:0}
+.biq .qt{font-weight:700;font-size:.95rem;margin-bottom:10px;display:flex;gap:8px}
+.biq .qt::before{content:"Q";color:var(--teal);font-weight:900;flex-shrink:0;font-family:"Chivo",sans-serif}
+.choice{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.choice button{flex:1;min-width:90px;border:1.5px solid var(--ink);background:#fff;border-radius:0;
+  padding:10px 8px;font-size:.86rem;font-weight:700;cursor:pointer;color:var(--ink);transition:.12s;line-height:1.35}
+.choice button:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.choice button[data-c="m"]{flex:0 0 auto;min-width:84px;color:var(--sub)}
+.choice button.sel{background:var(--grad);color:#fff;border-color:var(--ink)}
+.biq textarea.why{width:100%;border:1.5px solid var(--ink);border-radius:0;padding:9px 12px;
+  font-family:inherit;font-size:.9rem;resize:vertical;min-height:48px;line-height:1.6;background:#fff}
+.biq textarea.why:focus{outline:none;box-shadow:var(--hard-sm)}
+
+/* CV / 経歴 */
+.cv-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.cv-fld{flex:1;min-width:200px}
+.cv-fld label{display:block;font-size:.8rem;color:var(--sub);font-weight:700;margin-bottom:4px}
+.cv-fld input{width:100%;border:1.5px solid var(--ink);border-radius:0;padding:9px 12px;
+  font-family:inherit;font-size:.92rem;background:#fff}
+.cv-fld input:focus{outline:none;box-shadow:var(--hard-sm)}
+.qt2{font-weight:700;font-size:.9rem;margin-bottom:7px;color:var(--ink)}
+
+/* future axes: ヒト・モノ・カネ・情報・時間 */
+.fax{border-top:2px solid var(--ink);padding:14px 0 16px}
+.fax:first-child{border-top:0;padding-top:4px}
+.fax-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fax-icon{width:28px;height:28px;background:var(--grad);color:#fff;display:grid;place-items:center;
+  font-weight:800;font-size:.9rem;border:1.5px solid var(--ink);flex-shrink:0;font-family:"Zen Kaku Gothic New",sans-serif}
+.fax-label{font-weight:800;font-size:1rem;font-family:"Chivo",sans-serif}
+.fax-sub{font-size:.78rem;color:var(--sub)}
+.fax .pills{margin-bottom:10px}
+.fax-note{width:100%}
+
+/* fast form: 経歴・条件 */
+.ff-sec{font-weight:800;font-size:.95rem;color:var(--ink);margin:20px 0 12px;
+  padding:4px 0 6px;border-bottom:2px solid var(--ink);font-family:"Chivo",sans-serif;letter-spacing:.02em}
+.ff-sec:first-of-type{margin-top:8px}
+.ff-grid{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ff{flex:1;min-width:150px}
+.ff.ff-wide{flex:2;min-width:220px}
+.ff label{display:block;font-size:.74rem;color:var(--sub);font-weight:700;margin-bottom:3px}
+.ff input{width:100%;border:1.5px solid var(--ink);border-radius:0;padding:8px 11px;
+  font-family:inherit;font-size:.9rem;background:#fff}
+.ff input:focus{outline:none;box-shadow:var(--hard-sm)}
+.ff-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ff-lab{font-size:.82rem;color:var(--ink);font-weight:700;min-width:84px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pills button{border:1.5px solid var(--ink);background:#fff;border-radius:0;padding:7px 15px;
+  font-size:.85rem;font-weight:700;cursor:pointer;color:var(--ink);transition:.12s}
+.pills button:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.pills button.sel{background:var(--grad);color:#fff;border-color:var(--ink)}
+.hint-q{font-size:.78rem;color:var(--sub);margin-top:5px}
+.watch-box{margin-top:12px;border:1.5px solid var(--ink);background:#fcfbf8}
+.watch-h{font-size:.82rem;font-weight:700;padding:7px 12px;border-bottom:1.5px solid var(--ink);background:var(--mint-l)}
+.watch-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.watch-ng,.watch-ok{padding:10px 12px}
+.watch-ng{border-right:1.5px solid var(--line-soft)}
+.watch-lab{font-size:.74rem;font-weight:700;margin-bottom:6px}
+.watch-ng .watch-lab{color:#d97706}
+.watch-ok .watch-lab{color:#0c7d6f}
+.watch-box ul{list-style:none;margin:0;padding:0}
+.watch-box li{font-size:.76rem;line-height:1.5;padding:4px 0 4px 14px;position:relative;color:var(--ink)}
+.watch-ng li::before{content:"・";position:absolute;left:0;color:#d97706}
+.watch-ok li::before{content:"・";position:absolute;left:0;color:#0c7d6f}
+@media(max-width:600px){.watch-cols{grid-template-columns:1fr}.watch-ng{border-right:none;border-bottom:1.5px solid var(--line-soft)}}
+.pills.wakan button[data-c="ng"].sel{background:#d97706;color:#fff}
+.ff-inline{flex:1;min-width:140px;border:1.5px solid var(--ink);border-radius:0;padding:7px 11px;
+  font-family:inherit;font-size:.88rem;background:#fff}
+.ff-inline:focus{outline:none;box-shadow:var(--hard-sm)}
+.ff-noteinput{flex:1;min-width:200px;border:1.5px solid var(--ink);border-radius:0;padding:8px 11px;
+  font-family:inherit;font-size:.9rem;background:#fff}
+.ff-noteinput:focus{outline:none;box-shadow:var(--hard-sm)}
+
+/* job history cards */
+.job{border:2px solid var(--ink);border-radius:0;padding:16px;margin-bottom:14px;background:#fff;box-shadow:var(--hard-sm)}
+.job-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.job-no{font-weight:800;font-size:.85rem;color:#fff;background:var(--ink);border:none;
+  border-radius:0;padding:4px 14px;font-family:"Chivo",sans-serif}
+.job-del{border:1.5px solid var(--ink);background:#fff;border-radius:0;padding:5px 12px;
+  font-size:.8rem;color:var(--ink);cursor:pointer;font-family:inherit;font-weight:700}
+.job-del:hover{background:var(--ink);color:#fff}
+.job .ff input,.job .ff-noteinput{background:#fff}
+.job .ff select{width:100%;border:1.5px solid var(--ink);border-radius:0;padding:8px 11px;
+  font-family:inherit;font-size:.9rem;background:#fff;cursor:pointer}
+.job .ff select:focus{outline:none;box-shadow:var(--hard-sm)}
+.yr-sel{border:1.5px solid var(--ink);border-radius:0;padding:8px 11px;font-family:inherit;
+  font-size:.9rem;background:#fff;cursor:pointer;min-width:92px}
+.yr-sel:focus{outline:none;box-shadow:var(--hard-sm)}
+.addjob{width:100%;border:2px dashed var(--ink);background:var(--mint-l);color:var(--ink);
+  border-radius:0;padding:12px;font-weight:800;font-size:.92rem;cursor:pointer;font-family:inherit;
+  transition:.15s;margin-bottom:8px}
+.addjob:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.job-empty{font-size:.86rem;color:var(--sub);padding:14px;text-align:center;
+  border:2px dashed var(--line-soft);border-radius:0;margin-bottom:12px}
+
+/* ===== OUTPUT P2リッチ版 ===== */
+.page#page-cand{padding:0}
+.out-reel{height:calc(100vh - 56px);overflow-y:scroll;scroll-snap-type:y proximity;scroll-behavior:smooth}
+.out-reel .serif{font-family:"Instrument Serif",serif;font-weight:400}
+.out-reel .eg{font-family:"Chivo",sans-serif;font-weight:700;letter-spacing:.2em;font-size:.74rem;color:var(--teal);text-transform:uppercase}
+.out-reel .scrollhint{text-align:center;font-size:.74rem;font-family:"Chivo";letter-spacing:.15em;color:var(--sub);padding:16px;animation:obob 1.6s infinite}
+@keyframes obob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+/* 章1 */
+.oh-hero{min-height:calc(100vh - 56px);scroll-snap-align:start;display:grid;place-items:center;text-align:center;padding:40px;background:radial-gradient(circle at 50% 38%,#f1fbf7,var(--paper));position:relative;overflow:hidden}
+.oh-hero::after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:var(--mint-l);right:-140px;top:-120px;opacity:.6}
+.oh-hero .in{position:relative;z-index:2;max-width:760px}
+.oh-hero .eg{opacity:0;animation:ofu .8s .1s forwards}
+.oh-hero h1{font-family:"Instrument Serif",serif;font-size:3.2rem;line-height:1.2;margin:18px 0 8px;opacity:0;animation:ofu .8s .35s forwards}
+.oh-hero h1 b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.oh-hero .lead{font-size:1.12rem;line-height:1.9;color:var(--sub);opacity:0;animation:ofu .8s .6s forwards}
+.oh-hero .oh-count{display:inline-block;font-family:"Chivo";font-weight:900;font-size:1.1rem;color:var(--teal)}
+.oh-hero .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:24px;max-width:680px;margin-left:auto;margin-right:auto}
+.oh-hero .chip{background:#fff;border:2px solid var(--ink);padding:6px 13px;font-weight:700;font-size:.82rem;opacity:0;transform:scale(.8);animation:ochip .5s forwards}
+@keyframes ofu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes ochip{to{opacity:1;transform:none}}
+/* 章2 */
+.oh-wishes{min-height:calc(100vh - 56px);scroll-snap-align:start;padding:60px 24px 30px;background:var(--paper)}
+.oh-wishes .head{text-align:center;max-width:680px;margin:0 auto 36px}
+.oh-wishes .head h2{font-size:2.3rem;line-height:1.3;margin:12px 0 8px}
+.oh-wishes .head p{color:var(--sub);font-size:1rem;line-height:1.8}
+.oh-empty{max-width:560px;margin:0 auto;text-align:center;color:var(--sub);border:2px dashed var(--line-soft);padding:30px}
+.wgrid{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.wgrid{grid-template-columns:1fr}}
+.wcard{display:flex;gap:14px;align-items:flex-start;background:#fff;border:2px solid var(--ink);box-shadow:var(--hard-sm);padding:16px 18px;opacity:0;transform:translateY(20px)}
+.wcard.in{animation:ocard .6s forwards}
+@keyframes ocard{to{opacity:1;transform:none}}
+.wcard .ic{flex-shrink:0;width:46px;height:46px;border:2px solid var(--ink);display:grid;place-items:center;font-weight:900;font-size:1.15rem;color:#fff;font-family:"Chivo"}
+.wcard .ic.hito{background:#00a3b4}.wcard .ic.mono{background:#0c7d6f}.wcard .ic.kane{background:#00c389}.wcard .ic.joho{background:#1aa0b4}.wcard .ic.jikan{background:#3cb88f}
+.wcard .bd{flex:1}
+.wcard .wish{font-size:.82rem;color:var(--teal);font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.wcard .wish::before{content:"あなたの願い";background:var(--mint-l);border:1px solid var(--teal);font-size:.66rem;padding:1px 7px;font-weight:700}
+.wcard .ans{font-weight:800;font-size:1.02rem;margin-bottom:4px;line-height:1.4}
+.wcard .desc{font-size:.85rem;color:var(--sub);line-height:1.65}
+/* 章3 */
+/* OUTPUT 沿革＋裏側ストーリー */
+.oh-history{min-height:calc(100vh - 56px);scroll-snap-align:start;padding:60px 24px 70px;background:#fff}
+.oh-hist-lead{text-align:center;color:var(--sub);font-size:.95rem;margin-bottom:40px;line-height:1.7}
+.hist-tl{max-width:760px;margin:0 auto}
+.hist-tl .hrow{position:relative;padding:0 0 26px 150px;opacity:0;animation:histin .5s forwards}
+@keyframes histin{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.hist-tl .hrow{padding-left:96px}.hist-tl .hrow .yr{width:74px}.hist-tl .hrow .dot{left:86px}.hist-tl .hrow::before{left:86px}}
+.hist-tl .yr{position:absolute;left:0;width:120px;text-align:right;font-family:"Chivo";font-weight:700;font-size:.82rem;color:var(--sub);padding-top:1px}
+.hist-tl .dot{position:absolute;left:138px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--ink);transform:translateX(-50%);z-index:2}
+.hist-tl .hrow::before{content:"";position:absolute;left:138px;top:5px;bottom:-21px;width:2px;background:var(--line-soft);transform:translateX(-50%)}
+.hist-tl .ev{font-size:.98rem;line-height:1.55;padding-left:20px}
+.hist-tl .ev b{font-weight:700}
+.hist-tl .hrow.sales .dot{background:var(--teal);width:9px;height:9px}
+.hist-tl .hrow.sales .ev{color:var(--teal);font-weight:700;font-size:.9rem}
+.hist-tl .hrow.big .dot{background:var(--grad);width:15px;height:15px;box-shadow:0 0 0 4px var(--mint-l)}
+.hist-tl .hrow.big .ev{font-weight:800}
+.hist-tl .story{margin:10px 0 0 20px;background:#fff;border:2px solid var(--ink);box-shadow:var(--hard-sm);padding:14px 16px;position:relative}
+.hist-tl .story::before{content:"裏側のはなし";position:absolute;top:-10px;left:14px;background:var(--ink);color:#fff;font-family:"Chivo";font-size:.62rem;font-weight:700;letter-spacing:.1em;padding:2px 8px}
+.hist-tl .story .txt{font-size:.9rem;line-height:1.85;color:#333;margin-top:4px}
+/* 末尾 余白演出（案A） */
+.hist-tail{position:relative;height:210px;max-width:760px;margin:0 auto}
+.hist-tail .ht-line{position:absolute;left:138px;top:0;width:2px;transform:translateX(-50%);height:0;background:linear-gradient(var(--line-soft),transparent);animation:htgrow 1.2s .4s forwards}
+@media(max-width:600px){.hist-tail .ht-line{left:86px}.hist-tail .ht-year{width:74px}.hist-tail .ht-dot{left:86px}}
+@keyframes htgrow{to{height:130px}}
+.hist-tail .ht-year{position:absolute;left:0;width:120px;text-align:right;top:122px;font-family:"Chivo";font-weight:700;font-size:.8rem;color:var(--teal);opacity:0;animation:htap 1s 1.4s forwards}
+.hist-tail .ht-dot{position:absolute;left:138px;top:122px;width:20px;height:20px;border-radius:50%;background:var(--grad);border:3px solid var(--ink);transform:translateX(-50%);opacity:0;animation:htpulse 2s 1.6s infinite,htap .6s 1.6s forwards}
+@keyframes htpulse{0%,100%{box-shadow:0 0 0 0 rgba(0,195,137,.5)}50%{box-shadow:0 0 0 14px rgba(0,195,137,0)}}
+@keyframes htap{to{opacity:1}}
+/* 章4 */
+.oh-fin{min-height:calc(100vh - 56px);scroll-snap-align:start;display:grid;place-items:center;text-align:center;padding:40px;background:var(--grad);color:#fff;position:relative;overflow:hidden}
+.oh-fin::before,.oh-fin::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+.oh-fin::before{width:300px;height:300px;left:-100px;bottom:-100px}
+.oh-fin::after{width:200px;height:200px;right:-60px;top:-60px}
+.oh-fin .in{position:relative;z-index:2}
+.oh-fin .big{font-family:"Instrument Serif",serif;font-size:2.9rem;line-height:1.3;margin-bottom:18px}
+.oh-fin .sub{font-size:1.08rem;opacity:.95;line-height:1.9;max-width:480px;margin:0 auto}
+.oh-fin .badge{display:inline-block;margin-top:26px;background:#fff;color:var(--ink);border:2px solid var(--ink);box-shadow:5px 5px 0 rgba(0,0,0,.3);padding:12px 26px;font-weight:800;font-size:1rem}
+.oh-fin .sns{margin-top:32px}
+.oh-fin .sns-lead{font-size:.9rem;opacity:.92;margin-bottom:14px;font-weight:700;letter-spacing:.04em}
+.oh-fin .sns-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.oh-fin .sns-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);border:2px solid var(--ink);box-shadow:4px 4px 0 rgba(0,0,0,.3);padding:10px 18px;text-decoration:none;transition:.14s}
+.oh-fin .sns-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,.3)}
+.oh-fin .sns-btn .sns-tx{display:flex;flex-direction:column;line-height:1.25;text-align:left}
+.oh-fin .sns-btn .sns-tx b{font-size:.92rem;font-weight:800}
+.oh-fin .sns-btn .sns-tx em{font-style:normal;font-size:.76rem;color:var(--sub);font-family:"Chivo",sans-serif}
+/* 進捗ドット */
+.out-dots{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:10px}
+.out-dots .d{width:11px;height:11px;border-radius:50%;border:2px solid var(--ink);background:#fff;cursor:pointer;transition:.2s}
+.out-dots .d.on{background:var(--grad)}
+.page:not(.active) ~ .out-dots,#page-cand:not(.active) .out-dots{display:none}
+
+/* counter: KINOWAの強み打ち返し */
+.ctr-wrap{background:var(--mint-l)}
+.ctr-note{font-size:.84rem;color:var(--ink);margin-bottom:12px;font-weight:600}
+.ctr-card{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid var(--ink);
+  border-radius:0;padding:12px 14px;margin-bottom:10px}
+.ctr-card.hot{box-shadow:var(--hard-sm)}
+.ctr-rank{flex-shrink:0;width:28px;height:28px;border-radius:0;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-weight:800;font-family:"Chivo",sans-serif;font-size:.85rem}
+.ctr-card.hot .ctr-rank{background:var(--grad)}
+.ctr-body{flex:1}
+.ctr-t{font-weight:800;font-size:.95rem;margin-bottom:3px}
+.ctr-d{font-size:.85rem;color:var(--sub);line-height:1.55;margin-bottom:7px}
+.ctr-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ctr-tag{font-size:.72rem;font-weight:700;padding:3px 9px;border:1.5px solid var(--ink);border-radius:0}
+.ctr-tag.ax{background:var(--mint-l);color:var(--ink)}
+.ctr-tag.mb{background:var(--ink);color:#fff}
+
+/* strength editor */
+.strc{border:2px solid var(--ink);border-radius:0;padding:14px;margin-bottom:14px;background:#fff;box-shadow:var(--hard-sm)}
+.strc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.str-wish-box{margin-top:12px;border-top:1.5px dashed var(--line-soft);padding-top:12px}
+.str-wish-lab{display:block;font-weight:700;font-size:.85rem;color:var(--sub);margin-bottom:8px}
+.str-wish-pick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.str-wish-pick .sw-ax{flex:0 0 200px;border:2px solid var(--ink);padding:7px 8px;font-family:inherit;font-size:.86rem;background:#fff}
+.str-wish-pick .sw-item{flex:1 1 260px;border:2px solid var(--ink);padding:7px 8px;font-family:inherit;font-size:.86rem;background:#fff}
+.str-wish-pick .sw-add{flex:0 0 auto;border:2px solid var(--ink);background:var(--mint-l);padding:7px 14px;font-weight:700;font-size:.84rem;cursor:pointer;font-family:inherit}
+.str-wish-pick .sw-add:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.str-wish-tags{display:flex;flex-wrap:wrap;gap:8px}
+.wtag{display:inline-flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--ink);padding:4px 6px 4px 4px;font-size:.84rem;font-weight:600}
+.wtag .wtag-ic{display:inline-grid;place-items:center;width:22px;height:22px;color:#fff;font-weight:900;font-size:.78rem;font-family:"Chivo"}
+.wtag .wtag-ic.hito{background:#00a3b4}.wtag .wtag-ic.mono{background:#0c7d6f}.wtag .wtag-ic.kane{background:#00c389}.wtag .wtag-ic.joho{background:#1aa0b4}.wtag .wtag-ic.jikan{background:#3cb88f}
+.wtag button{border:none;background:none;font-size:1.1rem;line-height:1;cursor:pointer;color:var(--sub);padding:0 2px}
+.wtag button:hover{color:var(--ink)}
+.wtag-empty{font-size:.84rem;color:#a59f93;font-style:italic}
+@media(max-width:600px){.str-wish-pick .sw-ax,.str-wish-pick .sw-item{flex:1 1 100%}}
+
+/* mbti quick & guide extras */
+.quick-result{margin-top:12px;padding:12px 14px;background:var(--mint-l);border:2px solid var(--ink);
+  font-weight:700;font-size:.95rem}
+.mini-btn{border:1.5px solid var(--ink);background:var(--ink);color:#fff;border-radius:0;padding:5px 12px;
+  font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit;margin-left:6px}
+.mini-btn:hover{background:var(--teal)}
+.g-oneline{font-size:.9rem;line-height:1.7;background:var(--mint-l);border:1.5px solid var(--ink);
+  padding:12px 14px;margin-bottom:16px}
+.gpanel.care{border-top:6px solid transparent;border-image:linear-gradient(90deg,#00c389,#00bcd4) 1}
+.gpanel.ng{border-top:6px solid transparent;border-image:linear-gradient(90deg,#d97706,#e23d3d) 1}
+.gpanel.care li::before{content:"›";position:absolute;left:4px;color:var(--mint);font-weight:900}
+.gpanel.ng li::before{content:"›";position:absolute;left:4px;color:var(--warn);font-weight:900}
+
+/* store master */
+.store-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+/* Insight 左右2カラム */
+.insight-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.ep-frame{border:2px solid var(--line-soft);padding:12px 24px 24px;margin-bottom:14px;background:#fcfbf8}
+#t-insight textarea{width:100%;box-sizing:border-box;display:block}
+.ep-frame .card{box-shadow:var(--hard-sm);border:2px solid var(--ink);margin-bottom:16px}
+.ep-frame .card:last-child{margin-bottom:0}
+.ep-frame .ep-frame-title{margin:0 0 8px;font-size:1.4rem;line-height:1;padding-top:0}
+.insight-right-inner{position:sticky;top:14px}
+.insight-left .card{margin-bottom:14px}
+.insight-right .card{margin-bottom:14px}
+@media(max-width:900px){.insight-2col{grid-template-columns:1fr}.insight-right-inner{position:static}}
+/* 右カラム内はコンパクトに */
+.insight-right .comp-items{gap:6px}
+.insight-right .comp-chip{padding:5px 9px;font-size:.8rem}
+.insight-right .comp-gname{font-size:.84rem;margin-bottom:6px}
+.insight-right .comp-group{margin-bottom:12px}
+.insight-right .potbar{padding:10px 0}
+.insight-right .potbar-d{font-size:.8rem;margin-bottom:8px}
+
+/* === コンパクト評価カラム（高さ最優先で詰める） === */
+.compact-eval{position:relative}
+.compact-eval .eval-stack{position:relative;z-index:1}
+.compact-eval .sec-eval{font-size:1.15rem;margin:14px 0 7px}
+.compact-eval .sec-eval:first-child{margin-top:0}
+.compact-eval .card{margin-bottom:10px;padding:14px 16px}
+.compact-eval .card h3{font-size:1rem;margin-bottom:4px}
+.compact-eval .axis-desc{font-size:.78rem;margin-bottom:9px;padding-bottom:8px;line-height:1.5}
+.compact-eval .comp-group{margin-bottom:9px}
+.compact-eval .comp-gname{margin-bottom:5px}
+.compact-eval .comp-items{gap:5px}
+.compact-eval .comp-chip{padding:4px 8px;font-size:.78rem}
+.compact-eval .comp-count{margin-top:7px}
+.compact-eval .potbar{padding:7px 0}
+.compact-eval .potbar-d{font-size:.76rem;margin-bottom:6px;line-height:1.45}
+.compact-eval .potbar-hd b{font-size:.96rem}
+.compact-eval textarea{padding:7px 10px}
+
+/* === ピラミッド図（説明文の右横・小野モデルの階層） === */
+.tip-row{display:flex;gap:18px;align-items:stretch;margin-bottom:14px}
+.tip-row .tip{flex:1;margin-bottom:0}
+.pyramid-fig{position:relative;flex:0 0 auto;width:248px;height:118px;align-self:center}
+.pyramid-fig .pyr-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pyramid-fig .pl{position:absolute;left:50%;transform:translate(-50%,-50%);width:max-content;max-width:96%;
+  text-align:center;font-size:.6rem;letter-spacing:.04em;font-weight:700;white-space:nowrap;line-height:1}
+.pyramid-fig .pl-1{top:14.37%;font-size:.48rem;color:#777}
+.pyramid-fig .pl-2{top:38.12%;color:#007a87}
+.pyramid-fig .pl-3{top:61.88%;color:#00966a}
+.pyramid-fig .pl-4{top:85.62%;color:#b5630a}
+@media(max-width:760px){.tip-row{flex-direction:column}.pyramid-fig{align-self:center}}
+
+.compact-eval .eval-stack{position:relative;z-index:1}
+
+/* 3軸を大枠で囲む（小野モデルの評価対象群） */
+.compact-eval .eval-stack{border:2px solid var(--ink);box-shadow:var(--hard-sm);background:#fff;padding:14px 14px 4px}
+.compact-eval .eval-block{position:relative;padding-left:12px;margin-bottom:12px}
+.compact-eval .eval-block:last-child{margin-bottom:0}
+.compact-eval .eval-block::before{content:"";position:absolute;left:0;top:4px;bottom:8px;width:5px}
+.compact-eval .eval-block .card{box-shadow:none;border-width:1.5px}
+/* tier colors: コンピ=teal / ポテ=mint / SOE=amber（図と対応） */
+.tier-comp::before{background:#00a3b4}
+.tier-pot::before{background:#00c389}
+.tier-soe::before{background:#d97706}
+.tier-comp .sec-eval{color:#007a87}
+.tier-pot  .sec-eval{color:#00966a}
+.tier-soe  .sec-eval{color:#b5630a}
+/* ポテンシャルバー */
+.potbar{padding:14px 0;border-bottom:1.5px dashed var(--line-soft)}
+.potbar:last-child{border-bottom:none}
+.potbar-hd{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.potbar-ic{color:var(--teal);font-weight:900}
+.potbar-hd b{font-size:1.05rem}
+.potbar-val{margin-left:auto;font-family:"Chivo";font-weight:900;font-size:1.1rem;color:var(--teal);min-width:24px;text-align:right}
+.potbar-d{font-size:.85rem;color:var(--sub);line-height:1.6;margin-bottom:10px}
+.potbar-range{-webkit-appearance:none;appearance:none;width:100%;height:8px;background:var(--line-soft);border:2px solid var(--ink);outline:none;cursor:pointer}
+.potbar-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--ink);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.potbar-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--ink);cursor:pointer}
+.potbar-ends{display:flex;justify-content:space-between;font-size:.74rem;color:var(--sub);margin-top:5px}
+/* コンピテンシー */
+.comp-group{margin-bottom:16px}
+.comp-gname{font-weight:800;font-size:.9rem;color:var(--teal);border-left:4px solid var(--teal);padding-left:8px;margin-bottom:8px}
+.comp-items{display:flex;flex-wrap:wrap;gap:8px}
+.comp-chip{display:inline-flex;align-items:center;gap:7px;border:2px solid var(--ink);background:#fff;padding:7px 12px;font-size:.86rem;cursor:pointer;user-select:none;transition:.12s}
+.comp-chip:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.comp-chip input{width:16px;height:16px;accent-color:#00a3b4;cursor:pointer;margin:0}
+.comp-chip:has(input:checked){background:var(--mint-l);border-color:var(--teal)}
+.comp-count{margin-top:12px;text-align:right;font-family:"Chivo";font-weight:700;font-size:.9rem;color:var(--sub)}
+/* マスタ保存バー */
+.save-bar{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--ink);box-shadow:var(--hard-sm);padding:12px 16px;margin-bottom:16px;position:sticky;top:8px;z-index:20}
+.save-bar.save-bar-bottom{position:static;margin-top:18px;margin-bottom:0}
+.save-bar.dirty{background:#fffdf0;border-color:var(--teal)}
+.save-bar .save-status{font-weight:700;font-size:.9rem;color:var(--sub)}
+.save-bar.dirty .save-status{color:var(--teal)}
+.save-bar .save-actions{margin-left:auto;display:flex;gap:8px}
+.btn-primary{border:2px solid var(--ink);background:var(--grad);color:#fff;padding:8px 20px;font-weight:800;font-size:.9rem;cursor:pointer;font-family:inherit;box-shadow:var(--hard-sm)}
+.btn-primary:hover:not(:disabled){transform:translate(-1px,-1px)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.save-bar .btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+/* 沿革マスタ編集 */
+.hist-edit{border:1.5px solid var(--line-soft);background:#faf9f5;padding:12px;margin-bottom:12px}
+.hist-edit .he-top{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.hist-edit .he-yr{flex:0 0 150px;border:2px solid var(--ink);padding:7px 10px;font-family:inherit;font-size:.9rem;background:#fff}
+.hist-edit .he-type{flex:0 0 130px;border:2px solid var(--ink);padding:7px 8px;font-family:inherit;font-size:.88rem;background:#fff}
+.hist-edit .he-del{margin-left:auto;border:2px solid var(--ink);background:#fff;padding:7px 12px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:inherit}
+.hist-edit .he-del:hover{background:#ffe9e3}
+.hist-edit .he-ev{width:100%;border:2px solid var(--ink);padding:8px 10px;font-family:inherit;font-size:.92rem;margin-bottom:8px;background:#fff}
+.hist-edit .he-story{width:100%;border:2px solid var(--ink);padding:8px 10px;font-family:inherit;font-size:.88rem;min-height:56px;background:#fff;resize:vertical;line-height:1.7}
+@media(max-width:600px){.hist-edit .he-top{flex-wrap:wrap}.hist-edit .he-yr{flex:1 1 100%}.hist-edit .he-type{flex:1 1 auto}}
+
+/* candidate DB */
+.db-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.db-card{border:2px solid var(--ink);border-radius:0;margin-bottom:10px;background:#fff;overflow:hidden}
+.db-row{display:flex;gap:14px;align-items:baseline;padding:12px 14px;cursor:pointer;flex-wrap:wrap}
+.db-row:hover{background:var(--mint-l)}
+.db-name{font-weight:800;font-size:1rem}
+.db-meta{font-size:.82rem;color:var(--sub)}
+.db-sum{font-size:.82rem;color:var(--ink);flex:1;text-align:right;min-width:160px}
+.db-detail{display:none;padding:0 14px 14px;border-top:1.5px solid var(--line-soft)}
+.db-card.open .db-detail{display:block}
+.db-actions{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.db-actions .btn{padding:8px 16px;font-size:.85rem}
+.db-kv-row{display:flex;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line-soft);font-size:.88rem}
+.db-k{font-weight:700;min-width:160px;color:var(--ink)}
+.db-v{flex:1;color:var(--sub);white-space:pre-wrap}
+
+/* fit: 相性の見立て */.fit{border:2px solid var(--ink);border-radius:0;padding:14px;margin-bottom:12px;background:#fff;box-shadow:var(--hard-sm)}
+.fit-hd{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.fit-item{flex:1;border:1.5px solid var(--ink);border-radius:0;padding:8px 11px;font-family:inherit;font-size:.92rem;background:#fff}
+.fit-item:focus{outline:none;box-shadow:var(--hard-sm)}
+.fit-pills{margin-bottom:10px}
+.fit-pills button{border:1.5px solid var(--ink);background:#fff;border-radius:0;padding:7px 15px;
+  font-size:.85rem;font-weight:700;cursor:pointer;color:var(--ink);transition:.12s}
+.fit-pills .fit-yes.sel{background:var(--grad);color:#fff;border-color:var(--ink)}
+.fit-pills .fit-maybe.sel{background:var(--warn);color:#fff;border-color:var(--ink)}
+.fit-pills .fit-no.sel{background:#9ca8a2;color:#fff;border-color:var(--ink)}
+.fit-pills button:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.fit .ff-noteinput{background:#fff}
+
+/* rating (legacy, unused) */
+.rate{display:none}
+.stars{display:flex;gap:4px}
+.stars span{font-size:1.5rem;cursor:pointer;color:#d4ddd8}
+.stars span.on{color:var(--gold)}
+.score-val{font-size:.85rem;color:var(--sub)}
+
+/* mbti */
+.mbti-pick{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+.mbti-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.mbti-grid button{border:1.5px solid var(--ink);background:#fff;border-radius:0;padding:12px 6px;
+  cursor:pointer;font-weight:800;font-size:.95rem;transition:.12s;color:var(--ink);font-family:"Chivo",sans-serif}
+.mbti-grid button .nm{display:block;font-size:.68rem;color:var(--sub);font-weight:500;margin-top:3px;font-family:"Zen Kaku Gothic New",sans-serif}
+.mbti-grid button:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.mbti-grid button.sel{background:var(--grad);color:#fff;border-color:var(--ink)}
+.mbti-grid button.sel .nm{color:rgba(255,255,255,.9)}
+.guide-box{display:none}
+.guide-box.show{display:block;animation:fade .3s}
+.guide-head{display:flex;align-items:center;gap:14px;padding:18px 20px;
+  background:radial-gradient(circle at 18% 30%, #19d49b, #00a3b4 70%);
+  border-radius:0;margin-bottom:16px;border:2px solid var(--ink);position:relative;overflow:hidden}
+.guide-head::after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;
+  background:rgba(255,255,255,.18);right:-34px;top:-54px;pointer-events:none}
+.guide-head>*{position:relative;z-index:1}
+.guide-head .tcode{font-size:2rem;font-weight:900;color:#fff;font-family:"Chivo",sans-serif}
+.guide-head .tname{font-size:1.05rem;font-weight:700;color:#fff}
+.guide-head .ttag{font-size:.83rem;color:rgba(255,255,255,.9)}
+.gcol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.gcol{grid-template-columns:1fr}.mbti-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* === MBTI 左右2ペイン === */
+.mbti-2pane{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:20px;align-items:start}
+.mbti-2pane .mbti-grid{grid-template-columns:repeat(2,1fr);margin-bottom:0}
+.mbti-right{position:sticky;top:14px}
+.guide-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  text-align:center;color:var(--sub);font-size:.9rem;line-height:1.7;
+  border:2px dashed var(--line);background:#fcfbf8;padding:48px 24px;min-height:320px}
+.guide-empty .ge-ic{font-size:2.4rem;opacity:.5}
+.guide-empty .ge-person{width:72px;height:72px;opacity:.85}
+.quick-toggle{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+.quick-caret{margin-left:auto;font-size:.9rem;transition:transform .2s}
+.mbti-quick.collapsed .quick-caret{transform:rotate(-90deg)}
+.mbti-quick.collapsed #quick-wrap{display:none}
+@media(max-width:860px){
+  .mbti-2pane{grid-template-columns:1fr}
+  .mbti-right{position:static}
+}
+.gpanel{border:2px solid var(--ink);border-radius:0;padding:18px;background:#fff}
+.gpanel.dig{border-top:6px solid var(--teal)}.gpanel.sell{border-top:6px solid var(--mint)}
+.gpanel.essence{border-top:6px solid transparent;border-image:linear-gradient(90deg,#00c389,#00a3b4) 1;margin-bottom:4px}
+.gpanel.essence li{padding:10px 0 10px 20px;line-height:1.7}
+.gpanel.essence li::before{content:"▪";position:absolute;left:2px;color:#00A878;font-weight:900}
+.gpanel h4{font-size:.95rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.gpanel.dig h4{color:var(--ink)} .gpanel.sell h4{color:var(--ink)}
+.gpanel ul{list-style:none}.gpanel li{font-size:.9rem;padding:7px 0 7px 20px;position:relative;border-bottom:1.5px solid var(--line-soft)}
+.gpanel li:last-child{border:0}
+.gpanel.dig li::before{content:"›";position:absolute;left:4px;color:var(--teal);font-weight:900}
+.gpanel.sell li::before{content:"›";position:absolute;left:4px;color:var(--mint);font-weight:900}
+.gtraits{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.gtraits span{font-size:.78rem;background:var(--mint-l);padding:4px 11px;border-radius:0;color:var(--ink);border:1.5px solid var(--ink)}
+
+/* source of energy */
+.soe-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.soe-grid{grid-template-columns:1fr}}
+
+/* summary */
+.summary-score{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.sscard{flex:1;min-width:130px;background:var(--bg);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--line)}
+.sscard .v{font-size:1.8rem;font-weight:800;color:var(--green-d)}
+.sscard .l{font-size:.82rem;color:var(--sub);margin-top:2px}
+.total-card{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;border:0}
+.total-card .v,.total-card .l{color:#fff}
+
+.verdict{display:flex;gap:10px;flex-wrap:wrap}
+.verdict button{flex:1;min-width:120px;border:2px solid var(--line);background:#fff;border-radius:10px;
+  padding:14px;font-weight:700;cursor:pointer;font-size:.92rem;transition:.2s}
+.verdict button.sel{color:#fff;border-color:transparent}
+.verdict button[data-v="strong"].sel{background:var(--green)}
+.verdict button[data-v="hold"].sel{background:var(--warn)}
+.verdict button[data-v="pass"].sel{background:#9ca8a2}
+
+.btn{border:2px solid var(--ink);border-radius:0;padding:13px 26px;font-weight:800;font-size:.95rem;cursor:pointer;
+  font-family:inherit;transition:.12s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:var(--hard-sm)}
+.btn-primary:hover{transform:translate(-2px,-2px);box-shadow:var(--hard)}
+.btn-ghost{background:#fff;border:2px solid var(--ink);color:var(--ink)}
+.btn-ghost:hover{box-shadow:var(--hard-sm);transform:translate(-1px,-1px)}
+.actionbar{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;margin-top:24px}
+
+/* candidate-facing */
+.cand-hero{background:var(--grad);color:#fff;border-radius:0;border:2px solid var(--ink);box-shadow:var(--hard);
+  padding:44px 36px;margin-bottom:28px;position:relative;overflow:hidden}
+.cand-hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;
+  border-radius:50%;background:rgba(255,255,255,.12)}
+.cand-hero h1{font-size:2.3rem;margin-bottom:8px;position:relative;font-family:"Instrument Serif",serif;font-weight:400}
+.cand-hero p{opacity:.95;position:relative;max-width:560px}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:720px){.photo-grid{grid-template-columns:1fr}}
+.photo-ph{aspect-ratio:4/3;background:repeating-linear-gradient(45deg,#f3f1ea,#f3f1ea 12px,#eae7de 12px,#eae7de 24px);
+  border:2px dashed var(--ink);border-radius:0;display:grid;place-items:center;color:var(--ink);
+  font-size:.85rem;font-weight:700;text-align:center;padding:12px}
+.path{position:relative;padding-left:28px;margin-top:8px}
+.path::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:3px;background:var(--ink)}
+.path-step{position:relative;padding:14px 0}
+.path-step::before{content:"";position:absolute;left:-25px;top:18px;width:15px;height:15px;border-radius:50%;
+  background:var(--mint);border:3px solid var(--ink)}
+.path-step .yr{font-weight:900;color:var(--ink);font-size:.95rem;font-family:"Chivo",sans-serif}
+.path-step .ti{font-weight:700;margin:2px 0}
+.path-step .ds{font-size:.88rem;color:var(--sub)}
+.path-step .sal{display:inline-block;margin-top:6px;background:var(--mint-l);color:var(--ink);
+  font-weight:700;font-size:.82rem;padding:3px 12px;border-radius:0;border:1.5px solid var(--ink)}
+
+.tip{background:var(--mint-l);border:2px solid var(--ink);border-left:8px solid var(--teal);border-radius:0;
+  padding:14px 16px;font-size:.88rem;color:var(--ink);margin-bottom:18px}
+.hint{font-size:.8rem;color:var(--sub);margin-top:4px}
+.sec-title{font-size:1.6rem;font-weight:400;margin:30px 0 14px;color:var(--ink);font-family:"Instrument Serif",serif}
+
+@media print{
+  header,.metabar .nojp,.actionbar,.tabs,.mode-switch{display:none!important}
+  .tabpane{display:block!important;page-break-inside:avoid}
+  .page{display:block!important;padding:0}
+  body{background:#fff}
+  .card{box-shadow:none;page-break-inside:avoid;border:1.5px solid #111}
+  .biq{page-break-inside:avoid}
+  .choice button,.pills button,.fit-pills button{color:#777;border-color:#bbb;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .choice button.sel,.pills button.sel,.fit-pills .fit-yes.sel{background:#00a3b4!important;color:#fff!important;border-color:#111!important}
+  .fit-pills .fit-maybe.sel{background:#d97706!important;color:#fff!important;border-color:#111!important}
+  .fit-pills .fit-no.sel{background:#9ca8a2!important;color:#fff!important;border-color:#111!important}
+  .job,.fit{box-shadow:none}
+  .biq textarea.why,.q textarea{min-height:40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <div class="logo"><span class="mark">K</span> KINOWA 採用面接システム</div>
+    <div class="mode-switch">
+      <button id="m-int" class="active" onclick="setMode('int')">INPUT</button>
+      <button id="m-cand" onclick="setMode('cand')">OUTPUT</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ INPUT ============ -->
+<div id="page-int" class="page active">
+  <div class="metabar">
+    <div class="wrap">
+      <div class="fld"><label>求職者氏名</label><input id="c-name" placeholder="例)山田 太郎"></div>
+      <div class="fld"><label>応募店舗</label>
+        <select id="c-store"></select></div>
+      <div class="fld"><label>職種</label>
+        <select id="c-role"><option>薬剤師</option><option>医療事務</option><option>調剤事務</option><option>管理薬剤師候補</option><option>営業</option><option>その他</option></select></div>
+      <div class="fld"><label>MBTI</label>
+        <select id="c-mbti" onchange="state.mbti=this.value;syncMbtiGrid();renderCounter();">
+          <option value="">未選択</option>
+          <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
+          <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
+          <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
+          <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
+        </select></div>
+      <div class="fld"><label>面接日</label><input id="c-date" type="date"></div>
+      <div class="fld"><label>面接官</label><input id="c-iv" placeholder="氏名"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="tabs">
+      <button class="active" onclick="tab(this,'t-form')">Work History</button>
+      <button onclick="tab(this,'t-future')">The Future</button>
+      <button onclick="tab(this,'t-insight')">Insight</button>
+      <button onclick="tab(this,'t-mbti')">MBTI 質問ガイド</button>
+      <button onclick="tab(this,'t-store')">マスタメンテナンス</button>
+      <button onclick="tab(this,'t-db')">候補者データ</button>
+    </div>
+
+    <!-- 叶えたい未来 -->
+    <div id="t-future" class="tabpane">
+      <div class="tip">採用で唯一大事なのは <b>「この人が叶えたい未来の状態が、KINOWAで実現できるか」</b>。まず候補者が次の職場・キャリア・働き方で実現したいことを聞き取り、それぞれにKINOWAで叶うかの見立てを正直に残してください。点数はつけません。</div>
+      <div class="card">
+        <h3><span class="num">★</span>叶えたい未来（ヒト・モノ・カネ・情報・時間で分析）</h3>
+        <div class="axis-desc">本人の話を聞きながら、当てはまりそうな要素をタップで選べます（会話の補足）。本人が言語化しきれない希望も拾い、5つの観点で立体的に捉えます。各観点に補足も書けます。</div>
+        <div id="future-axes"></div>
+        <div class="q" style="margin-top:14px;margin-bottom:0"><div class="qt2">全体として最も大事にしている未来（本人の言葉で）</div>
+          <textarea data-k="fut-core" style="min-height:70px" placeholder="5観点のうち、この人が一番こだわっているのは何か。原体験や背景も。"></textarea></div>
+      </div>
+    </div>
+
+    <!-- KINOWAの強み（編集タブ） -->
+    <!-- Insight（ポテンシャル＋ソース・オブ・エナジー＋熱量を統合） -->
+    <div id="t-insight" class="tabpane">
+      <div class="tip-row">
+        <div class="tip"><b>候補者の内面・資質を見極める</b>タブです。数個の大枠エピソードを深く聞き、その語りから <b>ポテンシャル（抑えきれず湧き出るエネルギー）</b> と <b>コンピテンシー（思考を伴う再現性のある行動特性）</b> を読み取ります。学生（新卒）の場合は、仕事に限らず学業・部活・サークル・アルバイト・ボランティアなどの経験で構いません。<b>左で聞き、右で見極めを記録します。</b></div>
+        <div class="pyramid-fig" aria-hidden="true">
+          <svg class="pyr-svg" viewBox="0 0 100 80" preserveAspectRatio="none">
+            <polygon points="50,2 61.5,21 38.5,21" fill="rgba(120,120,120,.13)"/>
+            <polygon points="38.5,21 61.5,21 73,40 27,40" fill="rgba(0,163,180,.20)"/>
+            <polygon points="27,40 73,40 84.5,59 15.5,59" fill="rgba(0,195,137,.20)"/>
+            <polygon points="15.5,59 84.5,59 96,78 4,78" fill="rgba(217,119,6,.18)"/>
+            <polygon points="50,2 96,78 4,78" fill="none" stroke="rgba(60,60,60,.35)" stroke-width="0.5"/>
+            <line x1="38.5" y1="21" x2="61.5" y2="21" stroke="rgba(255,255,255,.95)" stroke-width="0.5"/>
+            <line x1="27" y1="40" x2="73" y2="40" stroke="rgba(255,255,255,.95)" stroke-width="0.5"/>
+            <line x1="15.5" y1="59" x2="84.5" y2="59" stroke="rgba(255,255,255,.95)" stroke-width="0.5"/>
+          </svg>
+          <span class="pl pl-1">経験・知識・スキル</span>
+          <span class="pl pl-2">コンピテンシー</span>
+          <span class="pl pl-3">ポテンシャル</span>
+          <span class="pl pl-4">ソース・オブ・エナジー</span>
+        </div>
+      </div>
+
+      <div class="insight-2col">
+        <!-- 左：質問（語ってもらう） -->
+        <div class="insight-left">
+          <div class="ep-frame">
+          <div class="sec-title ep-frame-title">エピソードから紐解く</div>
+          <div class="card">
+            <h3>何に没頭したか</h3>
+            <div class="axis-desc">一つの経験を、状況→課題→行動→結果の順で具体的に。「例えば？」で事実を掘り下げる。</div>
+            <div class="q ep-q"><div class="qt">これまでで最も力を注いだ・夢中になった経験を、状況から結果まで順を追って聞かせてください。（仕事・学業・部活・アルバイトなど何でも）</div></div>
+            <div class="q ep-q"><div class="qt">その中で最大の壁は何で、何を考えてどう乗り越えましたか。</div></div>
+            <div class="q ep-q" style="margin-bottom:0"><div class="qt">なぜそこまでやれたのですか。あなたを突き動かしたものは何でしたか。</div></div>
+          </div>
+          <div class="card">
+            <h3>どう乗り越えたか</h3>
+            <div class="axis-desc">追い込まれた状況での思考と行動に、胆力と課題対応が出る。</div>
+            <div class="q ep-q"><div class="qt">これまでで一番きつかった・追い込まれた状況を聞かせてください。</div></div>
+            <div class="q ep-q"><div class="qt">その状況で、あなたは何を考え、具体的にどう動きましたか。</div></div>
+            <div class="q ep-q" style="margin-bottom:0"><div class="qt">その経験は、今のあなたにどう生きていますか。</div></div>
+          </div>
+          <div class="card">
+            <h3>どう成長し続けるか</h3>
+            <div class="axis-desc">「他でも起きているか」を問い、思考を伴う再現性を直接確かめる。</div>
+            <div class="q ep-q"><div class="qt">ここ数年で、自分が最も成長したと思う経験を聞かせてください。</div></div>
+            <div class="q ep-q"><div class="qt">その成長は、何を考え、どんな行動を繰り返した結果ですか。</div></div>
+            <div class="q ep-q" style="margin-bottom:0"><div class="qt">同じような成長や変化は、他の場面でも起きていますか。</div></div>
+          </div>
+
+          </div><!-- /ep-frame -->
+
+          <div class="sec-title">人間性</div>
+          <div class="card">
+            <h3>自分中心か、他者を立てられるか</h3>
+            <div class="q" style="margin-bottom:0"><div class="qt">これまでで、チームやグループで何かをやり遂げて「うまくいった」と思える経験を1つ教えてください。</div>
+              <div class="hint-q"><b>深掘り：</b>「その中で、あなた以外に一番貢献したのは誰で、具体的に何をしましたか？」</div>
+
+              <div class="watch-box">
+                <div class="watch-h">👁 面接官が見るべきポイント</div>
+                <div class="watch-cols">
+                  <div class="watch-ng">
+                    <div class="watch-lab">⚠ 危険サイン（違和感あり）</div>
+                    <ul>
+                      <li>成功要因がほぼ自分／自分が引っ張った話に終始する</li>
+                      <li>他のメンバーが「手伝ってくれた」程度で、名前も具体的貢献も出てこない</li>
+                      <li>深掘りしても他者を具体的に立てられない・言葉に詰まる</li>
+                      <li>前のチームや関係者をさりげなく見下す描写が混じる</li>
+                    </ul>
+                  </div>
+                  <div class="watch-ok">
+                    <div class="watch-lab">✓ 健全な反応（違和感なし）</div>
+                    <ul>
+                      <li>「私たち」が主語。複数の他者の貢献を自然に語る</li>
+                      <li>深掘りで、特定の人の具体的な働きを名指しで称賛できる</li>
+                      <li>運や外部条件にも触れ、自分の役割を相対化できる</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ff-line" style="margin-top:10px"><span class="ff-lab" style="min-width:auto">見極めた人間性は</span>
+                <div class="pills wakan" data-key="humanity">
+                  <button type="button" data-c="ok" onclick="pickChoice('humanity','ok')">違和感なし</button>
+                  <button type="button" data-c="ng" onclick="pickChoice('humanity','ng')">違和感あり</button>
+                </div></div>
+            </div>
+          </div>
+
+          <div class="sec-title">熱量</div>
+          <div class="card">
+            <h3><span class="num">🔥</span>次の職場で輝こうとする熱量</h3>
+            <div class="axis-desc">KINOWAの唯一の採用基準。点数ではなく、面接官が会話から感じ取ったものを言葉で残します。</div>
+            <div class="ff-line"><span class="ff-lab" style="min-width:auto">面接官として感じた熱量は</span>
+              <div class="pills" data-key="heat">
+                <button type="button" data-c="strong" onclick="pickChoice('heat','strong')">確かに感じた</button>
+                <button type="button" data-c="some" onclick="pickChoice('heat','some')">ある程度感じた</button>
+                <button type="button" data-c="unseen" onclick="pickChoice('heat','unseen')">まだ見えない</button>
+                <button type="button" data-c="low" onclick="pickChoice('heat','low')">あまり感じない</button>
+              </div></div>
+            <div class="q" style="margin-bottom:0"><div class="qt2">そう感じた理由<span style="color:var(--warn)">※必ず記入</span></div>
+              <textarea data-k="heat-why" style="min-height:80px" placeholder="どの発言・態度から、輝こうとする熱量を感じた（or 感じなかった）か。具体的な場面で。"></textarea></div>
+          </div>
+        </div>
+
+        <!-- 右：測定（面接官が判定・スクロール追従） -->
+        <div class="insight-right">
+          <div class="insight-right-inner compact-eval">
+            <div class="eval-stack">
+            <div class="eval-block tier-comp">
+            <div class="sec-title sec-eval" style="margin-top:0">コンピテンシー</div>
+            <div class="card">
+              <div class="axis-desc"><b>意図して・状況を判断して・繰り返し</b>発揮されている行動だけにチェック。一度きりのまぐれは含めません。</div>
+              <div id="comp-groups"></div>
+              <div class="comp-count" id="comp-count">0 件 該当</div>
+            </div>
+            </div>
+
+            <div class="eval-block tier-pot">
+            <div class="sec-title sec-eval">ポテンシャル</div>
+            <div class="card">
+              <div class="axis-desc">「できるか」ではなく「せずにいられないほど湧くか」をバーで。語るときの熱・止まらなさ・無意識のこだわりから読み取る。</div>
+              <div id="pot-bars"></div>
+            </div>
+            </div>
+
+            <div class="eval-block tier-soe">
+            <div class="sec-title sec-eval">ソース・オブ・エナジー</div>
+            <div class="card">
+              <h3>使命感</h3>
+              <div class="axis-desc">何のために頑張るのか。愛・原体験・知的欲求・ルーツなど、その人を内側から動かすもの。</div>
+              <textarea data-k="soe-mission1" style="min-height:56px"></textarea>
+            </div>
+            <div class="card">
+              <h3>劣等感</h3>
+              <div class="axis-desc">満たされなかった経験がバネになっているか。それをどう昇華しているか。</div>
+              <textarea data-k="soe-inf1" style="min-height:56px"></textarea>
+            </div>
+            </div>
+            </div><!-- /eval-stack -->
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-title">総合所感</div>
+      <div class="card">
+        <h3><span class="num">…</span>総合所感</h3>
+        <div class="q" style="margin-bottom:0"><div class="qt2">ポテンシャル・コンピテンシー・人間性・熱量を踏まえた、この人 × KINOWA の見立て</div>
+          <textarea data-k="sum-comment" style="min-height:100px" placeholder="採用是非の数値判断ではなく、面接官としての見立てを言葉で"></textarea></div>
+      </div>
+      <div class="actionbar">
+        <button class="btn btn-ghost" onclick="saveJSON()">入力を保存(JSON)</button>
+        <button class="btn btn-ghost" onclick="loadJSON()">読込</button>
+        <button class="btn btn-primary" onclick="saveToDB()">候補者データに保存</button>
+        <button class="btn btn-primary" onclick="window.print()">PDF出力（印刷）</button>
+      </div>
+      <input type="file" id="loadfile" accept=".json" style="display:none">
+    </div>
+
+    <!-- MBTI -->
+    <div id="t-mbti" class="tabpane">
+      <div class="tip">MBTIが分かっていれば右上のグリッドから選択。<b>診断していない人も多い</b>ので、その場合は「クイック判別」で当たりをつけてください。</div>
+
+      <div class="mbti-2pane">
+        <!-- 左：タイプを決める -->
+        <div class="mbti-left">
+          <div class="card" style="margin-bottom:14px">
+            <h3><span class="num">⌕</span>タイプを選ぶ</h3>
+            <div class="axis-desc">クイック判別の結果、または本人の申告に基づいて選択。選ぶと右にガイドが出ます。</div>
+            <div class="mbti-grid" id="mbti-grid"></div>
+          </div>
+          <div class="card mbti-quick">
+            <h3 class="quick-toggle" onclick="toggleQuick()"><span class="num">⚡</span>1〜2分でわかるクイック判別 <span class="quick-caret" id="quick-caret">▾</span></h3>
+            <div id="quick-wrap">
+              <div class="axis-desc">4つの問いに「どちら寄り？」で答えるだけ。雑談の中でそれとなく確認してタップすると、おおよそのタイプが絞れます（あくまで会話の補助、決めつけは禁物）。</div>
+              <div id="quick-axes"></div>
+              <div class="quick-result" id="quick-result">4つ選ぶと、推定タイプが出ます。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右：ガイド -->
+        <div class="mbti-right">
+          <div class="guide-empty" id="guide-empty">
+            <svg class="ge-person" viewBox="0 0 64 64" fill="none" stroke="#00a3b4" stroke-width="2.5" aria-hidden="true">
+              <circle cx="32" cy="22" r="11"/>
+              <path d="M12 56c0-11 9-19 20-19s20 8 20 19" stroke-linecap="round"/>
+              <circle cx="32" cy="22" r="3" fill="#00c389" stroke="none"/>
+            </svg>
+            <div>この人はどんなタイプ？<br>左で選んで見極めましょう。</div>
+          </div>
+          <div class="guide-box" id="guide-box">
+            <div class="guide-head">
+              <div class="tcode" id="g-code"></div>
+              <div><div class="tname" id="g-name"></div><div class="ttag" id="g-tag"></div></div>
+            </div>
+            <div class="g-oneline" id="g-oneline"></div>
+            <div class="gpanel essence">
+              <h4>🧭 このタイプの本質・動機の源</h4>
+              <ul id="g-essence"></ul>
+            </div>
+            <div class="gcol" style="margin-top:16px">
+              <div class="gpanel care">
+                <h4>🤝 接し方のコツ</h4>
+                <ul id="g-care"></ul>
+              </div>
+              <div class="gpanel ng">
+                <h4>⚠ 避けたい関わり方</h4>
+                <ul id="g-ng"></ul>
+              </div>
+            </div>
+            <div style="margin-top:16px"><div class="qt2">この人に響きやすい言葉・キーワード</div>
+              <div class="gtraits" id="g-words"></div></div>
+            <div class="gtraits" id="g-traits" style="margin-top:14px"></div>
+            <div class="q" style="margin-top:18px"><div class="qt">MBTIガイドを踏まえた所見メモ</div><textarea data-k="mbti-note"></textarea></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 形式 -->
+    <div id="t-form" class="tabpane">
+      <div class="card">
+        <h3><span class="num">CV</span>Work History（タップ中心でさっと入力）</h3>
+        <div class="axis-desc">ボタンで答えられるものはタップ、固有名詞や金額だけ入力。詳しい職歴は履歴書・職務経歴書を参照。</div>
+
+        <div class="ff-sec">職歴（新しい順に。会社ごとにカードで追加）</div>
+        <div id="jobs"></div>
+        <button type="button" class="addjob" onclick="addJob()">＋ 会社を追加</button>
+
+        <div class="ff-sec">経歴サマリー（共通）</div>
+        <div class="ff-line"><span class="ff-lab">マネジメント経験</span>
+          <div class="pills" data-key="cv-mgmt">
+            <button type="button" data-c="a" onclick="pickChoice('cv-mgmt','a')">あり（役職）</button>
+            <button type="button" data-c="m" onclick="pickChoice('cv-mgmt','m')">リーダー経験</button>
+            <button type="button" data-c="b" onclick="pickChoice('cv-mgmt','b')">なし</button>
+          </div>
+          <input data-k="cv-mgmt-note" class="ff-inline" placeholder="補足（人数・役割など）"></div>
+        <div class="ff-grid">
+          <div class="ff"><label id="cv-years-lab">通算の実務経験年数</label><input data-k="cv-years" placeholder="約8年"></div>
+          <div class="ff"><label>転職回数</label><input data-k="cv-count" placeholder="2回目"></div>
+        </div>
+        <div class="ff-line"><span class="ff-lab">備考</span>
+          <input data-k="cv-note" class="ff-noteinput" placeholder="任意：資格・ブランク・補足など"></div>
+
+        <div class="ff-sec">勤務条件</div>
+        <div class="ff-line"><span class="ff-lab">運転</span>
+          <div class="pills" data-key="f-drive">
+            <button type="button" data-c="a" onclick="pickChoice('f-drive','a')">運転可</button>
+            <button type="button" data-c="m" onclick="pickChoice('f-drive','m')">要相談</button>
+            <button type="button" data-c="b" onclick="pickChoice('f-drive','b')">不可</button>
+          </div>
+          <input data-k="f-drive-note" class="ff-inline" placeholder="補足"></div>
+        <div class="ff-line"><span class="ff-lab">応援・転勤</span>
+          <div class="pills" data-key="f-move">
+            <button type="button" data-c="a" onclick="pickChoice('f-move','a')">可</button>
+            <button type="button" data-c="m" onclick="pickChoice('f-move','m')">近隣のみ</button>
+            <button type="button" data-c="b" onclick="pickChoice('f-move','b')">不可</button>
+          </div>
+          <input data-k="f-move-note" class="ff-inline" placeholder="補足"></div>
+        <div class="ff-line"><span class="ff-lab">通勤手段</span>
+          <div class="pills" data-key="f-commute">
+            <button type="button" data-c="car" onclick="pickChoice('f-commute','car')">車</button>
+            <button type="button" data-c="train" onclick="pickChoice('f-commute','train')">電車</button>
+            <button type="button" data-c="bike" onclick="pickChoice('f-commute','bike')">自転車・バイク</button>
+            <button type="button" data-c="walk" onclick="pickChoice('f-commute','walk')">徒歩</button>
+          </div>
+          <input data-k="f-commute-note" class="ff-inline" placeholder="補足（所要時間など）"></div>
+        <div class="ff-line"><span class="ff-lab">健康状態</span>
+          <div class="pills" data-key="f-health">
+            <button type="button" data-c="a" onclick="pickChoice('f-health','a')">問題なし</button>
+            <button type="button" data-c="b" onclick="pickChoice('f-health','b')">配慮事項あり</button>
+          </div>
+          <input data-k="f-health-note" class="ff-inline" placeholder="配慮事項（あれば）"></div>
+        <div class="ff-line"><span class="ff-lab">想定入職時期</span>
+          <select class="yr-sel" id="start-m" onchange="state.text['f-start-m']=this.value">
+            <option value="">―月</option>
+            <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+            <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+            <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+          </select>
+          <select class="yr-sel" id="start-d" onchange="state.text['f-start-d']=this.value"></select>
+          <div class="pills" data-key="f-start" style="margin-left:4px">
+            <button type="button" data-c="now" onclick="pickChoice('f-start','now')">即日可</button>
+            <button type="button" data-c="sodan" onclick="pickChoice('f-start','sodan')">応相談</button>
+          </div></div>
+        <div class="ff-line"><span class="ff-lab">時期の補足</span>
+          <input data-k="f-start-note" class="ff-noteinput" placeholder="任意：現職の引き継ぎ次第／月初希望 など"></div>
+        <div class="ff-grid">
+          <div class="ff"><label>現職給与</label><input data-k="f-cursal" placeholder="年収450万 / 時給2200"></div>
+          <div class="ff"><label>希望給与</label><input data-k="f-wishsal" placeholder="入職時 / 半年後 / 数年後"></div>
+          <div class="ff ff-wide"><label>希望就業時間・曜日</label><input data-k="f-hours" placeholder="平日9-18 / 土日応相談"></div>
+        </div>
+        <div class="ff-line" style="margin-top:8px"><span class="ff-lab">給与・勤務の補足</span>
+          <input data-k="f-pay-note" class="ff-noteinput" placeholder="任意：給与や勤務条件についての補足"></div>
+      </div>
+    </div>
+
+    <!-- 店舗マスタ -->
+    <div id="t-store" class="tabpane">
+      <div class="tip"><b>マスタの管理</b>。KINOWAの強み（OUTPUTの「願いへの応え」に表示）、沿革（OUTPUTの「これまでとこれから」に表示）、応募店舗の一覧を編集できます。<b>編集後は最下部または下記の「保存」を押すまで反映されません。</b></div>
+
+      <div class="save-bar" id="master-save-bar">
+        <span class="save-status" id="master-save-status">変更はありません</span>
+        <div class="save-actions">
+          <button type="button" class="btn btn-ghost" id="master-revert" onclick="revertMaster()">変更を破棄</button>
+          <button type="button" class="btn btn-primary" id="master-save" onclick="saveMaster()">保存する</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">＋</span>KINOWAの強みマスタ</h3>
+        <div class="axis-desc">OUTPUTで、候補者が選んだ「叶えたい未来」への“応え”として表示されます。各強みに効く観点（ヒト/モノ/カネ/情報/時間）をタップで設定すると、その観点の願いに対応づけて表示されます。タイトルが応えの見出し、説明が本文になります。</div>        <div id="str-rows"></div>
+        <button type="button" class="addjob" onclick="addStrength()">＋ 強みを追加</button>
+        <div class="actionbar" style="margin-top:14px">
+          <button class="btn btn-ghost" onclick="resetStrengths()">サンプルに戻す</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">▦</span>沿革マスタ</h3>
+        <div class="axis-desc">OUTPUTの沿革に表示されます。年月・出来事・種別（通常／年商の節目／大きな節目）・裏側のはなし（任意）を編集できます。出来事は &lt;b&gt;太字&lt;/b&gt; や &lt;br&gt; 改行が使えます。</div>
+        <div id="hist-rows"></div>
+        <button type="button" class="addjob" onclick="addHist()">＋ 沿革を追加</button>
+        <div class="actionbar" style="margin-top:14px">
+          <button class="btn btn-ghost" onclick="resetHist()">初期の沿革に戻す</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">⌂</span>店舗マスタ</h3>
+        <div class="axis-desc">店舗名を入力して追加。並び順は上から表示され、上部の「応募店舗」プルダウンに反映されます。</div>
+        <div id="store-rows"></div>
+        <button type="button" class="addjob" onclick="addStore()">＋ 店舗を追加</button>
+        <div class="actionbar" style="margin-top:14px">
+          <button class="btn btn-ghost" onclick="resetStores()">初期の店舗に戻す</button>
+        </div>
+      </div>
+
+      <div class="save-bar save-bar-bottom" id="master-save-bar2">
+        <span class="save-status" id="master-save-status2">変更はありません</span>
+        <div class="save-actions">
+          <button type="button" class="btn btn-ghost" onclick="revertMaster()">変更を破棄</button>
+          <button type="button" class="btn btn-primary" onclick="saveMaster()">保存する</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 候補者データ集積 -->
+    <div id="t-db" class="tabpane">
+      <div class="tip"><b>候補者データの集積</b>。「候補者データに保存」を押すと、この端末のブラウザに蓄積され一覧化されます（同じ氏名＋面接日は上書き）。下の<b>スプレッドシート連携</b>を設定すると、保存時にGoogleスプレッドシートにも自動で送信され、複数の面接官のデータを1か所に集約できます。</div>
+
+      <div class="card">
+        <h3><span class="num">⇅</span>スプレッドシート連携（任意）</h3>
+        <div class="axis-desc">Google Apps ScriptのWebアプリURLを登録すると、「候補者データに保存」時にスプレッドシートへ自動送信します。設定方法は配布の手順書（GAS_setup.md）を参照。URLはこの端末にのみ保存されます。</div>
+        <div class="ff-line" style="flex-wrap:wrap">
+          <input id="gas-url" class="ff-inline" placeholder="https://script.google.com/macros/s/……/exec" style="flex:1;min-width:280px">
+          <button class="btn btn-ghost" onclick="saveGasUrl()">URLを保存</button>
+          <button class="btn btn-ghost" onclick="testGasUrl()">送信テスト</button>
+        </div>
+        <div id="gas-status" class="hint-q" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">▤</span>保存済みの候補者</h3>
+        <div class="axis-desc">行をタップで詳細を展開。「読込」で入力欄に呼び戻して編集・印刷できます。CSVで一括書き出しも可能です。</div>
+        <div class="db-bar">
+          <input id="db-search" class="ff-inline" placeholder="氏名・店舗で絞り込み" oninput="renderDB()" style="max-width:240px">
+          <span style="flex:1"></span>
+          <button class="btn btn-ghost" onclick="exportCSV()">CSV書き出し</button>
+        </div>
+        <div id="db-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ OUTPUT（求職者提示） ============ -->
+<div id="page-cand" class="page">
+  <div class="out-reel" id="out-reel">
+    <!-- 章1 ミラー -->
+    <section class="oh-hero" id="oh-hero">
+      <div class="in">
+        <div class="eg" id="oh-eg">For you</div>
+        <h1 id="oh-title">あなたの願いに、<br>KINOWA は応えます。</h1>
+        <p class="lead">面接で聞かせてくれた、あなたが大切にしたいこと。<br>その<span class="oh-count">すべて</span>に、私たちはこう向き合います。</p>
+        <div class="chips" id="oh-chips"></div>
+      </div>
+      <div class="scrollhint" style="position:absolute;bottom:12px;left:0;right:0">▼ スクロール</div>
+    </section>
+
+    <!-- 章2 願い -->
+    <section class="oh-wishes" id="oh-wishes">
+      <div class="head">
+        <div class="eg">Your wishes × KINOWA</div>
+        <h2 class="serif">願い、ひとつひとつに。</h2>
+        <p>あなたが選んだ「叶えたい」。KINOWAがどう実現するか、お見せします。</p>
+      </div>
+      <div class="wgrid" id="oh-wgrid"></div>
+      <div class="scrollhint">▼ あなたの未来へ</div>
+    </section>
+
+    <!-- 章3 未来年表 -->
+    <section class="oh-history">
+      <div class="eg" style="text-align:center">The story behind KINOWA</div>
+      <h2 class="serif" style="text-align:center;font-size:2.3rem;margin:8px 0 12px">KINOWA のこれまでと、これから。</h2>
+      <p class="oh-hist-lead">表の沿革だけでは見えない、その裏側の物語も。</p>
+      <div class="hist-tl" id="oh-hist"></div>
+      <div class="hist-tail">
+        <div class="ht-line"></div>
+        <div class="ht-year">20XX —</div>
+        <div class="ht-dot"></div>
+      </div>
+    </section>
+
+    <!-- 章4 フィナーレ -->
+    <section class="oh-fin">
+      <div class="in">
+        <div class="big" id="oh-fin-big">あなたの「叶えたい」を、<br>KINOWA で。</div>
+        <div class="sub" id="oh-fin-sub">あなたの願いに応える準備が、私たちにはあります。<br>その未来を、一緒につくりましょう。</div>
+        <div class="badge">― KINOWA Holdings 株式会社</div>
+        <div class="sns">
+          <div class="sns-lead">KINOWA の日常は、SNSでも</div>
+          <div class="sns-row">
+            <a class="sns-btn" href="https://www.instagram.com/kinowa.h.d/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.4" fill="currentColor"/></svg>
+              <span class="sns-tx"><b>Instagram</b><em>@kinowa.h.d</em></span>
+            </a>
+            <a class="sns-btn" href="https://www.tiktok.com/@okusuriyakuzaishi" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M16.5 3c.3 2.1 1.6 3.7 3.7 4v2.4c-1.3.1-2.6-.3-3.7-1v5.9c0 3-2.4 5.4-5.4 5.4S5.7 17.3 5.7 14.3 8.1 8.9 11.1 8.9c.3 0 .6 0 .9.1v2.5c-.3-.1-.6-.2-.9-.2-1.6 0-2.9 1.3-2.9 2.9s1.3 2.9 2.9 2.9 3-1.3 3-2.9V3h2.5Z"/></svg>
+              <span class="sns-tx"><b>TikTok</b><em>@okusuriyakuzaishi</em></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ===== ポテンシャル4要素 データ（二択形式・選択済み16問） =====
+   各質問: a=好ましい傾向側 / b=もう一方。面接官はどちら寄りかを記録し、
+   「なぜ?」を深掘りしてメモ＋5段階評価する。 */
+/* ポテンシャル4要素（抑えきれず湧き出るエネルギーの強度をバーで） */
+const POTENTIAL=[
+ {key:"curiosity",icon:"◇",t:"好奇心",d:"知りたい・試したい衝動の強さ。新しいものに引き寄せられ、古い考えを手放せるか。",lo:"あまり出ていない",hi:"抑えきれず湧き出る"},
+ {key:"insight",icon:"◇",t:"洞察",d:"物事の奥を見ずにいられない深さ。本質や意味を掘り下げようとする力。",lo:"あまり出ていない",hi:"抑えきれず湧き出る"},
+ {key:"engagement",icon:"◇",t:"共鳴",d:"人や事に感情で巻き込まれる強さ。心を動かし、人を動かさずにいられない力。",lo:"あまり出ていない",hi:"抑えきれず湧き出る"},
+ {key:"determination",icon:"◇",t:"胆力",d:"やらずにいられない・退かない意志の強さ。困難でも信念を持ってやり抜き、自分を律する力。",lo:"あまり出ていない",hi:"抑えきれず湧き出る"}
+];
+
+/* コンピテンシー30項目（思考を伴う再現性のある行動特性）。あり/なしでチェック */
+const COMPETENCY=[
+ {g:"思考・判断", items:[
+   {k:"c1",t:"本質を見極めて動く"},{k:"c2",t:"論理的に筋道を立てて判断する"},{k:"c3",t:"優先順位を考えて取捨選択する"},
+   {k:"c4",t:"仮説を立てて検証する"},{k:"c5",t:"全体を俯瞰して捉える"},{k:"c6",t:"原因を掘り下げて特定する"}]},
+ {g:"実行・推進", items:[
+   {k:"c7",t:"自ら起点を作って動く"},{k:"c8",t:"段取りを設計してから進める"},{k:"c9",t:"最後までやり切る"},
+   {k:"c10",t:"障害を想定して先回りする"},{k:"c11",t:"改善点を見つけて手を打つ"},{k:"c12",t:"状況に応じてやり方を変える"}]},
+ {g:"対人・協働", items:[
+   {k:"c13",t:"相手の意図を汲んで対応する"},{k:"c14",t:"場を読んで関係を調整する"},{k:"c15",t:"相手に合わせて伝え方を変える"},
+   {k:"c16",t:"対立を捉えて合意に導く"},{k:"c17",t:"人を巻き込んで動かす"},{k:"c18",t:"相手の成長を考えて関わる"}]},
+ {g:"品質・規律", items:[
+   {k:"c19",t:"確認の仕組みでミスを防ぐ"},{k:"c20",t:"ルールの意図を理解して守る"},{k:"c21",t:"一定の品質で安定して仕上げる"},
+   {k:"c22",t:"約束・期限を逆算して守る"},{k:"c23",t:"リスクを見積もって備える"},{k:"c24",t:"記録を残して次に活かす"}]},
+ {g:"顧客・成果", items:[
+   {k:"c25",t:"相手の利益を起点に考えて動く"},{k:"c26",t:"数値・成果から逆算して動く"},{k:"c27",t:"期待を超える工夫を加える"},
+   {k:"c28",t:"専門知識を状況に応じて使い分ける"},{k:"c29",t:"多職種の立場を踏まえて連携する"},{k:"c30",t:"学びを次の行動に取り入れ続ける"}]}
+];
+
+/* ===== MBTI 16タイプ データ ===== */
+const MBTI={
+ INTJ:{name:"建築家",tag:"戦略的・独立志向",traits:["長期視点","効率重視","自律","論理"],
+  essence:["動機の源は<b>「自分の設計図どおりに世界を最適化したい」</b>という内的衝動。目先の業務より、その先にある仕組み・到達点が見えていないと力が入らない。承認や所属より、<b>知的な納得と裁量</b>でエネルギーが湧くタイプ。","強みは長期視点と本質を突く設計力。一方その裏返しとして、<b>他者の感情や現場の事情を「非効率」と切り捨てがち</b>で、独断・冷たさと受け取られることがある。面接では『なぜそう考えたか』を語らせると地頭の深さが見える。"],
+  care:["結論と理由を論理的に。曖昧な精神論より、評価基準や到達点を数字・構造で示す。","業務の<b>裁量と任せる範囲</b>を明確にする。細かく管理されない環境だと安心する。","『あなたの設計をどう活かせるか』という未来の話に乗ってくる。"],
+  ng:["『みんなやってるから』『とにかくお願い』など根拠の薄い依頼で動かそうとする。","細部の手順を逐一指示し、考える余地を奪う。","感情だけで詰める／非効率な会議や手続きを強いる。"]},
+ INTP:{name:"論理学者",tag:"探究・分析志向",traits:["知的好奇心","分析","本質志向","柔軟"],
+  essence:["動機の源は<b>「なぜそうなるのか、原理から理解したい」</b>という探究心。報酬や地位より、<b>知的に面白いか／筋が通っているか</b>で動く。納得しないルールには内心従わない、本質志向の人。","強みは深い分析力と既成概念を疑う視点。裏返すと<b>理屈倒れ・着手の遅さ・関心のムラ</b>が出やすく、興味の外の実務は後回しになりがち。面接では『最近とことん調べたこと』を聞くと目の輝きが変わる。"],
+  care:["『なぜこの運用なのか』の理由・背景まで説明すると腹落ちする。","議論や問いかけを歓迎する姿勢を見せる。否定より一緒に考える。","型にはめず、<b>考える余地・実験の自由</b>を残す。"],
+  ng:["『決まりだから』で思考停止を迫る／質問を面倒がる。","雑談や同調圧力で巻き込もうとする。","細かいルーティンの正確さばかりを最初から求める。"]},
+ ENTJ:{name:"指揮官",tag:"統率・目標達成志向",traits:["リーダーシップ","目標志向","決断","推進力"],
+  essence:["動機の源は<b>「目標を立て、人を率いて達成する」</b>こと。成果と前進、そして<b>上のポジションへの道筋</b >がエネルギーになる。停滞・無能・優柔不断を最も嫌う、推進力の塊。","強みは決断力と巻き込み力。裏返すと<b>支配的・性急・相手を詰めすぎる</b>傾向があり、現場の感情を置き去りにしがち。面接では『どう周囲を巻き込んだか』を掘ると、リーダーの質（独裁か牽引か）が見える。"],
+  care:["目標・役割・評価を明確に。<b>『ここまで任せる』という権限</b>を見せると燃える。","成長とキャリアの道筋（管理薬剤師・統括等）を具体的に語る。","結論から話し、テンポよくやり取りする。"],
+  ng:["目的が曖昧なまま『とりあえず』で動かす。","決定権を与えず、こまごまと管理する。","成果が評価に反映されない不透明な制度を示す。"]},
+ ENTP:{name:"討論者",tag:"発想・挑戦志向",traits:["アイデア","議論好き","変化歓迎","機転"],
+  essence:["動機の源は<b>「新しい切り口を試し、現状を揺さぶる」</b>こと。ルーティンや前例踏襲に強い退屈を感じ、<b>議論・発想・変化</b>で生き返る。可能性の話に最も食いつく。","強みは発想力と臨機応変さ。裏返すと<b>飽きっぽさ・詰めの甘さ・反論のための反論</b>が出やすく、地道な継続が苦手。面接では『既存のやり方を変えた経験』を聞くと、発想が実行に至るタイプか口だけかが判別できる。"],
+  care:["新規立ち上げ・改善提案など<b>挑戦と裁量</b>の機会を見せる。","アイデアを否定せず『面白いね、どう実現する？』と乗る。","議論を楽しむ姿勢で対等に話す。"],
+  ng:["『前からこうだから』と変化を拒む／提案を握りつぶす。","単調な反復だけの役割に固定する。","細かい管理と長い手続きで縛る。"]},
+ INFJ:{name:"提唱者",tag:"理想・貢献志向",traits:["理念","共感","計画的","誠実"],
+  essence:["動機の源は<b>「信じる理想に沿って、人の役に立ちたい」</b>という静かな使命感。給与や効率より、<b>意義・理念への共感</b>で深く動く。表は穏やかでも内に強い軸を持つ。","強みは共感力と長期の構想力。裏返すと<b>理想と現実の差に消耗・抱え込み・燃え尽き</b>が起きやすい。面接では『仕事で実現したい信念』『違和感を覚える職場像』を聞くと、本人の核が見える。"],
+  care:["グループの医療理念・在宅での貢献の意味を語る。","一対一でじっくり、本音を引き出す時間をとる。","『あなたの想いを大切にする』という育成姿勢を示す。"],
+  ng:["数字・効率だけで語り、意義を軽視する。","大人数の前で即答を迫る。","理想を頭ごなしに『きれいごと』と否定する。"]},
+ INFP:{name:"仲介者",tag:"価値観・共感志向",traits:["価値観重視","共感","誠実","内省"],
+  essence:["動機の源は<b>「自分の価値観に正直でいられること」</b>。評価や競争より、<b>誰かの役に立てた実感・自分らしさ</b>でエネルギーが湧く。穏やかだが譲れない芯を持つ。","強みは深い共感と誠実さ。裏返すと<b>傷つきやすさ・自己批判・対立回避</b>が出やすく、本音を溜め込みがち。面接では『大切にしたい価値観』『役に立てて嬉しかった瞬間』を聞くと安心して語り出す。"],
+  care:["急かさず、考える間と安心できる雰囲気をつくる。","人への貢献・寄り添いの場面が多いことを伝える。","個性と価値観を尊重する1on1中心の関わりを示す。"],
+  ng:["成果や数字で比較・競争を煽る。","大勢の前で詰める／頭ごなしに正論をぶつける。","型にはめ、自分らしさを否定する。"]},
+ ENFJ:{name:"主人公",tag:"育成・調和志向",traits:["人望","育成","調和","熱意"],
+  essence:["動機の源は<b>「人を支え、育て、場を良くする」</b>こと。自分の成果以上に、<b>周囲の成長と感謝・チームの調和</b>でエネルギーが湧く、面倒見の人。","強みは人望と育成力。裏返すと<b>頼まれると断れず抱え込む・他人優先で自分が後回し・対立に弱い</b>傾向。面接では『人を育てて喜ばれた経験』を掘ると、自己犠牲か持続可能な関わりかが見える。"],
+  care:["後輩育成・チームづくり・多職種連携など人に関わる役割を示す。","本人の貢献をしっかり言葉で承認する。","温かい人間関係のある職場文化を伝える。"],
+  ng:["孤立した役割・人と関わらない業務に固定する。","貢献を当然視して感謝を伝えない。","対立やギスギスした空気の中に放り込む。"]},
+ ENFP:{name:"運動家",tag:"情熱・人間関係志向",traits:["情熱","発想","社交的","柔軟"],
+  essence:["動機の源は<b>「人との出会いと、ワクワクする可能性」</b>。ルーティンや管理に窒息し、<b>新しさ・人とのつながり・情熱を注げる対象</b>で一気に伸びる。","強みは熱量と発想、人を巻き込む明るさ。裏返すと<b>飽きっぽさ・気分のムラ・詰めの甘さ</b>が出やすい。面接では『ワクワクして取り組めた仕事』を聞くと表情が変わり、本物の熱の在りかが分かる。"],
+  care:["新しい挑戦・多様な関わりの機会を見せる。","頑張りや個性をその場で認め、明るく反応する。","自由度を残し、型で縛りすぎない。"],
+  ng:["単調な反復・細かい管理で縛る。","頑張りを無視する／淡々と事務的に扱う。","可能性の話を『現実を見ろ』と潰す。"]},
+ ISTJ:{name:"管理者",tag:"堅実・責任志向",traits:["責任感","正確性","堅実","ルール尊重"],
+  essence:["動機の源は<b>「任されたことを正確に、最後までやり切る」</b>責任感。派手さより、<b>着実な積み上げ・秩序・信頼に応えること</b>でエネルギーが湧く。","強みは正確性と堅実さ、組織の土台になる安定感。裏返すと<b>変化への抵抗・融通の利かなさ・新しいやり方への警戒</b>。面接では『コツコツ続けて成果につなげた経験』を聞くと、地力と誠実さが伝わる。"],
+  care:["手順・ルール・到達点を明確に示すと安心する。","調剤の正確性など堅実さが評価される点を伝える。","段階的で見通しの立つキャリアを示す。"],
+  ng:["行き当たりばったり／予定を急に変える。","曖昧な指示・基準のない評価。","『とりあえず変えてみよう』と根拠なく揺さぶる。"]},
+ ISFJ:{name:"擁護者",tag:"献身・支援志向",traits:["献身","気配り","誠実","縁の下"],
+  essence:["動機の源は<b>「身近な人を陰で支え、安心を守る」</b>こと。注目より、<b>感謝・安定・人の役に立てている実感</b>でエネルギーが湧く、縁の下の力持ち。","強みは細やかな気配りと献身。裏返すと<b>自己主張の弱さ・抱え込み・変化への不安</b>が出やすく、無理を溜めがち。面接では『陰で支えて感謝された経験』を聞くと、誠実な本質が見える。"],
+  care:["安心できる環境・面倒見の良さを具体的に伝える。","本人の支えをきちんと見て、言葉で感謝する。","急な変化は理由とともに、段階的に。"],
+  ng:["気配りを当然視して評価しない。","大勢の前で意見を急かす。","唐突な変更・不安定な環境に置く。"]},
+ ESTJ:{name:"幹部",tag:"実務・管理志向",traits:["実行力","管理","現実的","統率"],
+  essence:["動機の源は<b>「現実を効率よく回し、結果を出す」</b>こと。理想論より、<b>仕組み・役割・成果の明確さ</b>でエネルギーが湧く実務家。","強みは実行力と管理力、現場をまとめる統率。裏返すと<b>頑固さ・正論で押す・柔軟性の不足</b>が出やすい。面接では『非効率な現場をどう改善したか』を聞くと、実行の質とリーダーシップが見える。"],
+  care:["役割・評価・成果の基準を明確に示す。","店舗運営・マネジメントへの現実的な道を語る。","結論から、効率よくやり取りする。"],
+  ng:["曖昧な精神論／回りくどい進め方。","役割と評価が不透明なまま動かす。","決定を覆し続け、現場を混乱させる。"]},
+ ESFJ:{name:"領事",tag:"協調・サービス志向",traits:["協調","面倒見","責任感","社交"],
+  essence:["動機の源は<b>「みんなが気持ちよく過ごせる場をつくる」</b>こと。<b>感謝・調和・人間関係の温かさ</b>でエネルギーが湧く、世話好きでチーム思いの人。","強みは協調性と面倒見、場を和ませる力。裏返すと<b>周囲の評価に左右される・対立回避・気を遣いすぎて疲れる</b>傾向。面接では『チームの和のために工夫したこと』を聞くと、人柄が自然に出る。"],
+  care:["温かいチームワーク・人を大切にする文化を伝える。","患者対応で感謝されるやりがいを語る。","本人の気配りを認め、安心感を与える。"],
+  ng:["孤立した環境・冷たい人間関係に置く。","感謝を伝えず事務的に扱う。","対立の矢面に一人で立たせる。"]},
+ ISTP:{name:"巨匠",tag:"実践・効率志向",traits:["実践的","冷静","効率","手際"],
+  essence:["動機の源は<b>「手を動かして、無駄なく解決する」</b>こと。長い議論より、<b>実地で試す・自分のペースで効率的に片づける</b>ことでエネルギーが湧く職人肌。","強みは冷静な実践力と手際。裏返すと<b>感情表現の薄さ・束縛への強い反発・説明を省きがち</b>。面接では『手を動かして解決した工夫』を聞くと、実務の地力が具体的に見える。"],
+  care:["手技・実務スキルが活きる現場であることを示す。","裁量を持って効率的に働ける自由度を伝える。","端的に要点だけ。回りくどさを避ける。"],
+  ng:["細かいルールで縛り、自由を奪う。","長い会議や精神論に付き合わせる。","常時の密な報連相・感情的な関わりを強いる。"]},
+ ISFP:{name:"冒険家",tag:"感性・柔軟志向",traits:["感性","柔軟","控えめ","実直"],
+  essence:["動機の源は<b>「自分の感性に正直に、心地よく取り組む」</b>こと。競争や型より、<b>穏やかな関わり・自分らしさ・今この瞬間の納得</b>でエネルギーが湧く。","強みは優しい感性と柔軟さ、実直さ。裏返すと<b>自己主張の弱さ・プレッシャーに弱い・先延ばし</b>が出やすい。面接では『自分らしく丁寧に取り組めた仕事』を聞くと、控えめな芯が見えてくる。"],
+  care:["穏やかな在宅ケアなど、寄り添う関わりを示す。","プレッシャーより成長を重んじる育成姿勢を伝える。","自由度を残し、せかさず見守る。"],
+  ng:["強い競争・数字でのプレッシャー。","型にはめて自分らしさを否定する。","大勢の前で急かす／詰める。"]},
+ ESTP:{name:"起業家",tag:"行動・現場志向",traits:["行動力","臨機応変","現実的","社交"],
+  essence:["動機の源は<b>「今この現場で、すぐ動いて結果を出す」</b>こと。机上より、<b>スピード・実地・手応え</b>でエネルギーが湧く行動派。","強みは瞬発力と臨機応変、人懐っこさ。裏返すと<b>飽きっぽさ・計画性の不足・リスク軽視</b>が出やすい。面接では『とっさの判断で乗り切った経験』を聞くと、現場力と即応性が伝わる。"],
+  care:["変化と現場感のある業務、成果がすぐ反映される点を示す。","結論から、テンポよく。実地で見せる。","多店舗で実地経験を積める機会を語る。"],
+  ng:["長い座学・抽象論に縛りつける。","成果が見えにくい・反映されない制度。","細かい計画と管理でスピードを殺す。"]},
+ ESFP:{name:"エンターテイナー",tag:"社交・体験志向",traits:["社交的","明るい","行動派","共感"],
+  essence:["動機の源は<b>「人と関わり、その場を明るく楽しむ」</b>こと。<b>人とのつながり・楽しさ・即時の反応</b>でエネルギーが湧く、ムードメーカー。","強みは社交性と明るさ、場を温める共感力。裏返すと<b>気分のムラ・地道な作業の苦手さ・計画性の不足</b>。面接では『人と関わって楽しかった仕事』を聞くと、表情と熱が一気に上がる。"],
+  care:["人と関わる賑やかな現場・明るい職場を伝える。","頑張りをその場で認め合う文化を示す。","明るくテンポよく、ポジティブに反応する。"],
+  ng:["孤独な単純作業に固定する。","暗く事務的に扱う／頑張りを無視する。","細かい管理と長い座学で縛る。"]}
+};
+const ORDER=["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"];
+
+/* ===== MBTI 4軸の意味（接し方ガイドの素材） ===== */
+const AXIS_INFO={
+ E:{name:"外向 (E)",care:"会話のキャッチボールを多めに。考えを声に出してもらうと本音が出る。",ng:"沈黙で考えさせ続ける／一方的に話させない",word:"一緒に・チームで・話そう"},
+ I:{name:"内向 (I)",care:"急かさず、考える間を与える。少人数・静かな場で本音が出やすい。",ng:"即答を迫る／大人数の前で意見を求める",word:"じっくり・自分のペースで・落ち着いて"},
+ S:{name:"現実 (S)",care:"具体例・実物・数字で話す。経験に基づいた話を聞く。",ng:"抽象論や将来像だけで語る",word:"実際に・具体的に・確実に"},
+ N:{name:"直感 (N)",care:"将来像や可能性、意味を語ると乗ってくる。全体像から入る。",ng:"細部の手順ばかり詰める",word:"可能性・将来・新しい・意味"},
+ T:{name:"論理 (T)",care:"理由・根拠・公平さを示す。評価基準を明確に。",ng:"情に訴えるだけ／基準が曖昧な評価",word:"理由は・合理的・公平に・成果"},
+ F:{name:"情緒 (F)",care:"気持ちに共感し、人への貢献を語る。承認を伝える。",ng:"正論で詰める／感情を軽視する",word:"気持ち・支え合い・あなたのおかげ・貢献"},
+ J:{name:"計画 (J)",care:"見通し・スケジュール・到達点を示すと安心する。",ng:"行き当たりばったり／予定を急に変える",word:"計画・見通し・着実に・ゴール"},
+ P:{name:"柔軟 (P)",care:"選択肢や自由度を残す。型にはめすぎない。",ng:"細かく縛る／余白のない管理",word:"自由に・柔軟に・いろいろ試せる"}
+};
+const QUICK_Q=[
+ {axis:["E","I"],q:"エネルギーの向き",a:["人と話すと元気が出る（外向E）","一人の時間で充電する（内向I）"]},
+ {axis:["S","N"],q:"情報の捉え方",a:["目の前の事実・現実・細部に注目（現実S）","その奥の意味・つながり・可能性に注目（直感N）"]},
+ {axis:["T","F"],q:"判断のしかた",a:["論理・筋の通り方で決める（論理T）","人の気持ち・調和で決める（情緒F）"]},
+ {axis:["J","P"],q:"物事の進め方",a:["計画・段取りを決めてから着実に進めると力が出る（計画J）","状況を見ながら柔軟に動き、必要なときに一気に仕上げる（柔軟P）"]}
+];
+const QUICK_STATE={};
+function renderQuickAxes(){
+  const wrap=document.getElementById('quick-axes');if(!wrap)return;
+  wrap.innerHTML=QUICK_Q.map((qq,i)=>`<div class="ff-line">
+    <span class="ff-lab" style="min-width:96px">${qq.q}</span>
+    <div class="pills" data-qx="${i}">
+      <button type="button" onclick="pickQuick(${i},'${qq.axis[0]}')" class="${QUICK_STATE[i]===qq.axis[0]?'sel':''}">${qq.a[0]}</button>
+      <button type="button" onclick="pickQuick(${i},'${qq.axis[1]}')" class="${QUICK_STATE[i]===qq.axis[1]?'sel':''}">${qq.a[1]}</button>
+    </div></div>`).join('');
+}
+function pickQuick(i,ax){
+  QUICK_STATE[i]=ax;renderQuickAxes();
+  const done=QUICK_Q.every((_,idx)=>QUICK_STATE[idx]);
+  const res=document.getElementById('quick-result');
+  if(done){
+    const code=QUICK_Q.map((_,idx)=>QUICK_STATE[idx]).join('');
+    res.innerHTML=`推定タイプ：<b>${code}</b>（${MBTI[code].name}）　<button type="button" class="mini-btn" onclick="adoptQuick('${code}')">このタイプを採用</button>`;
+  }else{
+    res.textContent='4つ選ぶと、推定タイプが出ます。';
+  }
+}
+function adoptQuick(code){
+  state.mbti=code;const m=document.getElementById('c-mbti');if(m)m.value=code;
+  syncMbtiGrid();renderCounter();
+  document.getElementById('guide-box').scrollIntoView({behavior:'smooth'});
+}
+
+
+/* ===== state ===== */
+const state={text:{},choice:{},multi:{},jobs:[],fit:[],future:{},strengths:[],mbti:"",potential:{},competency:{}};
+
+/* ===== render potential ===== */
+/* 軸ごとの基準色（小野モデル：好奇心=赤/洞察=青/共鳴=黄/胆力=黒） */
+const POT_HUE={curiosity:[226,61,61], insight:[37,99,235], engagement:[214,158,0], determination:[26,26,26]};
+function potColor(v,key){
+  const base=POT_HUE[key]||[120,120,120];
+  v=Math.max(0,Math.min(5,+v));
+  if(v===0) return '#e3e0d9';            // 未評価=ごく薄いグレー
+  // 値が低い＝白に近い淡色 / 高い＝基準色そのもの（濃い）
+  const f=v/5;                            // 0.2〜1
+  const tint=1-f;                         // 白を混ぜる割合（低いほど大）
+  const r=Math.round(base[0]+(255-base[0])*tint);
+  const g=Math.round(base[1]+(255-base[1])*tint);
+  const b=Math.round(base[2]+(255-base[2])*tint);
+  return `rgb(${r},${g},${b})`;
+}
+function potTrack(v,key){
+  v=Math.max(0,Math.min(5,+v));
+  const pct=(v/5)*100;
+  if(v===0) return 'var(--line-soft)';
+  const pale=potColor(1,key);   // 左端=淡色
+  const deep=potColor(v,key);   // 現在値=濃さ
+  return `linear-gradient(to right, ${pale} 0%, ${deep} ${pct}%, var(--line-soft) ${pct}%, var(--line-soft) 100%)`;
+}
+function buildPotential(){
+  const box=document.getElementById('pot-bars');if(!box)return;
+  state.potential=state.potential||{};
+  box.innerHTML=POTENTIAL.map(p=>{
+    const v=state.potential[p.key]!=null?state.potential[p.key]:0;
+    return `<div class="potbar">
+      <div class="potbar-hd"><span class="potbar-ic" style="color:${potColor(v||1,p.key)}">${p.icon}</span><b>${p.t}</b><span class="potbar-val" id="potval-${p.key}" style="color:${v>0?potColor(v,p.key):'var(--sub)'}">${v>0?v:'—'}</span></div>
+      <div class="potbar-d">${p.d}</div>
+      <input type="range" class="potbar-range" id="potrange-${p.key}" min="0" max="5" step="1" value="${v}" style="background:${potTrack(v,p.key)}" oninput="setPotential('${p.key}',this.value)">
+      <div class="potbar-ends"><span>${p.lo}</span><span>${p.hi}</span></div>
+    </div>`;
+  }).join('');
+}
+function setPotential(key,val){
+  state.potential=state.potential||{};
+  state.potential[key]=+val;
+  const el=document.getElementById('potval-'+key);
+  if(el){el.textContent=(+val>0)?val:'—';el.style.color=(+val>0)?potColor(val,key):'var(--sub)';}
+  const r=document.getElementById('potrange-'+key);
+  if(r)r.style.background=potTrack(val,key);
+}
+function buildCompetency(){
+  const box=document.getElementById('comp-groups');if(!box)return;
+  state.competency=state.competency||{};
+  box.innerHTML=COMPETENCY.map(g=>`
+    <div class="comp-group">
+      <div class="comp-gname">${g.g}</div>
+      <div class="comp-items">
+        ${g.items.map(it=>`<label class="comp-chip"><input type="checkbox" ${state.competency[it.k]?'checked':''} onchange="toggleComp('${it.k}',this.checked)"><span>${it.t}</span></label>`).join('')}
+      </div>
+    </div>`).join('');
+  updateCompCount();
+}
+function toggleComp(k,on){
+  state.competency=state.competency||{};
+  if(on)state.competency[k]=1;else delete state.competency[k];
+  updateCompCount();
+  const lbl=event&&event.target?event.target.closest('.comp-chip'):null;
+  if(lbl)lbl.classList.toggle('on',on);
+}
+function updateCompCount(){
+  const n=Object.keys(state.competency||{}).length;
+  const el=document.getElementById('comp-count');if(el)el.textContent=n+' 件 該当';
+}
+/* ===== 二択の選択記録 ===== */
+function pickChoice(key,c){
+  state.choice=state.choice||{};
+  state.choice[key]=c;
+  const wrap=document.querySelector(`.choice[data-key="${key}"],.pills[data-key="${key}"]`);
+  wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.c===c));
+}
+/* ===== 複数選択（経験業務など） ===== */
+function toggleMulti(btn,key){
+  state.multi=state.multi||{};
+  const set=new Set(state.multi[key]||[]);
+  const label=btn.textContent;
+  if(set.has(label)){set.delete(label);btn.classList.remove('sel');}
+  else{set.add(label);btn.classList.add('sel');}
+  state.multi[key]=[...set];
+}
+/* ===== 叶えたい未来：ヒト・モノ・カネ・情報・時間 ===== */
+const FUTURE_AXES=[
+ {key:"hito",icon:"人",label:"ヒト",sub:"人間関係・育成・チーム",
+  opts:["尊敬できる上司・経営者のもとで働きたい","信頼し合える仲間と働きたい","チームで協力して成果を出したい","後輩や新人の成長を支えたい","他職種・他部署と連携して働きたい","努力や成果を正当に認めてほしい","風通しよく相談し合える環境で働きたい","頼れる先輩・指導者のもとで学びたい","リーダーとしてチームをまとめたい","お互いを尊重し合える職場で働きたい","良い人間関係の中で働きたい"]},
+ {key:"mono",icon:"物",label:"モノ",sub:"仕事・役割・キャリア（やること／なること）",
+  opts:["やりたい仕事・分野に携わりたい","専門的な仕事に携わりたい","幅広い業務を担当したい","裁量を持って自分で進めたい","責任ある役割を任されたい","お客様・患者と深く関わる仕事がしたい","人と接する仕事で力を発揮したい","お客様・患者の役に立つ実感を得たい","役職・管理職になりたい","新規立ち上げ・新しい挑戦をしたい","将来のキャリアの選択肢を広げたい","独立・開業も視野に入れたい","本部・教育など現場以外の道も拓きたい","自分の仕事に誇りを持ちたい"]},
+ {key:"kane",icon:"金",label:"カネ",sub:"給与・待遇・福利厚生",
+  opts:["年収を上げたい","安定した収入を得たい","成果や頑張りを給与で評価してほしい","昇給・昇格の見通しを持ちたい","賞与・手当を充実させたい","役職・資格に応じた手当がほしい","退職金・企業年金など将来の備えがほしい","住宅・家賃などの生活補助がほしい","産休・育休など制度を安心して使いたい","長期的に安定した待遇で働きたい"]},
+ {key:"joho",icon:"情",label:"情報",sub:"学び・知識・ノウハウ（知ること／学ぶこと）",
+  opts:["専門スキルを伸ばしたい","研修・勉強会で学び続けたい","資格取得を目指したい","専門知識を深めて第一人者になりたい","マネジメントの知識を身につけたい","先輩や上司から実践的に学びたい","業界・最新の動向にふれていたい","明確な評価で自分の現在地を知りたい","会社の方針・将来性を知りたい","フィードバックを受けて成長したい","他店舗・他職種の事例から学びたい","学びを支援する仕組みがほしい"]},
+ {key:"jikan",icon:"時",label:"時間",sub:"働き方・時間の使い方",
+  opts:["メリハリをつけて働きたい","残業の少ない働き方をしたい","希望休を取りやすい環境で働きたい","有給を取得しやすい職場で働きたい","家庭・育児と両立したい","自分に合った勤務時間で働きたい","長く働き続けたい","プライベートを大切にしたい","介護と両立したい","ライフステージに合わせて働きたい","無理なく続けられる働き方をしたい"]}
+];
+function renderFutureAxes(){
+  state.future=state.future||{};
+  const wrap=document.getElementById('future-axes');if(!wrap)return;
+  wrap.innerHTML=FUTURE_AXES.map(ax=>{
+    const sel=new Set((state.future[ax.key]&&state.future[ax.key].picks)||[]);
+    return `<div class="fax">
+      <div class="fax-hd"><span class="fax-icon">${ax.icon}</span>
+        <span class="fax-label">${ax.label}</span><span class="fax-sub">${ax.sub}</span></div>
+      <div class="pills multi">${ax.opts.map(o=>`<button type="button" class="${sel.has(o)?'sel':''}" onclick="toggleFuture('${ax.key}','${o}')">${o}</button>`).join('')}</div>
+      <input class="ff-noteinput fax-note" value="${esc(state.future[ax.key]&&state.future[ax.key].note)}" oninput="updFutureNote('${ax.key}',this.value)" placeholder="${ax.label}の補足（本人の言葉・具体的な希望）">
+    </div>`;
+  }).join('');
+}
+function toggleFuture(key,opt){
+  state.future=state.future||{};
+  state.future[key]=state.future[key]||{picks:[],note:''};
+  const arr=state.future[key].picks;const pos=arr.indexOf(opt);
+  if(pos>=0)arr.splice(pos,1);else arr.push(opt);
+  renderFutureAxes();
+  renderCounter();
+}
+function updFutureNote(key,v){
+  state.future=state.future||{};
+  state.future[key]=state.future[key]||{picks:[],note:''};
+  state.future[key].note=v;
+}
+
+/* ===== KINOWAの強み（カウンター要素） =====
+   axes: 効く分類キー / mbti: 特に刺さる傾向タグ（E,I,S,N,T,F,J,P / 空=全般） */
+const DEFAULT_STRENGTHS=[
+ {t:"在宅・施設医療に本格的に関われる",d:"地域の在宅・施設を多数担当。同行からスタートし、主担当・エリア管理まで段階的に任される。",wishes:["mono::やりたい仕事・分野に携わりたい","mono::専門的な仕事に携わりたい","mono::お客様・患者と深く関わる仕事がしたい"]},
+ {t:"キャリアパスの柔軟性とスピード感",d:"本人のやりたいことや特性をキャリアに反映させることを大事に。早期登用の実績あり。",wishes:["mono::役職・管理職になりたい","joho::役職・管理職を目指したい","joho::マネジメントの知識を身につけたい"]},
+ {t:"1on1コーチング",d:"特性に合わせた関わり方を上司が学んでおり、画一的でない育成。新人の立ち上がりを丁寧に支援。",wishes:["hito::後輩や新人の成長を支えたい","hito::頼れる先輩・指導者のもとで学びたい","joho::先輩や上司から実践的に学びたい"]},
+ {t:"多職種連携のチーム医療",d:"医師・看護師・ケアマネと連携。薬剤師としての介在価値は大きい。",wishes:["hito::他職種・他部署と連携して働きたい","hito::チームで協力して成果を出したい","mono::人と接する仕事で力を発揮したい"]},
+ {t:"頑張りが反映される明確な評価制度",d:"360度評価・スキルマップ・KPIの3ステップ。成果と昇給が連動し納得感がある。",wishes:["kane::成果や頑張りを給与で評価してほしい","kane::昇給・昇格の見通しを持ちたい","joho::明確な評価で自分の現在地を知りたい"]},
+ {t:"複数法人・多店舗で多様なキャリア",d:"グループ内に多様な店舗・法人があり、在宅特化・教育担当・本部など強みに応じた選択肢が広い。",wishes:["mono::将来のキャリアの選択肢を広げたい","mono::本部・教育など現場以外の道も拓きたい","mono::新規立ち上げ・新しい挑戦をしたい"]},
+ {t:"家庭・育児と両立しやすい柔軟な働き方",d:"役員を含めて子育て世代が組織の中心。もちろん制度もしっかり整っている。",wishes:["jikan::家庭・育児と両立したい","jikan::自分に合った勤務時間で働きたい","jikan::ライフステージに合わせて働きたい"]},
+ {t:"研修・資格取得の支援",d:"専門・認定薬剤師など資格取得を会社が支援。研修はメンバーとのコミュニケーションの上で個別に設定。",wishes:["joho::専門スキルを伸ばしたい","joho::研修・勉強会で学び続けたい","joho::資格取得を目指したい","joho::専門知識を深めて第一人者になりたい"]},
+ {t:"風通しの良いフラットな組織文化",d:"役職に関わらず意見を言いやすく、提案が通りやすい。改善アイデアを実行に移せる土壌。",wishes:["hito::風通しよく相談し合える環境で働きたい","hito::お互いを尊重し合える職場で働きたい","hito::良い人間関係の中で働きたい"]},
+ {t:"グループの安定基盤と将来性",d:"複数法人による安定した経営基盤。新規出店・事業拡大も続いており、長く安心して働ける。",wishes:["kane::安定した収入を得たい","kane::長期的に安定した待遇で働きたい","joho::会社の方針・将来性を知りたい"]},
+ {t:"残業を抑え、休みを取りやすい体制",d:"業務分担と人員配置で残業を抑制。有休も取得しやすく、プライベートを確保しやすい。",wishes:["jikan::残業の少ない働き方をしたい","jikan::有給を取得しやすい職場で働きたい","jikan::メリハリをつけて働きたい","jikan::プライベートを大切にしたい"]},
+ {t:"患者と長く深く関われる地域密着型展開",d:"医療と介護の融合により、地域医療を包括的にサポート。",wishes:["mono::お客様・患者と深く関わる仕事がしたい","mono::お客様・患者の役に立つ実感を得たい","hito::尊敬できる上司・経営者のもとで働きたい"]},
+ {t:"尊敬できる経営陣と、誇れる仕事",d:"企業出身者も多く在籍しており、固定観念のないフラットな思考。",wishes:["hito::尊敬できる上司・経営者のもとで働きたい","hito::信頼し合える仲間と働きたい","mono::自分の仕事に誇りを持ちたい"]},
+ {t:"年収アップを目指せる手当・昇給",d:"役職・資格に応じた手当と、成果に連動した昇給で、着実に年収を上げられる。毎年昇給5％平均を実現。",wishes:["kane::年収を上げたい","kane::役職・資格に応じた手当がほしい","kane::賞与・手当を充実させたい"]},
+ {t:"リーダー・新人教育で活躍できる",d:"リーダーシップを発揮できる機会提供。マネージメント研修も充実。",wishes:["hito::リーダーとしてチームをまとめたい","hito::後輩や新人の成長を支えたい","joho::マネジメントの知識を身につけたい"]}
+];
+function getStrengths(){
+  if(!state.strengths||!state.strengths.length){
+    try{const ls=JSON.parse(localStorage.getItem('kinowa_strengths')||'null');state.strengths=(ls&&ls.length)?ls:JSON.parse(JSON.stringify(DEFAULT_STRENGTHS));}
+    catch(_){state.strengths=JSON.parse(JSON.stringify(DEFAULT_STRENGTHS));}
+  }
+  return state.strengths;
+}
+
+/* ===== カウンター算出（分類最優先・MBTI補助） ===== */
+function pickedAxes(){
+  state.future=state.future||{};
+  return Object.keys(state.future).filter(k=>(state.future[k]&&state.future[k].picks&&state.future[k].picks.length));
+}
+function mbtiTags(){
+  if(!state.mbti)return [];
+  return state.mbti.split(''); // 例 INTJ -> ['I','N','T','J']
+}
+function scoreStrength(s){
+  const axes=pickedAxes();const tags=mbtiTags();
+  let score=0;
+  // 分類適合（最優先：1件につき+10）
+  (s.axes||[]).forEach(a=>{if(axes.includes(a))score+=10;});
+  // MBTI補助（軸一致1件につき+2、上限+4相当）
+  if(tags.length){(s.mbti||[]).forEach(m=>{if(tags.includes(m))score+=2;});}
+  return score;
+}
+function renderCounter(){
+  const wrap=document.getElementById('counter-list');if(!wrap)return;
+  const axes=pickedAxes();
+  const list=getStrengths().map((s,i)=>({s,i,score:scoreStrength(s)}));
+  if(axes.length===0){
+    wrap.innerHTML='<div class="job-empty">上で「叶えたい未来」を選ぶと、刺さりやすいKINOWAの強みが上位に並びます。'+(state.mbti?'（MBTI：'+state.mbti+' を加味）':'（MBTIを選ぶとさらに精度UP）')+'</div>';
+    return;
+  }
+  // スコア降順、同点は元順
+  list.sort((a,b)=>b.score-a.score||a.i-b.i);
+  const matched=list.filter(x=>x.score>0);
+  const top=matched.length?matched:list;
+  wrap.innerHTML=`<div class="ctr-note">候補者の希望${state.mbti?'＋MBTI（'+state.mbti+'）':''}に照らして、刺さりやすい順に表示しています。面接での「KINOWAならこうですよ」という打ち返しに。</div>`
+    +top.slice(0,8).map((x,rank)=>{
+      const hot=x.score>=10;
+      const matchAx=(x.s.axes||[]).filter(a=>axes.includes(a)).map(a=>axLabel(a));
+      const matchMb=state.mbti?(x.s.mbti||[]).filter(m=>mbtiTags().includes(m)):[];
+      return `<div class="ctr-card ${hot?'hot':''}">
+        <div class="ctr-rank">${rank+1}</div>
+        <div class="ctr-body">
+          <div class="ctr-t">${esc(x.s.t)}</div>
+          <div class="ctr-d">${esc(x.s.d)}</div>
+          <div class="ctr-tags">${matchAx.map(a=>`<span class="ctr-tag ax">${a}に応える</span>`).join('')}${matchMb.length?`<span class="ctr-tag mb">${state.mbti}傾向に好相性</span>`:''}</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+function axLabel(k){const m={hito:"ヒト",mono:"モノ",kane:"カネ",joho:"情報",jikan:"時間"};return m[k]||k;}
+
+/* ===== OUTPUT：P2リッチ版（願い→KINOWAの応え） ===== */
+const AX_ICON={hito:"人",mono:"物",kane:"金",joho:"情",jikan:"時"};
+
+/* 沿革＋裏側ストーリー。story空文字なら裏話カードなし。type: ''/sales/big */
+const DEFAULT_HISTORY=[
+ {y:"2018年7月",t:"<b>FunPharmacy株式会社</b> 設立",type:"",story:""},
+ {y:"2018年11月",t:"<b>くりの木薬局</b>（大阪市浪速区）開局",type:"",story:""},
+ {y:"2019年9月",t:"年商1,000万円突破",type:"sales",story:""},
+ {y:"2021年4月",t:"<b>お茶の木薬局</b>（宇治市）開局",type:"",story:"創業者の2人は忙しすぎて分裂していたらしい。"},
+ {y:"2021年9月",t:"グループ年商1億円突破",type:"sales",story:""},
+ {y:"2021年10月",t:"<b>はれの木薬局</b>（京都市中京区）開局",type:"",story:""},
+ {y:"2022年1月",t:"グループ年商2億円突破",type:"sales",story:""},
+ {y:"2022年4月",t:"グループ年商3億円突破",type:"sales",story:""},
+ {y:"2022年12月",t:"グループ年商4億円突破",type:"sales",story:""},
+ {y:"2023年8月",t:"<b>ケアの木薬局</b>（貝塚市）開局／株式会社Alps <b>つばくろ薬局</b>（茨木市）開局",type:"",story:"在宅専門薬局。現在では20を超える介護施設に対してサービスを提供。"},
+ {y:"2023年9月",t:"<b>さくらの木薬局</b>（名古屋市瑞穂区）株式譲受により開局",type:"",story:"消火器ばらまき事件。"},
+ {y:"2023年10月",t:"FunPharmacy株式会社を名称変更<br><b>KINOWA Holdings株式会社</b> 発足",type:"",story:"「木」の「和」を増やしていく。"},
+ {y:"2024年4月",t:"<b>そらの木薬局</b>（宇治市）事業譲受により開局",type:"",story:""},
+ {y:"2024年10月",t:"グループ年商10億円突破",type:"big",story:""},
+ {y:"2025年2月",t:"<b>ゆずの木薬局</b>（京都市南区）開局",type:"",story:"目指せ個人在宅100件超。地域の介護の中核として。"},
+ {y:"2025年3月",t:"<b>にじの木薬局</b>（宝塚市）開局",type:"",story:"医療モール型。内装やデザインにもこだわり。"},
+ {y:"2025年9月",t:"<b>ほしの木薬局</b>（岸和田市）事業譲受により開局",type:"",story:"弊社として初めての病院門前として誕生。"},
+ {y:"2026年1月",t:"<b>サン薬局</b>（河内長野市）株式譲受により開局",type:"",story:"これがきっかけで定年規定のブラッシュアップ。"},
+];
+function getHistory(){
+  if(!state.history){
+    try{const ls=JSON.parse(localStorage.getItem('kinowa_history')||'null');state.history=(ls&&ls.length)?ls:DEFAULT_HISTORY.map(o=>({...o}));}
+    catch(_){state.history=DEFAULT_HISTORY.map(o=>({...o}));}
+  }
+  return state.history;
+}
+function saveHistory(){try{localStorage.setItem('kinowa_history',JSON.stringify(getHistory()));}catch(_){}}
+
+function renderHistory(){
+  const wrap=document.getElementById('oh-hist');if(!wrap)return;
+  wrap.innerHTML=getHistory().map(r=>{
+    const cls=r.type==='sales'?'hrow sales':(r.type==='big'?'hrow big':'hrow');
+    const story=(r.story&&r.story.trim()!=='')?`<div class="story"><div class="txt">${r.story}</div></div>`:'';
+    return `<div class="${cls}"><div class="yr">${esc(r.y)}</div><div class="dot"></div><div class="ev">${r.t}${story}</div></div>`;
+  }).join('');
+  // 上から順に出現
+  const rows=wrap.querySelectorAll('.hrow');
+  rows.forEach((el,i)=>el.style.animationDelay=(0.1+i*0.08)+'s');
+  const last=0.1+rows.length*0.08;
+  const sec=document.querySelector('.oh-history');
+  if(sec){
+    const ln=sec.querySelector('.ht-line'),yr=sec.querySelector('.ht-year'),dt=sec.querySelector('.ht-dot');
+    if(ln)ln.style.animationDelay=(last+0.2)+'s';
+    if(yr)yr.style.animationDelay=(last+1.2)+'s';
+    if(dt){dt.style.animationDelay=(last+1.4)+'s';}
+  }
+}
+
+/* 沿革マスタ編集UI */
+function mHist(){return (masterDraft&&masterDraft.history)?masterDraft.history:getHistory();}
+function renderHistRows(){
+  const box=document.getElementById('hist-rows');if(!box)return;
+  const arr=mHist();
+  box.innerHTML=arr.map((r,i)=>`
+    <div class="hist-edit">
+      <div class="he-top">
+        <input class="he-yr" value="${esc(r.y)}" placeholder="2024年10月" oninput="updHist(${i},'y',this.value)">
+        <select class="he-type" onchange="updHist(${i},'type',this.value)">
+          <option value=""${r.type===''?' selected':''}>通常</option>
+          <option value="sales"${r.type==='sales'?' selected':''}>年商の節目</option>
+          <option value="big"${r.type==='big'?' selected':''}>大きな節目</option>
+        </select>
+        <button type="button" class="he-del" onclick="delHist(${i})">削除</button>
+      </div>
+      <input class="he-ev" value="${escAttr(r.t)}" placeholder="出来事（&lt;b&gt;店舗名&lt;/b&gt;（地名）開局 など）" oninput="updHist(${i},'t',this.value)">
+      <textarea class="he-story" placeholder="裏側のはなし（任意）。空欄ならカードは表示されません。" oninput="updHist(${i},'story',this.value)">${esc(r.story||'')}</textarea>
+    </div>`).join('');
+}
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function addHist(){mHist().push({y:'',t:'',type:'',story:''});markMasterDirty();renderHistRows();}
+function delHist(i){if(!confirm('この沿革を削除します。（保存するまで反映されません）'))return;mHist().splice(i,1);markMasterDirty();renderHistRows();}
+function updHist(i,key,val){mHist()[i][key]=val;markMasterDirty();}
+function resetHist(){if(!confirm('沿革を初期状態に戻します。（保存するまで反映されません）'))return;if(masterDraft)masterDraft.history=DEFAULT_HISTORY.map(o=>({...o}));markMasterDirty();renderHistRows();}
+function renderOutput(){
+  const reel=document.getElementById('out-reel');if(!reel)return;
+  const name=cv('c-name');
+  // 章1 見出し
+  const eg=document.getElementById('oh-eg');
+  if(eg)eg.textContent=name?('For '+name+' さん'):'For you';
+  // 候補者が選んだ全希望（分類ごと）を集める
+  state.future=state.future||{};
+  const picks=[]; // {axis, wish}
+  Object.keys(AX_ICON).forEach(k=>{
+    const arr=(state.future[k]&&state.future[k].picks)||[];
+    arr.forEach(w=>picks.push({axis:k,wish:w}));
+  });
+  const title=document.getElementById('oh-title');
+  const chips=document.getElementById('oh-chips');
+  const wgrid=document.getElementById('oh-wgrid');
+  const finBig=document.getElementById('oh-fin-big');
+  const finSub=document.getElementById('oh-fin-sub');
+  const pAxes=pickedAxes();
+
+  // 沿革＋裏側ストーリー（候補者に依存しない固定コンテンツ）
+  renderHistory();
+
+  if(picks.length===0){
+    if(title)title.innerHTML='あなたの願いに、<br>KINOWA は応えます。';
+    if(chips)chips.innerHTML='';
+    if(wgrid)wgrid.innerHTML='<div class="oh-empty">INPUTの「叶えたい未来」で希望を選ぶと、ここにその一つひとつへのKINOWAの応えが表示されます。</div>';
+    if(finBig)finBig.innerHTML='あなたの「叶えたい」を、<br>KINOWA で。';
+    if(finSub)finSub.innerHTML='あなたの願いに応える準備が、私たちにはあります。<br>その未来を、一緒につくりましょう。';
+    return;
+  }
+  const cnt=picks.length;
+  if(title)title.innerHTML=`あなたの<b>${cnt}つの願い</b>に、<br>KINOWA は応えます。`;
+  if(finSub)finSub.innerHTML=`${cnt}つの願いすべてに応える準備が、私たちにはあります。<br>その未来を、一緒につくりましょう。`;
+  if(finBig)finBig.innerHTML='あなたの「叶えたい」を、<br>KINOWA で。';
+
+  // チップ（選んだ願い）
+  if(chips)chips.innerHTML=picks.map((p,i)=>`<span class="chip" style="animation-delay:${(0.8+i*0.06)}s">${esc(p.wish)}</span>`).join('');
+
+  // 各願いに対応する強みを割り当て（小項目一致を最優先、なければ同分類で補う）
+  const strengths=getStrengths().map((s,i)=>({s,i}));
+  const usedCount={};
+  function answerFor(axis,wish){
+    const key=axis+'::'+wish;
+    // ①小項目が完全一致する強み
+    let cand=strengths.filter(o=>(o.s.wishes||[]).includes(key));
+    // ②なければ同じ分類の小項目をどれか持つ強み
+    if(!cand.length)cand=strengths.filter(o=>(o.s.wishes||[]).some(w=>w.split('::')[0]===axis));
+    // ③それでもなければ全強み
+    const pool=cand.length?cand:strengths;
+    pool.sort((a,b)=>(usedCount[a.i]||0)-(usedCount[b.i]||0)||a.i-b.i);
+    const chosen=pool[0];
+    usedCount[chosen.i]=(usedCount[chosen.i]||0)+1;
+    return chosen.s;
+  }
+  if(wgrid)wgrid.innerHTML=picks.map((p,i)=>{
+    const a=answerFor(p.axis,p.wish);
+    return `<div class="wcard" data-i="${i}">
+      <div class="ic ${p.axis}">${AX_ICON[p.axis]}</div>
+      <div class="bd">
+        <div class="wish">${esc(p.wish)}</div>
+        <div class="ans">${esc(a.t)}</div>
+        <div class="desc">${esc(a.d)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // カードを順次表示（IntersectionObserver）
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){const i=+e.target.dataset.i;e.target.style.animationDelay=(i%2*0.06)+'s';e.target.classList.add('in');io.unobserve(e.target);}});
+  },{root:reel,threshold:.15});
+  reel.querySelectorAll('.wcard').forEach(c=>io.observe(c));
+
+  // 進捗ドット同期
+  setupOutDots(reel);
+  reel.scrollTo({top:0});
+}
+function setupOutDots(reel){
+  let dotsWrap=document.getElementById('out-dots');
+  const secs=reel.querySelectorAll('section');
+  if(!dotsWrap){
+    dotsWrap=document.createElement('div');dotsWrap.id='out-dots';dotsWrap.className='out-dots';
+    dotsWrap.innerHTML=[...secs].map((_,i)=>`<div class="d${i===0?' on':''}" data-i="${i}"></div>`).join('');
+    document.getElementById('page-cand').appendChild(dotsWrap);
+    dotsWrap.querySelectorAll('.d').forEach(d=>d.onclick=()=>secs[+d.dataset.i].scrollIntoView({behavior:'smooth'}));
+  }
+  const dots=dotsWrap.querySelectorAll('.d');
+  const dio=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const idx=[...secs].indexOf(e.target);dots.forEach((d,i)=>d.classList.toggle('on',i===idx));}});},{root:reel,threshold:.5});
+  secs.forEach(s=>dio.observe(s));
+}
+
+/* ===== KINOWAの強み 編集タブ ===== */
+const AX_KEYS=[["hito","ヒト"],["mono","モノ"],["kane","カネ"],["joho","情報"],["jikan","時間"]];
+const MB_KEYS=[["E","外向E"],["I","内向I"],["S","現実S"],["N","直感N"],["T","論理T"],["F","情緒F"],["J","計画J"],["P","柔軟P"]];
+function strTemplate(idx,s){
+  const wishes=s.wishes||[];
+  // 分類セレクトの選択肢
+  const axOpts=FUTURE_AXES.map(ax=>`<option value="${ax.key}">${ax.label}（${ax.sub.split('（')[0]}）</option>`).join('');
+  // 選択済み小項目タグ
+  const tags=wishes.length?wishes.map((w,wi)=>{
+    const axKey=w.split('::')[0],label=w.split('::')[1];
+    const icon=AX_ICON[axKey]||'';
+    return `<span class="wtag"><span class="wtag-ic ${axKey}">${icon}</span>${esc(label)}<button type="button" onclick="delStrWish(${idx},${wi})">×</button></span>`;
+  }).join(''):`<span class="wtag-empty">未設定（どの願いにも対応しません）</span>`;
+  return `<div class="strc" data-idx="${idx}">
+    <div class="strc-hd">
+      <span class="job-no">${idx+1}</span>
+      <button type="button" class="job-del" onclick="delStrength(${idx})">削除</button>
+    </div>
+    <div class="ff" style="margin-bottom:10px"><label>強みのタイトル（応えの見出し）</label>
+      <input value="${esc(s.t)}" oninput="updStrength(${idx},'t',this.value)" placeholder="例：在宅・施設医療に本格的に関われる"></div>
+    <div class="ff" style="margin-bottom:10px"><label>説明（応えの本文）</label>
+      <input value="${esc(s.d)}" oninput="updStrength(${idx},'d',this.value)" placeholder="どんな強みかを一文で"></div>
+    <div class="str-wish-box">
+      <label class="str-wish-lab">対応する「叶えたい未来」</label>
+      <div class="str-wish-pick">
+        <select class="sw-ax" onchange="fillStrWishOpts(this,${idx})"><option value="">分類を選ぶ…</option>${axOpts}</select>
+        <select class="sw-item"><option value="">小項目を選ぶ…</option></select>
+        <button type="button" class="sw-add" onclick="addStrWish(${idx},this)">＋ 追加</button>
+      </div>
+      <div class="str-wish-tags">${tags}</div>
+    </div>
+  </div>`;
+}
+// 分類選択→小項目を埋める
+function fillStrWishOpts(sel,idx){
+  const ax=FUTURE_AXES.find(a=>a.key===sel.value);
+  const itemSel=sel.parentElement.querySelector('.sw-item');
+  if(!ax){itemSel.innerHTML='<option value="">小項目を選ぶ…</option>';return;}
+  itemSel.innerHTML='<option value="">小項目を選ぶ…</option>'+ax.opts.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join('');
+}
+function addStrWish(idx,btn){
+  const box=btn.parentElement;
+  const axSel=box.querySelector('.sw-ax'),itemSel=box.querySelector('.sw-item');
+  const ax=axSel.value,item=itemSel.value;
+  if(!ax||!item){alert('分類と小項目を両方選んでください。');return;}
+  const key=ax+'::'+item;
+  const s=mStr()[idx];s.wishes=s.wishes||[];
+  if(!s.wishes.includes(key))s.wishes.push(key);
+  markMasterDirty();renderStrengths();
+}
+function delStrWish(idx,wi){const s=mStr()[idx];s.wishes.splice(wi,1);markMasterDirty();renderStrengths();}
+function mStr(){return (masterDraft&&masterDraft.strengths)?masterDraft.strengths:getStrengths();}
+function renderStrengths(){
+  const wrap=document.getElementById('str-rows');if(!wrap)return;
+  const arr=mStr();
+  if(!arr.length){wrap.innerHTML='<div class="job-empty">「＋ 強みを追加」でKINOWAの強みを登録してください。</div>';return;}
+  wrap.innerHTML=arr.map((s,i)=>strTemplate(i,s)).join('');
+}
+function addStrength(){mStr().push({t:'',d:'',axes:[],wishes:[]});markMasterDirty();renderStrengths();}
+function delStrength(i){mStr().splice(i,1);markMasterDirty();renderStrengths();}
+function updStrength(i,k,v){mStr()[i][k]=v;markMasterDirty();}
+function updStrMulti(i,k,v){
+  const arr=mStr()[i][k]||[];const pos=arr.indexOf(v);
+  if(pos>=0)arr.splice(pos,1);else arr.push(v);
+  mStr()[i][k]=arr;markMasterDirty();renderStrengths();
+}
+function resetStrengths(){
+  if(!confirm('KINOWAの強みをサンプル初期状態に戻します。（保存するまで反映されません）'))return;
+  if(masterDraft)masterDraft.strengths=JSON.parse(JSON.stringify(DEFAULT_STRENGTHS));
+  markMasterDirty();renderStrengths();
+}
+
+/* ===== 職種連動：経験業務リスト ===== */
+const EXP_PHARMACIST=["外来調剤","在宅","施設","OTC","無菌","かかりつけ","管理薬剤師","ドラッグ併設"];
+const EXP_CLERK=["処方箋受付","処方入力(レセコン)","調剤報酬の算定","レセプト・請求業務","会計・窓口対応","お薬手帳・薬歴の管理","電話・問い合わせ対応","保険資格の確認","在宅事務・書類作成","医薬品の在庫・発注","品出し・ピッキング補助","OTC・物販の接客","管理・リーダー業務"];
+const EXP_MED=["外来・初再診受付","診療報酬の算定","レセプト・請求業務","会計・窓口対応","電話・問い合わせ対応","保険資格の確認","カルテ・書類管理","予約・案内対応","クラーク業務","在庫・備品管理","管理・リーダー業務"];
+const EXP_SALES=["新規開拓","ルート営業","既存フォロー","提案・企画","契約・交渉","顧客管理","売上管理","チームマネジメント"];
+const EXP_GENERIC=["接客・販売","事務・データ入力","電話・メール応対","在庫・発注管理","スタッフ管理","売上・数値管理","企画・提案","教育・研修"];
+function expListFor(role){
+  if(role==="薬剤師"||role==="管理薬剤師"||role==="管理薬剤師候補") return EXP_PHARMACIST;
+  if(role==="調剤事務") return EXP_CLERK;
+  if(role==="医療事務") return EXP_MED;
+  if(role==="営業") return EXP_SALES;
+  return EXP_GENERIC;
+}
+const ROLE_OPTS=["薬剤師","管理薬剤師","医療事務","調剤事務","営業","その他"];
+const EMP_OPTS=["正社員","パート・アルバイト","派遣","契約"];
+const YY_OPTS=Array.from({length:31},(_,i)=>i);      // 0〜30年
+const MM_OPTS=Array.from({length:12},(_,i)=>i);      // 0〜11ヶ月
+const QUIT_OPTS=["キャリアアップ","やりたい仕事への挑戦","人間関係","給与・待遇","通勤・転居","残業・働き方","会社都合","家庭の事情","在職中"];
+
+/* ===== 職歴カード ===== */
+function jobTemplate(idx,job){
+  const appRole=document.getElementById('c-role').value;
+  const expList=expListFor(job.role||appRole);
+  return `<div class="job" data-idx="${idx}">
+    <div class="job-hd"><span class="job-no">${idx+1}社目</span>
+      <button type="button" class="job-del" onclick="delJob(${idx})">削除</button></div>
+    <div class="ff-grid">
+      <div class="ff ff-wide"><label>会社名</label><input value="${esc(job.company)}" oninput="updJob(${idx},'company',this.value)" placeholder="○○薬局"></div>
+    </div>
+    <div class="ff-line"><span class="ff-lab">在籍期間</span>
+      <select class="yr-sel" onchange="updJob(${idx},'yy',this.value)">
+        <option value=""${!job.yy?' selected':''}>―年</option>
+        ${YY_OPTS.map(y=>`<option value="${y}"${job.yy===y?' selected':''}>${y}年</option>`).join('')}
+      </select>
+      <select class="yr-sel" onchange="updJob(${idx},'mm',this.value)">
+        <option value=""${!job.mm?' selected':''}>―ヶ月</option>
+        ${MM_OPTS.map(m=>`<option value="${m}"${job.mm===m?' selected':''}>${m}ヶ月</option>`).join('')}
+      </select></div>
+    <div class="ff-line"><span class="ff-lab">雇用形態</span>
+      <div class="pills">${EMP_OPTS.map(e=>`<button type="button" class="${job.emp===e?'sel':''}" onclick="updJob(${idx},'emp','${e}');renderJobs()">${e}</button>`).join('')}</div></div>
+    <div class="ff-line"><span class="ff-lab">職種</span>
+      <div class="pills">${ROLE_OPTS.map(r=>`<button type="button" class="${job.role===r?'sel':''}" onclick="updJobRole(${idx},'${r}')">${r}</button>`).join('')}</div></div>
+    <div class="ff-line"><span class="ff-lab">主な業務</span>
+      <div class="pills multi">${expList.map(e=>`<button type="button" class="${(job.exp||[]).includes(e)?'sel':''}" onclick="updJobMulti(${idx},'exp','${e}')">${e}</button>`).join('')}</div></div>
+    <div class="ff-line"><span class="ff-lab">退職理由</span>
+      <div class="pills multi">${QUIT_OPTS.map(q=>`<button type="button" class="${(job.quit||[]).includes(q)?'sel':''}" onclick="updJobMulti(${idx},'quit','${q}')">${q}</button>`).join('')}</div></div>
+    <div class="ff-line"><span class="ff-lab">理由の補足</span>
+      <input class="ff-noteinput" value="${esc(job.quitnote)}" oninput="updJob(${idx},'quitnote',this.value)" placeholder="任意：退職理由のひとこと補足"></div>
+  </div>`;
+}
+function esc(s){return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function renderJobs(){
+  state.jobs=state.jobs||[];
+  const wrap=document.getElementById('jobs');if(!wrap)return;
+  if(state.jobs.length===0){wrap.innerHTML='<div class="job-empty">「＋ 会社を追加」で職歴を入れてください（新しい順がおすすめ）。</div>';return;}
+  wrap.innerHTML=state.jobs.map((j,i)=>jobTemplate(i,j)).join('');
+}
+function addJob(){state.jobs=state.jobs||[];state.jobs.push({company:'',yy:'',mm:'',emp:'',role:'',exp:[],quit:[],quitnote:''});renderJobs();}
+function delJob(i){state.jobs.splice(i,1);renderJobs();}
+function updJob(i,k,v){state.jobs[i][k]=v;}
+function updJobRole(i,r){state.jobs[i].role=r;renderJobs();}
+function updJobMulti(i,k,v){
+  const arr=state.jobs[i][k]||[];const pos=arr.indexOf(v);
+  if(pos>=0)arr.splice(pos,1);else arr.push(v);
+  state.jobs[i][k]=arr;renderJobs();
+}
+
+/* ===== 相性の見立て（叶えたい未来 × KINOWA） ===== */
+const FIT_OPTS=[["yes","叶う","fit-yes"],["maybe","工夫すれば叶う","fit-maybe"],["no","正直難しい","fit-no"]];
+function fitTemplate(idx,f){
+  return `<div class="fit" data-idx="${idx}">
+    <div class="fit-hd">
+      <input class="fit-item" value="${esc(f.item)}" oninput="updFit(${idx},'item',this.value)" placeholder="叶えたい未来の項目（例：在宅の主担当になりたい）">
+      <button type="button" class="job-del" onclick="delFit(${idx})">削除</button>
+    </div>
+    <div class="pills fit-pills">${FIT_OPTS.map(o=>`<button type="button" class="${o[2]} ${f.judge===o[0]?'sel':''}" onclick="updFitJudge(${idx},'${o[0]}')">${o[1]}</button>`).join('')}</div>
+    <input class="ff-noteinput" value="${esc(f.note)}" oninput="updFit(${idx},'note',this.value)" placeholder="見立ての理由（KINOWAの制度・環境・実情に照らして）">
+  </div>`;
+}
+function renderFit(){
+  state.fit=state.fit||[];
+  const wrap=document.getElementById('fit-rows');if(!wrap)return;
+  if(state.fit.length===0){wrap.innerHTML='<div class="job-empty">「＋ 見立てを追加」で、叶えたい未来の項目ごとにKINOWAで叶うかを記録します。</div>';return;}
+  wrap.innerHTML=state.fit.map((f,i)=>fitTemplate(i,f)).join('');
+}
+function addFit(){state.fit=state.fit||[];state.fit.push({item:'',judge:'',note:''});renderFit();}
+function delFit(i){state.fit.splice(i,1);renderFit();}
+function updFit(i,k,v){state.fit[i][k]=v;}
+function updFitJudge(i,j){state.fit[i].judge=j;renderFit();}
+
+/* ===== 複数選択（共通） ===== */
+function renderExpPills(){
+  const role=document.getElementById('c-role').value;
+  const yl=document.getElementById('cv-years-lab');
+  if(yl){
+    let lab="通算の実務経験年数";
+    if(role==="医療事務"||role==="調剤事務")lab="通算の事務経験年数";
+    else if(role==="営業")lab="通算の営業経験年数";
+    yl.textContent=lab;
+  }
+  renderJobs(); // 応募職種が変わると各職歴カードの業務候補も追従
+}
+/* ===== mbti grid ===== */
+function toggleQuick(){
+  const q=document.querySelector('.mbti-quick');if(q)q.classList.toggle('collapsed');
+}
+function buildMbti(){
+  const g=document.getElementById('mbti-grid');
+  ORDER.forEach(code=>{const b=document.createElement('button');
+    b.innerHTML=`${code}<span class="nm">${MBTI[code].name}</span>`;
+    b.onclick=()=>{state.mbti=code;document.querySelectorAll('#mbti-grid button').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');showGuide(code);renderCounter();};
+    g.appendChild(b);});
+}
+function showGuide(code){
+  const m=MBTI[code];if(!m)return;
+  document.getElementById('guide-box').classList.add('show');
+  const ge=document.getElementById('guide-empty');if(ge)ge.style.display='none';
+  document.getElementById('g-code').textContent=code;
+  document.getElementById('g-name').textContent=m.name;
+  document.getElementById('g-tag').textContent=m.tag;
+  document.getElementById('g-essence').innerHTML=m.essence.map(x=>`<li>${x}</li>`).join('');
+  document.getElementById('g-traits').innerHTML=m.traits.map(x=>`<span>${x}</span>`).join('');
+  // 接し方・避けたい関わりはタイプ固有
+  const ax=code.split('');
+  const careEl=document.getElementById('g-care');
+  const ngEl=document.getElementById('g-ng');
+  const wordEl=document.getElementById('g-words');
+  const oneEl=document.getElementById('g-oneline');
+  if(careEl)careEl.innerHTML=m.care.map(x=>`<li>${x}</li>`).join('');
+  if(ngEl)ngEl.innerHTML=m.ng.map(x=>`<li>${x}</li>`).join('');
+  if(wordEl)wordEl.innerHTML=ax.map(a=>AXIS_INFO[a].word.split('・').map(w=>`<span>${w}</span>`).join('')).join('');
+  if(oneEl)oneEl.innerHTML=`<b>${code}</b>はひとことで言うと「<b>${m.tag}</b>」タイプ。${ax.map(a=>AXIS_INFO[a].name).join(' / ')} の組み合わせ。まず<b>本質・動機の源</b>を押さえ、<b>接し方のコツ</b>を意識すると、本音を引き出しやすくなります。`;
+}
+
+/* ===== text capture ===== */
+function bindText(){
+  document.querySelectorAll('textarea[data-k],input[data-k]').forEach(t=>{
+    t.oninput=()=>{state.text[t.dataset.k]=t.value;};
+  });
+}
+
+/* ===== mode & tabs ===== */
+function setMode(m){
+  document.getElementById('page-int').classList.toggle('active',m==='int');
+  document.getElementById('page-cand').classList.toggle('active',m==='cand');
+  document.getElementById('m-int').classList.toggle('active',m==='int');
+  document.getElementById('m-cand').classList.toggle('active',m==='cand');
+  if(m==='cand')renderOutput();
+  window.scrollTo(0,0);
+}
+function tab(btn,id){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='t-store'){initMasterDraft();renderStrengths();renderHistRows();renderStores();}
+}
+
+/* ===== save / load ===== */
+function collectMeta(){return{name:cv('c-name'),store:cv('c-store'),role:cv('c-role'),mbti:cv('c-mbti'),date:cv('c-date'),iv:cv('c-iv')};}
+function cv(id){const el=document.getElementById(id);return el?el.value:'';}
+function saveJSON(){
+  const data={meta:collectMeta(),...state};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`面接_${data.meta.name||'候補者'}_${data.meta.date||''}.json`;a.click();
+}
+document.getElementById('loadfile').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);applyData(d);alert('読み込みました');}catch(_){alert('読込に失敗しました');}};
+  r.readAsText(f);
+};
+function loadJSON(){document.getElementById('loadfile').click();}
+function applyData(d){
+  if(d.meta){['name','store','role','mbti','date','iv'].forEach(k=>{const el=document.getElementById('c-'+k);if(el&&d.meta[k]!=null)el.value=d.meta[k];});}
+  state.text=d.text||{};state.choice=d.choice||{};state.multi=d.multi||{};state.jobs=d.jobs||[];state.fit=d.fit||[];state.future=d.future||{};state.strengths=d.strengths||[];state.mbti=d.mbti||(d.meta&&d.meta.mbti)||'';
+  state.potential=d.potential||{};state.competency=d.competency||{};
+  document.querySelectorAll('textarea[data-k],input[data-k]').forEach(t=>{if(state.text[t.dataset.k]!=null)t.value=state.text[t.dataset.k];});
+  renderExpPills();renderFutureAxes();renderStrengths();renderCounter();buildPotential();buildCompetency();
+  {const sm=document.getElementById('start-m'),sd=document.getElementById('start-d');
+   if(sm&&state.text['f-start-m']!=null)sm.value=state.text['f-start-m'];
+   if(sd&&state.text['f-start-d']!=null)sd.value=state.text['f-start-d'];}
+  Object.keys(state.choice).forEach(key=>{const wrap=document.querySelector(`.choice[data-key="${key}"],.pills[data-key="${key}"]`);if(wrap){const c=state.choice[key];wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.c===c));}});
+  Object.keys(state.multi).forEach(key=>{const wrap=document.querySelector(`.pills[data-key="${key}"]`);if(wrap){const set=new Set(state.multi[key]);wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',set.has(b.textContent)));}});
+  if(state.mbti){const mс=document.getElementById('c-mbti');if(mс)mс.value=state.mbti;syncMbtiGrid();}
+  renderCounter();
+}
+
+/* ===== マスタ編集の下書き（保存ボタンを押すまで反映しない） ===== */
+let masterDraft=null;      // {strengths, history, stores}
+let masterDirty=false;
+function initMasterDraft(force){
+  // タブを開いたとき、保存済みデータを下書きに複製。未保存があれば維持。
+  if(masterDraft && masterDirty && !force) return;
+  masterDraft={
+    strengths:JSON.parse(JSON.stringify(getStrengths())),
+    history:JSON.parse(JSON.stringify(getHistory())),
+    stores:getStores().slice()
+  };
+  masterDirty=false;
+  updateMasterSaveBar();
+}
+function markMasterDirty(){masterDirty=true;updateMasterSaveBar();}
+function updateMasterSaveBar(){
+  const txt=masterDirty?'未保存の変更があります':'変更はありません';
+  ['master-save-status','master-save-status2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=txt;});
+  ['master-save-bar','master-save-bar2'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('dirty',masterDirty);});
+  ['master-save','master-revert'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!masterDirty;});
+}
+function saveMaster(){
+  if(!masterDraft)return;
+  // 下書きを実データへ反映＋localStorage保存
+  state.strengths=JSON.parse(JSON.stringify(masterDraft.strengths));
+  state.history=JSON.parse(JSON.stringify(masterDraft.history));
+  state.stores=masterDraft.stores.slice();
+  try{localStorage.setItem('kinowa_strengths',JSON.stringify(state.strengths));}catch(_){}
+  saveHistory();saveStores();
+  masterDirty=false;updateMasterSaveBar();
+  // 反映：応募店舗プルダウン等
+  renderStoreSelect();
+  alert('保存しました。OUTPUTや応募店舗に反映されます。');
+}
+function revertMaster(){
+  if(!masterDirty){return;}
+  if(!confirm('保存していない変更をすべて破棄します。よろしいですか？'))return;
+  initMasterDraft(true);
+  renderStrengths();renderHistRows();renderStores();
+}
+
+/* ===== 店舗マスタ ===== */
+const DEFAULT_STORES=["くりの木薬局","お茶の木薬局","ケアの木薬局","ほしの木薬局","はれの木薬局","にじの木薬局","ゆずの木薬局","サン薬局"];
+function getStores(){
+  if(!state.stores||!state.stores.length){
+    try{const ls=JSON.parse(localStorage.getItem('kinowa_stores')||'null');state.stores=(ls&&ls.length)?ls:DEFAULT_STORES.slice();}
+    catch(_){state.stores=DEFAULT_STORES.slice();}
+  }
+  return state.stores;
+}
+function saveStores(){try{localStorage.setItem('kinowa_stores',JSON.stringify(getStores()));}catch(_){}}
+function renderStoreSelect(){
+  const sel=document.getElementById('c-store');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=getStores().map(s=>`<option>${esc(s)}</option>`).join('');
+  if(cur&&getStores().includes(cur))sel.value=cur;
+}
+function mStore(){return (masterDraft&&masterDraft.stores)?masterDraft.stores:getStores();}
+function renderStores(){
+  const wrap=document.getElementById('store-rows');if(!wrap)return;
+  const arr=mStore();
+  if(!arr.length){wrap.innerHTML='<div class="job-empty">「＋ 店舗を追加」で応募店舗を登録してください。</div>';return;}
+  wrap.innerHTML=arr.map((s,i)=>`<div class="ff-line">
+    <span class="job-no">${i+1}</span>
+    <input class="ff-inline" value="${esc(s)}" oninput="updStore(${i},this.value)" placeholder="店舗名">
+    <button type="button" class="job-del" onclick="delStore(${i})">削除</button>
+  </div>`).join('');
+}
+function addStore(){mStore().push('');markMasterDirty();renderStores();}
+function delStore(i){mStore().splice(i,1);markMasterDirty();renderStores();}
+function updStore(i,v){mStore()[i]=v;markMasterDirty();}
+function resetStores(){if(!confirm('店舗一覧を初期状態に戻します。（保存するまで反映されません）'))return;if(masterDraft)masterDraft.stores=DEFAULT_STORES.slice();markMasterDirty();renderStores();}
+
+/* ===== MBTIメタ⇔ガイドグリッド連動 ===== */
+function syncMbtiGrid(){
+  const code=state.mbti;
+  document.querySelectorAll('#mbti-grid button').forEach(x=>x.classList.toggle('sel',x.textContent.startsWith(code)&&code));
+  if(code){const m=document.getElementById('c-mbti');if(m&&m.value!==code)m.value=code; if(typeof showGuide==='function')showGuide(code);}
+}
+
+/* ===== スプレッドシート連携（GAS Webアプリ） ===== */
+function getGasUrl(){try{return localStorage.getItem('kinowa_gas_url')||'';}catch(_){return '';}}
+function saveGasUrl(){
+  const v=(document.getElementById('gas-url').value||'').trim();
+  try{localStorage.setItem('kinowa_gas_url',v);}catch(_){}
+  const s=document.getElementById('gas-status');
+  if(s)s.textContent=v?'✓ URLを保存しました。以後、候補者データ保存時にスプレッドシートへ送信します。':'URLを空にしました（送信は行いません）。';
+}
+function loadGasUrl(){const i=document.getElementById('gas-url');if(i)i.value=getGasUrl();}
+/* GASへ送信。no-corsのため結果は受け取れない（送信のみ） */
+function syncToSheet(rec){
+  const url=getGasUrl();if(!url)return;
+  try{
+    fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(rec)});
+  }catch(e){/* オフライン等は黙って無視（localStorageには保存済み） */}
+}
+function testGasUrl(){
+  const url=(document.getElementById('gas-url').value||'').trim();
+  const s=document.getElementById('gas-status');
+  if(!url){if(s)s.textContent='URLが空です。先にURLを入力してください。';return;}
+  try{
+    fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({meta:{name:'__test__',store:'',date:''},data:{},savedAt:new Date().toISOString(),test:true})});
+    if(s)s.textContent='テスト送信しました。スプレッドシートに「__test__」の行が増えていれば連携成功です（反映に数秒かかることがあります）。';
+  }catch(e){if(s)s.textContent='送信に失敗しました：'+e.message;}
+}
+
+/* ===== 候補者データ集積（localStorage） ===== */
+function dbAll(){try{return JSON.parse(localStorage.getItem('kinowa_candidates')||'[]');}catch(_){return [];}}
+function dbSave(arr){try{localStorage.setItem('kinowa_candidates',JSON.stringify(arr));}catch(e){alert('保存に失敗しました（ブラウザ保存の上限の可能性）');}}
+function recordKey(meta){return (meta.name||'(無名)')+'__'+(meta.date||'');}
+function saveToDB(){
+  const meta=collectMeta();
+  if(!meta.name){if(!confirm('氏名が未入力です。このまま保存しますか？'))return;}
+  const rec={meta, data:{...state}, savedAt:new Date().toISOString()};
+  const arr=dbAll();
+  const key=recordKey(meta);
+  const idx=arr.findIndex(r=>recordKey(r.meta)===key);
+  if(idx>=0)arr[idx]=rec; else arr.push(rec);
+  dbSave(arr);renderDB();
+  syncToSheet(rec);
+  const url=getGasUrl();
+  alert('候補者データに保存しました（'+(meta.name||'無名')+'）'+(url?'\n＋ スプレッドシートにも送信しました。':''));
+}
+function delDB(i){if(!confirm('この候補者データを削除しますか？'))return;const arr=dbAll();arr.splice(i,1);dbSave(arr);renderDB();}
+function loadFromDB(i){const arr=dbAll();const r=arr[i];if(!r)return;applyData({meta:r.meta,...r.data});setMode('int');alert('入力欄に読み込みました');}
+function summaryLine(r){
+  const f=r.data&&r.data.future||{};
+  const picks=Object.keys(f).map(k=>(f[k]&&f[k].picks||[]).length).reduce((a,b)=>a+b,0);
+  const heat=r.data&&r.data.choice&&r.data.choice.heat;
+  const heatMap={strong:"熱量◎",some:"熱量○",unseen:"熱量△",low:"熱量▽"};
+  return [r.meta.role,r.meta.mbti,heatMap[heat]].filter(Boolean).join('・')+`（希望${picks}件）`;
+}
+function renderDB(){
+  const wrap=document.getElementById('db-list');if(!wrap)return;
+  let arr=dbAll();
+  const q=(document.getElementById('db-search')||{}).value||'';
+  if(q)arr=arr.filter(r=>((r.meta.name||'')+(r.meta.store||'')).includes(q));
+  if(!arr.length){wrap.innerHTML='<div class="job-empty">まだ保存された候補者はいません。INPUT下部の「候補者データに保存」で蓄積されます。</div>';return;}
+  const all=dbAll();
+  wrap.innerHTML=arr.map((r)=>{
+    const gi=all.indexOf(r);
+    return `<div class="db-card">
+      <div class="db-row" onclick="this.parentElement.classList.toggle('open')">
+        <div class="db-name">${esc(r.meta.name||'(無名)')}</div>
+        <div class="db-meta">${esc(r.meta.store||'')}　${esc(r.meta.date||'')}</div>
+        <div class="db-sum">${esc(summaryLine(r))}</div>
+      </div>
+      <div class="db-detail">
+        <div class="db-actions">
+          <button class="btn btn-ghost" onclick="loadFromDB(${gi})">読込（編集・印刷）</button>
+          <button class="btn btn-ghost" onclick="delDB(${gi})">削除</button>
+        </div>
+        <div class="db-kv">${dbDetail(r)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function dbDetail(r){
+  const t=r.data&&r.data.text||{};
+  const rows=[];
+  if(t['fut-core'])rows.push(['最も大事にしている未来',t['fut-core']]);
+  if(t['heat-why'])rows.push(['熱量の根拠',t['heat-why']]);
+  if(t['sum-comment'])rows.push(['総合所感',t['sum-comment']]);
+  const f=r.data&&r.data.future||{};
+  const ax={hito:'ヒト',mono:'モノ',kane:'カネ',joho:'情報',jikan:'時間'};
+  Object.keys(ax).forEach(k=>{const p=(f[k]&&f[k].picks)||[];if(p.length)rows.push([ax[k],p.join('、')]);});
+  if(!rows.length)return '<span style="color:var(--sub);font-size:.85rem">詳細メモは未記入です。</span>';
+  return rows.map(([k,v])=>`<div class="db-kv-row"><span class="db-k">${esc(k)}</span><span class="db-v">${esc(v)}</span></div>`).join('');
+}
+function exportCSV(){
+  const arr=dbAll();if(!arr.length){alert('データがありません');return;}
+  const head=['氏名','店舗','職種','MBTI','面接日','面接官','熱量','最も大事にしている未来','総合所感'];
+  const heatMap={strong:'確かに感じた',some:'ある程度',unseen:'まだ見えない',low:'あまり感じない'};
+  const rows=arr.map(r=>{const t=r.data&&r.data.text||{};const c=r.data&&r.data.choice||{};
+    return [r.meta.name,r.meta.store,r.meta.role,r.meta.mbti,r.meta.date,r.meta.iv,
+      heatMap[c.heat]||'',t['fut-core']||'',t['sum-comment']||''];});
+  const esc2=s=>'"'+String(s||'').replace(/"/g,'""')+'"';
+  const csv='\ufeff'+[head,...rows].map(r=>r.map(esc2).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`KINOWA候補者一覧_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+/* ===== init ===== */
+buildPotential();buildCompetency();buildMbti();bindText();renderFutureAxes();renderStrengths();renderCounter();
+renderStoreSelect();renderStores();renderHistRows();renderDB();renderQuickAxes();loadGasUrl();
+document.getElementById('c-date').valueAsDate=new Date();
+document.getElementById('c-role').addEventListener('change',renderExpPills);
+renderExpPills();
+/* 入職時期の日プルダウン（1〜31日） */
+(function(){
+  const dsel=document.getElementById('start-d');if(!dsel)return;
+  let h='<option value="">―日</option>';
+  for(let d=1;d<=31;d++)h+=`<option value="${d}">${d}日</option>`;
+  dsel.innerHTML=h;
+})();
+</script>
+</body>
+</html>
