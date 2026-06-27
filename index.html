@@ -1929,6 +1929,7 @@ function tab(btn,id){
   document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='t-store'){initMasterDraft();renderStrengths();renderHistRows();renderStores();}
+  if(id==='t-db'){renderDB();}
 }
 
 /* ===== save / load ===== */
@@ -2112,13 +2113,14 @@ function summaryLine(r){
 }
 function renderDB(){
   const wrap=document.getElementById('db-list');if(!wrap)return;
-  let arr=dbAll();
-  const q=(document.getElementById('db-search')||{}).value||'';
-  if(q)arr=arr.filter(r=>((r.meta.name||'')+(r.meta.store||'')).includes(q));
-  if(!arr.length){wrap.innerHTML='<div class="job-empty">まだ保存された候補者はいません。INPUT下部の「候補者データに保存」で蓄積されます。</div>';return;}
   const all=dbAll();
-  wrap.innerHTML=arr.map((r)=>{
-    const gi=all.indexOf(r);
+  const q=(document.getElementById('db-search')||{}).value||'';
+  // 元配列のインデックスを保持したまま絞り込む
+  let entries=all.map((r,idx)=>({r,idx}));
+  if(q)entries=entries.filter(e=>((e.r.meta.name||'')+(e.r.meta.store||'')).includes(q));
+  if(!entries.length){wrap.innerHTML='<div class="job-empty">まだ保存された候補者はいません。INPUT下部の「候補者データに保存」で蓄積されます。</div>';return;}
+  wrap.innerHTML=entries.map(({r,idx})=>{
+    const gi=idx;
     return `<div class="db-card">
       <div class="db-row" onclick="this.parentElement.classList.toggle('open')">
         <div class="db-name">${esc(r.meta.name||'(無名)')}</div>
