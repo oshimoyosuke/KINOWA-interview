@@ -563,22 +563,55 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 .sec-title{font-size:1.6rem;font-weight:400;margin:30px 0 14px;color:var(--ink);font-family:"Instrument Serif",serif}
 
 @media print{
-  header,.metabar .nojp,.actionbar,.tabs,.mode-switch{display:none!important}
-  .tabpane{display:block!important;page-break-inside:avoid}
-  .page{display:block!important;padding:0}
-  body{background:#fff}
-  .card{box-shadow:none;page-break-inside:avoid;border:1.5px solid #111}
-  .biq{page-break-inside:avoid}
-  .choice button,.pills button,.fit-pills button{color:#777;border-color:#bbb;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .choice button.sel,.pills button.sel,.fit-pills .fit-yes.sel{background:#00a3b4!important;color:#fff!important;border-color:#111!important}
-  .fit-pills .fit-maybe.sel{background:#d97706!important;color:#fff!important;border-color:#111!important}
-  .fit-pills .fit-no.sel{background:#9ca8a2!important;color:#fff!important;border-color:#111!important}
-  .job,.fit{box-shadow:none}
-  .biq textarea.why,.q textarea{min-height:40px}
+  /* 画面UIをすべて隠し、レポートだけ印刷する */
+  body>*{display:none!important}
+  #print-report{display:block!important;color:#111;font-family:"Noto Sans JP",sans-serif}
+  body{background:#fff!important}
+  @page{margin:14mm 12mm}
+
+  .pr-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #111;padding-bottom:8px;margin-bottom:14px}
+  .pr-title{font-size:20pt;font-weight:700;font-family:"Instrument Serif",serif}
+  .pr-org{font-size:8.5pt;color:#555}
+
+  .pr-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 18px;margin-bottom:16px;
+    border:1.5px solid #111;padding:10px 14px;background:#f7f7f5}
+  .pr-meta div{display:flex;flex-direction:column;font-size:9pt}
+  .pr-meta span{font-size:7.5pt;color:#666;letter-spacing:.02em}
+  .pr-meta b{font-size:10.5pt}
+
+  .pr-sec{page-break-inside:avoid;margin-bottom:13px}
+  .pr-sec h2{font-size:11pt;font-weight:700;border-left:5px solid #00a3b4;padding:2px 0 2px 9px;margin-bottom:8px;background:#eef7f6}
+  .pr-sub{font-size:8.5pt;color:#555;margin-bottom:5px}
+
+  .pr-f{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #e6e3dc;font-size:9.5pt;line-height:1.6}
+  .pr-f:last-child{border-bottom:none}
+  .pr-flab{flex:0 0 33%;color:#444;font-weight:700;font-size:8.7pt}
+  .pr-fval{flex:1}
+  .pr-fval i{color:#aaa;font-style:normal}
+  .pr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .pr-grid2 .pr-f{border-bottom:1px solid #e6e3dc}
+
+  .pr-pot{margin-bottom:7px}
+  .pr-pot-l{display:flex;justify-content:space-between;font-size:9pt;margin-bottom:2px}
+  .pr-pot-l span{color:#666;font-size:8.3pt}
+  .pr-bar{height:9px;background:#eceae4;border:1px solid #cfccc4}
+  .pr-bar-f{height:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  .pr-chips{display:flex;flex-wrap:wrap;gap:5px}
+  .pr-chips span{font-size:8.3pt;border:1px solid #111;padding:2px 8px;background:#fff}
+  .pr-empty{font-size:8.5pt;color:#aaa}
+
+  .pr-foot{margin-top:16px;border-top:1px solid #ccc;padding-top:6px;font-size:7.5pt;color:#888;text-align:center}
+  #print-report *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+/* 画面では印刷レポートを隠す */
+#print-report{display:none}
 </style>
 </head>
 <body>
+
+<!-- 印刷専用：面接評価レポート（画面では非表示、印刷時のみ表示） -->
+<div id="print-report" aria-hidden="true"></div>
 
 <header>
   <div class="hd">
@@ -788,7 +821,7 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
         <button class="btn btn-ghost" onclick="saveJSON()">入力を保存(JSON)</button>
         <button class="btn btn-ghost" onclick="loadJSON()">読込</button>
         <button class="btn btn-primary" onclick="saveToDB()">候補者データに保存</button>
-        <button class="btn btn-primary" onclick="window.print()">PDF出力（印刷）</button>
+        <button class="btn btn-primary" onclick="buildPrintReport();window.print()">PDF出力（印刷）</button>
       </div>
       <input type="file" id="loadfile" accept=".json" style="display:none">
     </div>
@@ -1497,6 +1530,85 @@ function addHist(){mHist().push({y:'',t:'',type:'',story:''});markMasterDirty();
 function delHist(i){if(!confirm('この沿革を削除します。（保存するまで反映されません）'))return;mHist().splice(i,1);markMasterDirty();renderHistRows();}
 function updHist(i,key,val){mHist()[i][key]=val;markMasterDirty();}
 function resetHist(){if(!confirm('沿革を初期状態に戻します。（保存するまで反映されません）'))return;if(masterDraft)masterDraft.history=DEFAULT_HISTORY.map(o=>({...o}));markMasterDirty();renderHistRows();}
+/* ===== 印刷用 面接評価レポート ===== */
+function esc2(s){return String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function nl2br(s){return esc2(s).replace(/\n/g,'<br>');}
+function buildPrintReport(){
+  const root=document.getElementById('print-report');if(!root)return;
+  const meta=collectMeta();
+  const t=state.text||{}, ch=state.choice||{}, pot=state.potential||{};
+  const heatMap={strong:'確かに感じた',some:'ある程度感じた',unseen:'まだ見えない',low:'あまり感じない'};
+  const humanMap={ok:'違和感なし',ng:'違和感あり'};
+  const today=new Date().toLocaleDateString('ja-JP');
+
+  // ポテンシャル4軸
+  const potRows=POTENTIAL.map(function(p){
+    const v=+pot[p.key]||0; const pct=v/5*100;
+    const col=potColor(v||1,p.key);
+    return '<div class="pr-pot"><div class="pr-pot-l"><b>'+esc2(p.t)+'</b><span>'+(v>0?v+' / 5':'未評価')+'</span></div>'+
+      '<div class="pr-bar"><div class="pr-bar-f" style="width:'+pct+'%;background:'+col+'"></div></div></div>';
+  }).join('');
+
+  // コンピテンシー該当
+  const comp=state.competency||{};
+  const compHit=[];
+  COMPETENCY.forEach(function(g){g.items.forEach(function(it){if(comp[it.k])compHit.push(it.t);});});
+  const compHtml=compHit.length
+    ? '<div class="pr-chips">'+compHit.map(function(c){return '<span>'+esc2(c)+'</span>';}).join('')+'</div>'
+    : '<div class="pr-empty">該当チェックなし</div>';
+
+  // 叶えたい未来（希望条件）
+  const fut=state.future||{};
+  let futList=[];
+  Object.keys(fut).forEach(function(k){(fut[k]&&fut[k].picks||[]).forEach(function(w){futList.push(w);});});
+  const futHtml=futList.length
+    ? '<div class="pr-chips">'+futList.map(function(w){return '<span>'+esc2(w)+'</span>';}).join('')+'</div>'
+    : '<div class="pr-empty">選択なし</div>';
+
+  // MBTI
+  const mb=state.mbti||meta.mbti||'';
+  const mbName=(MBTI[mb]&&MBTI[mb].name)||'';
+
+  const sec=(title,body)=>'<section class="pr-sec"><h2>'+esc2(title)+'</h2>'+body+'</section>';
+  const field=(label,val,empty='—')=>'<div class="pr-f"><span class="pr-flab">'+esc2(label)+'</span><span class="pr-fval">'+(val?nl2br(val):'<i>'+empty+'</i>')+'</span></div>';
+
+  const headHtml=
+    '<div class="pr-head"><div class="pr-title">面接評価レポート</div><div class="pr-org">KINOWA Holdings 採用面接システム</div></div>'+
+    '<div class="pr-meta">'+
+      '<div><span>氏名</span><b>'+esc2(meta.name||'—')+'</b></div>'+
+      '<div><span>応募店舗</span><b>'+esc2(meta.store||'—')+'</b></div>'+
+      '<div><span>職種</span><b>'+esc2(meta.role||'—')+'</b></div>'+
+      '<div><span>面接日</span><b>'+esc2(meta.date||'—')+'</b></div>'+
+      '<div><span>面接官</span><b>'+esc2(meta.iv||'—')+'</b></div>'+
+      '<div><span>MBTI</span><b>'+esc2(mb)+(mbName?'（'+esc2(mbName)+'）':'')+'</b></div>'+
+    '</div>';
+
+  const secOverall=sec('総合評価',
+    '<div class="pr-grid2">'+
+      field('熱量（次の職場で輝こうとする力）',heatMap[ch.heat]||'')+
+      field('人間性（自分中心か／他者を立てられるか）',humanMap[ch.humanity]||'')+
+    '</div>'+
+    field('熱量を感じた理由',t['heat-why'])+
+    field('総合所感',t['sum-comment']));
+
+  const secPot=sec('ポテンシャル（抑えきれず湧き出るエネルギー）',
+    potRows+field('使命感',t['soe-mission1'])+field('劣等感',t['soe-inf1']));
+
+  const secComp=sec('コンピテンシー（再現性のある行動特性）',
+    '<div class="pr-sub">該当：'+compHit.length+'件</div>'+compHtml);
+
+  const secMbti=sec('MBTI 所見',field('MBTIガイドを踏まえた所見',t['mbti-note']));
+
+  const startStr=(t['f-start-m']?t['f-start-m']+'月 '+(t['f-start-d']||'')+'日頃':'');
+  const secFut=sec('叶えたい未来（希望条件）',
+    futHtml+field('希望年収',t['f-wishsal'])+field('希望勤務時間',t['f-hours'])+field('入職希望',startStr));
+
+  const secCv=sec('職歴・経験',
+    field('経験年数',t['cv-years'])+field('管理薬剤師等の経験',t['cv-mgmt-note'])+field('補足',t['cv-note']));
+
+  root.innerHTML=headHtml+secOverall+secPot+secComp+secMbti+secFut+secCv+
+    '<div class="pr-foot">出力日：'+today+'　／　KINOWA Holdings 採用面接システム</div>';
+}
 function renderOutput(){
   const reel=document.getElementById('out-reel');if(!reel)return;
   const name=cv('c-name');
@@ -1977,7 +2089,20 @@ function saveToDB(){
   alert('候補者データに保存しました（'+(meta.name||'無名')+'）'+(url?'\n＋ スプレッドシートにも送信しました。':''));
 }
 function delDB(i){if(!confirm('この候補者データを削除しますか？'))return;const arr=dbAll();arr.splice(i,1);dbSave(arr);renderDB();}
-function loadFromDB(i){const arr=dbAll();const r=arr[i];if(!r)return;applyData({meta:r.meta,...r.data});setMode('int');alert('入力欄に読み込みました');}
+function loadFromDB(i){
+  const arr=dbAll();const r=arr[i];if(!r)return;
+  applyData({meta:r.meta,...r.data});
+  setMode('int');
+  // 入力タブ（Work History）に切り替えて、読み込んだ内容が見えるようにする
+  const tabBtns=document.querySelectorAll('.tabs button, .tabbar button');
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
+  const form=document.getElementById('t-form');if(form)form.classList.add('active');
+  // タブのハイライトを Work History に戻す
+  const firstBtn=document.querySelector("button[onclick*=\"t-form\"]");
+  if(firstBtn){firstBtn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));firstBtn.classList.add('active');}
+  window.scrollTo(0,0);
+  alert('入力欄に読み込みました（Work Historyタブから確認・編集できます）');
+}
 function summaryLine(r){
   const f=r.data&&r.data.future||{};
   const picks=Object.keys(f).map(k=>(f[k]&&f[k].picks||[]).length).reduce((a,b)=>a+b,0);
