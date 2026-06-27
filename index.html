@@ -579,29 +579,35 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
   .pr-meta span{font-size:7.5pt;color:#666;letter-spacing:.02em}
   .pr-meta b{font-size:10.5pt}
 
-  .pr-sec{page-break-inside:avoid;margin-bottom:13px}
-  .pr-sec h2{font-size:11pt;font-weight:700;border-left:5px solid #00a3b4;padding:2px 0 2px 9px;margin-bottom:8px;background:#eef7f6}
-  .pr-sub{font-size:8.5pt;color:#555;margin-bottom:5px}
+  .pr-sec{page-break-inside:avoid;margin-bottom:11px}
+  .pr-sec h2{font-size:10pt;font-weight:700;background:#111;color:#fff;padding:3px 8px;margin-bottom:7px}
+  .pr-sub{font-size:8pt;color:#555;margin-bottom:4px}
+  .pr-cols{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:start}
 
-  .pr-f{display:flex;gap:10px;padding:4px 0;border-bottom:1px solid #e6e3dc;font-size:9.5pt;line-height:1.6}
+  .pr-judges{display:flex;flex-direction:column;gap:6px;margin-bottom:2px}
+  .pr-j{border:1.5px solid #111;padding:5px 10px;display:flex;justify-content:space-between;align-items:center}
+  .pr-jlab{font-size:8.5pt;color:#666}
+  .pr-jval{font-size:11pt;font-weight:700}
+
+  .pr-f{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid #e6e3dc;font-size:9pt;line-height:1.5}
   .pr-f:last-child{border-bottom:none}
-  .pr-flab{flex:0 0 33%;color:#444;font-weight:700;font-size:8.7pt}
+  .pr-flab{flex:0 0 30%;color:#666;font-weight:700;font-size:8pt}
   .pr-fval{flex:1}
-  .pr-fval i{color:#aaa;font-style:normal}
-  .pr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
-  .pr-grid2 .pr-f{border-bottom:1px solid #e6e3dc}
 
-  .pr-pot{margin-bottom:7px}
+  .pr-pot{margin-bottom:5px}
   .pr-pot-l{display:flex;justify-content:space-between;font-size:9pt;margin-bottom:2px}
-  .pr-pot-l span{color:#666;font-size:8.3pt}
-  .pr-bar{height:9px;background:#eceae4;border:1px solid #cfccc4}
+  .pr-pot-l span{color:#666;font-size:8pt}
+  .pr-bar{height:8px;background:#eceae4;border:1px solid #cfccc4}
   .pr-bar-f{height:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-  .pr-chips{display:flex;flex-wrap:wrap;gap:5px}
-  .pr-chips span{font-size:8.3pt;border:1px solid #111;padding:2px 8px;background:#fff}
-  .pr-empty{font-size:8.5pt;color:#aaa}
+  /* コンピは枠チップ、希望は縦の左罫チップ */
+  .pr-chips{display:flex;flex-direction:column;gap:4px}
+  .pr-chips span{font-size:8.7pt;border-left:3px solid #00a3b4;padding:3px 9px;background:#f7f7f5}
+  .pr-compchips span{font-size:8.7pt;border:1px solid #111;padding:2px 8px;display:inline-block;margin:0 4px 4px 0;background:#fff}
 
-  .pr-foot{margin-top:16px;border-top:1px solid #ccc;padding-top:6px;font-size:7.5pt;color:#888;text-align:center}
+  .pr-note{border:1.5px dashed #999;min-height:62px;padding:7px 9px}
+
+  .pr-foot{margin-top:12px;border-top:1px solid #ccc;padding-top:5px;font-size:7.5pt;color:#888;text-align:center}
   #print-report *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 /* 画面では印刷レポートを隠す */
@@ -1554,7 +1560,7 @@ function buildPrintReport(){
   const compHit=[];
   COMPETENCY.forEach(function(g){g.items.forEach(function(it){if(comp[it.k])compHit.push(it.t);});});
   const compHtml=compHit.length
-    ? '<div class="pr-chips">'+compHit.map(function(c){return '<span>'+esc2(c)+'</span>';}).join('')+'</div>'
+    ? '<div class="pr-compchips">'+compHit.map(function(c){return '<span>'+esc2(c)+'</span>';}).join('')+'</div>'
     : '<div class="pr-empty">該当チェックなし</div>';
 
   // 叶えたい未来（希望条件）
@@ -1569,8 +1575,14 @@ function buildPrintReport(){
   const mb=state.mbti||meta.mbti||'';
   const mbName=(MBTI[mb]&&MBTI[mb].name)||'';
 
-  const sec=(title,body)=>'<section class="pr-sec"><h2>'+esc2(title)+'</h2>'+body+'</section>';
-  const field=(label,val,empty='—')=>'<div class="pr-f"><span class="pr-flab">'+esc2(label)+'</span><span class="pr-fval">'+(val?nl2br(val):'<i>'+empty+'</i>')+'</span></div>';
+  // 値が空ならその行ごと省略する field
+  const field=(label,val)=> (val&&String(val).trim())
+    ? '<div class="pr-f"><span class="pr-flab">'+esc2(label)+'</span><span class="pr-fval">'+nl2br(val)+'</span></div>'
+    : '';
+  // 本文が実質空ならセクションごと省略する sec
+  const sec=(title,body)=> (body&&body.replace(/<[^>]*>/g,'').trim())
+    ? '<section class="pr-sec"><h2>'+esc2(title)+'</h2>'+body+'</section>'
+    : '';
 
   const headHtml=
     '<div class="pr-head"><div class="pr-title">面接評価レポート</div><div class="pr-org">KINOWA Holdings 採用面接システム</div></div>'+
@@ -1580,33 +1592,47 @@ function buildPrintReport(){
       '<div><span>職種</span><b>'+esc2(meta.role||'—')+'</b></div>'+
       '<div><span>面接日</span><b>'+esc2(meta.date||'—')+'</b></div>'+
       '<div><span>面接官</span><b>'+esc2(meta.iv||'—')+'</b></div>'+
-      '<div><span>MBTI</span><b>'+esc2(mb)+(mbName?'（'+esc2(mbName)+'）':'')+'</b></div>'+
+      (mb?'<div><span>MBTI</span><b>'+esc2(mb)+(mbName?'（'+esc2(mbName)+'）':'')+'</b></div>':'')+
     '</div>';
 
+  // 総合評価：熱量・人間性は短ラベルの判定行＋理由/所感（空は省略）
+  const heatStr=heatMap[ch.heat]||'';
+  const humanStr=humanMap[ch.humanity]||'';
+  const judgeRows=
+    (heatStr?'<div class="pr-j"><span class="pr-jlab">熱量</span><span class="pr-jval">'+esc2(heatStr)+'</span></div>':'')+
+    (humanStr?'<div class="pr-j"><span class="pr-jlab">人間性</span><span class="pr-jval">'+esc2(humanStr)+'</span></div>':'');
   const secOverall=sec('総合評価',
-    '<div class="pr-grid2">'+
-      field('熱量（次の職場で輝こうとする力）',heatMap[ch.heat]||'')+
-      field('人間性（自分中心か／他者を立てられるか）',humanMap[ch.humanity]||'')+
-    '</div>'+
+    (judgeRows?'<div class="pr-judges">'+judgeRows+'</div>':'')+
     field('熱量を感じた理由',t['heat-why'])+
     field('総合所感',t['sum-comment']));
 
   const secPot=sec('ポテンシャル（抑えきれず湧き出るエネルギー）',
     potRows+field('使命感',t['soe-mission1'])+field('劣等感',t['soe-inf1']));
 
-  const secComp=sec('コンピテンシー（再現性のある行動特性）',
-    '<div class="pr-sub">該当：'+compHit.length+'件</div>'+compHtml);
+  const secComp=compHit.length
+    ? sec('コンピテンシー（再現性のある行動特性）','<div class="pr-sub">該当：'+compHit.length+'件</div>'+compHtml)
+    : '';
 
   const secMbti=sec('MBTI 所見',field('MBTIガイドを踏まえた所見',t['mbti-note']));
 
   const startStr=(t['f-start-m']?t['f-start-m']+'月 '+(t['f-start-d']||'')+'日頃':'');
-  const secFut=sec('叶えたい未来（希望条件）',
-    futHtml+field('希望年収',t['f-wishsal'])+field('希望勤務時間',t['f-hours'])+field('入職希望',startStr));
+  const condBody=field('希望勤務時間',t['f-hours'])+field('入職希望',startStr)+field('希望年収',t['f-wishsal']);
+  const secFut= futList.length ? sec('叶えたい未来',futHtml) : '';
+  const secCond= condBody ? sec('希望条件',condBody) : '';
 
   const secCv=sec('職歴・経験',
     field('経験年数',t['cv-years'])+field('管理薬剤師等の経験',t['cv-mgmt-note'])+field('補足',t['cv-note']));
 
-  root.innerHTML=headHtml+secOverall+secPot+secComp+secMbti+secFut+secCv+
+  // 記入枠（常に表示）
+  const memoNote='<section class="pr-sec"><h2>面接官 所見メモ</h2><div class="pr-note">　</div></section>';
+  const handoffNote='<section class="pr-sec"><h2>次選考への申し送り</h2><div class="pr-note">　</div></section>';
+
+  // 2カラム構成：左=評価系＋所見メモ／右=希望系＋申し送り
+  const leftCol=secOverall+secPot+secComp+secMbti+memoNote;
+  const rightCol=secFut+secCond+secCv+handoffNote;
+
+  root.innerHTML=headHtml+
+    '<div class="pr-cols"><div>'+leftCol+'</div><div>'+rightCol+'</div></div>'+
     '<div class="pr-foot">出力日：'+today+'　／　KINOWA Holdings 採用面接システム</div>';
 }
 function renderOutput(){
