@@ -203,6 +203,12 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 .wcard .bd{flex:1}
 .wcard .wish{font-size:.82rem;color:var(--teal);font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:5px}
 .wcard .wish::before{content:"あなたの願い";background:var(--mint-l);border:1px solid var(--teal);font-size:.66rem;padding:1px 7px;font-weight:700}
+.wcard .wish-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.wcard .wq{display:inline-flex;align-items:center;gap:5px;font-size:.76rem;font-weight:700;color:var(--teal);
+  background:var(--mint-l);border:1px solid var(--teal);padding:2px 8px}
+.wcard .ic-s{width:14px;height:14px;display:grid;place-items:center;font-size:.6rem;font-style:normal;
+  color:#fff;background:var(--teal);font-family:"Chivo";font-weight:900}
+.wcard .ic-s.hito{background:#00a3b4}.wcard .ic-s.mono{background:#0c7d6f}.wcard .ic-s.kane{background:#00c389}.wcard .ic-s.joho{background:#1aa0b4}.wcard .ic-s.jikan{background:#3cb88f}
 .wcard .ans{font-weight:800;font-size:1.02rem;margin-bottom:4px;line-height:1.4}
 .wcard .desc{font-size:.85rem;color:var(--sub);line-height:1.65}
 /* 章3 */
@@ -637,7 +643,7 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
       <div class="fld"><label>応募店舗</label>
         <select id="c-store"></select></div>
       <div class="fld"><label>職種</label>
-        <select id="c-role"><option>薬剤師</option><option>医療事務</option><option>調剤事務</option><option>管理薬剤師候補</option><option>営業</option><option>その他</option></select></div>
+        <select id="c-role"><option>薬剤師</option><option>医療事務</option><option>調剤事務</option><option>営業</option><option>その他</option></select></div>
       <div class="fld"><label>MBTI</label>
         <select id="c-mbti" onchange="state.mbti=this.value;syncMbtiGrid();renderCounter();">
           <option value="">未選択</option>
@@ -677,7 +683,7 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
     <!-- Insight（ポテンシャル＋ソース・オブ・エナジー＋熱量を統合） -->
     <div id="t-insight" class="tabpane">
       <div class="tip-row">
-        <div class="tip"><b>候補者の内面・資質を見極める</b>タブです。数個の大枠エピソードを深く聞き、その語りから <b>ポテンシャル（抑えきれず湧き出るエネルギー）</b> と <b>コンピテンシー（思考を伴う再現性のある行動特性）</b> を読み取ります。学生（新卒）の場合は、仕事に限らず学業・部活・サークル・アルバイト・ボランティアなどの経験で構いません。<b>左で聞き、右で見極めを記録します。</b></div>
+        <div class="tip"><b>候補者の内面・資質を見極める</b>タブです。数個の大枠エピソードを深く聞き、その語りから <b>ポテンシャル（抑えきれず湧き出るエネルギー）</b> と <b>コンピテンシー（思考を伴う再現性のある行動特性）</b> を読み取ります。学生（新卒）の場合は、仕事に限らず学業・部活・サークル・アルバイト・ボランティアなどの経験で構いません。</div>
         <div class="pyramid-fig" aria-hidden="true">
           <svg class="pyr-svg" viewBox="0 0 100 80" preserveAspectRatio="none">
             <polygon points="50,2 61.5,21 38.5,21" fill="rgba(120,120,120,.13)"/>
@@ -701,35 +707,76 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
         <div class="insight-left">
           <div class="ep-frame">
           <div class="sec-title ep-frame-title">エピソードから紐解く</div>
+
           <div class="card">
-            <h3>何に没頭したか</h3>
-            <div class="axis-desc">一つの経験を、状況→課題→行動→結果の順で具体的に。「例えば？」で事実を掘り下げる。</div>
-            <div class="q ep-q"><div class="qt">これまでで最も力を注いだ・夢中になった経験を、状況から結果まで順を追って聞かせてください。（仕事・学業・部活・アルバイトなど何でも）</div></div>
-            <div class="q ep-q"><div class="qt">その中で最大の壁は何で、何を考えてどう乗り越えましたか。</div></div>
-            <div class="q ep-q" style="margin-bottom:0"><div class="qt">なぜそこまでやれたのですか。あなたを突き動かしたものは何でしたか。</div></div>
+            <h3>変化・更新できる人か</h3>
+            <div class="q" style="margin-bottom:0"><div class="qt">自分の考えややり方が、あるとき変わった経験を教えてください。何がきっかけで、どう変わりましたか？</div>
+              <div class="hint-q"><b>深掘り：</b>「自分のやり方に固執して失敗したことは？」「年下や経験の浅い人から学んだことは？」「最近、人や本の影響で考えを取り入れたことは？」——"例えば？"で具体的な事実に降ろす。</div>
+
+              <div class="watch-box">
+                <div class="watch-h">👁 見るべきポイント（好奇心・更新のエネルギー）</div>
+                <div class="watch-cols">
+                  <div class="watch-ng">
+                    <div class="watch-lab">⚠ 危険サイン（違和感あり）</div>
+                    <ul>
+                      <li>過去の自分の誤りを認められず、変わった実例が出てこない</li>
+                      <li>「特に変わっていない」「昔から正しかった」と語る</li>
+                      <li>年下・格下から学ぶことに抵抗がある素振り</li>
+                      <li>変化を外圧のせいにし、自分から手放した話が無い</li>
+                    </ul>
+                  </div>
+                  <div class="watch-ok">
+                    <div class="watch-lab">✓ 健全な反応（違和感なし）</div>
+                    <ul>
+                      <li>固執→失敗→修正の転換点を、具体的に語れる</li>
+                      <li>古い考えを自分からサッと手放した実例がある</li>
+                      <li>相手の立場を問わず素直に吸収できる</li>
+                      <li>変化を語るとき前のめりになる・エネルギーを感じる</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
           <div class="card">
-            <h3>どう乗り越えたか</h3>
-            <div class="axis-desc">追い込まれた状況での思考と行動に、胆力と課題対応が出る。</div>
-            <div class="q ep-q"><div class="qt">これまでで一番きつかった・追い込まれた状況を聞かせてください。</div></div>
-            <div class="q ep-q"><div class="qt">その状況で、あなたは何を考え、具体的にどう動きましたか。</div></div>
-            <div class="q ep-q" style="margin-bottom:0"><div class="qt">その経験は、今のあなたにどう生きていますか。</div></div>
-          </div>
-          <div class="card">
-            <h3>どう成長し続けるか</h3>
-            <div class="axis-desc">「他でも起きているか」を問い、思考を伴う再現性を直接確かめる。</div>
-            <div class="q ep-q"><div class="qt">ここ数年で、自分が最も成長したと思う経験を聞かせてください。</div></div>
-            <div class="q ep-q"><div class="qt">その成長は、何を考え、どんな行動を繰り返した結果ですか。</div></div>
-            <div class="q ep-q" style="margin-bottom:0"><div class="qt">同じような成長や変化は、他の場面でも起きていますか。</div></div>
+            <h3>何にエネルギーが湧くか</h3>
+            <div class="q" style="margin-bottom:0"><div class="qt">これまでで一番エネルギーを注いだことは何ですか？そのとき、自分の中で何が起きていましたか？</div>
+              <div class="hint-q"><b>深掘り：</b>「あなたが"スイッチが入る"のはどんなとき？直近の瞬間は？」「これまでで自分を一番変えた経験と、その何が自分を変えた？」——"できるか"ではなく"何にエネルギーが湧くか"を、事実で掘る。</div>
+
+              <div class="watch-box">
+                <div class="watch-h">👁 見るべきポイント（ポテンシャルの発露）</div>
+                <div class="watch-cols">
+                  <div class="watch-ng">
+                    <div class="watch-lab">⚠ 危険サイン（違和感あり）</div>
+                    <ul>
+                      <li>「頑張った」の一般論で、没頭した実感が語られない</li>
+                      <li>達成・評価・報酬など"外からの見返り"でしか動いていない</li>
+                      <li>スイッチが入る瞬間を自分で言語化できない</li>
+                      <li>語り口が平板で、熱・具体・自発性が感じられない</li>
+                    </ul>
+                  </div>
+                  <div class="watch-ok">
+                    <div class="watch-lab">✓ 健全な反応（違和感なし）</div>
+                    <ul>
+                      <li>やっていること自体が楽しい、という内発的な熱がある</li>
+                      <li>好奇心・洞察・共鳴・胆力のどれかで明らかに目が輝く</li>
+                      <li>没頭時に内側で起きていたことを具体的に語れる</li>
+                      <li>語る速度・具体性が上がり、抑えきれないエネルギーを感じる</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           </div><!-- /ep-frame -->
 
           <div class="sec-title">人間性</div>
           <div class="card">
-            <h3>自分中心か、他者を立てられるか</h3>
-            <div class="q" style="margin-bottom:0"><div class="qt">これまでで、チームやグループで何かをやり遂げて「うまくいった」と思える経験を1つ教えてください。</div>
-              <div class="hint-q"><b>深掘り：</b>「その中で、あなた以外に一番貢献したのは誰で、具体的に何をしましたか？」</div>
+            <h3>他者から見た自分を、どれだけ語れるか</h3>
+            <div class="q" style="margin-bottom:0"><div class="qt">あなたと長く一緒に働いた人なら、あなたの「扱いにくいところ・気をつけたほうがいいところ」をいくつか挙げられると思います。その人になったつもりで、5つ挙げてみてください。</div>
+              <div class="hint-q"><b>深掘り：</b>「そのうち1つで、実際に相手を困らせてしまった・迷惑をかけた場面を、具体的に教えてください。」——数を出す過程での失速、他責への転換、表情の変化も観察する。</div>
 
               <div class="watch-box">
                 <div class="watch-h">👁 面接官が見るべきポイント</div>
@@ -737,18 +784,20 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
                   <div class="watch-ng">
                     <div class="watch-lab">⚠ 危険サイン（違和感あり）</div>
                     <ul>
-                      <li>成功要因がほぼ自分／自分が引っ張った話に終始する</li>
-                      <li>他のメンバーが「手伝ってくれた」程度で、名前も具体的貢献も出てこない</li>
-                      <li>深掘りしても他者を具体的に立てられない・言葉に詰まる</li>
-                      <li>前のチームや関係者をさりげなく見下す描写が混じる</li>
+                      <li>3つ目あたりで枯れる／同じ話の言い換えで水増しする</li>
+                      <li>実は長所の裏返し（「完璧主義」「頑張りすぎる」等）ばかりを並べる</li>
+                      <li>「そんな人はいない」「嫉妬・誤解でしょう」と他者視点を拒否・変換する</li>
+                      <li>深掘りすると他責に転じる（「環境が悪かった」等）／実害の具体が出ない</li>
+                      <li>数を求められて不機嫌になる・面接官を軽く見下す反応が出る</li>
                     </ul>
                   </div>
                   <div class="watch-ok">
                     <div class="watch-lab">✓ 健全な反応（違和感なし）</div>
                     <ul>
-                      <li>「私たち」が主語。複数の他者の貢献を自然に語る</li>
-                      <li>深掘りで、特定の人の具体的な働きを名指しで称賛できる</li>
-                      <li>運や外部条件にも触れ、自分の役割を相対化できる</li>
+                      <li>数を増やしても、痛いが本物の弱点を自然に足していける</li>
+                      <li>他者の目に映る自分を、防衛せず具体的に語れる</li>
+                      <li>深掘りで、自分が実際に迷惑をかけた出来事と非を認められる</li>
+                      <li>その後どう向き合った・変えたかまで語れる</li>
                     </ul>
                   </div>
                 </div>
@@ -969,6 +1018,8 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
         </div>
         <div class="ff-line" style="margin-top:8px"><span class="ff-lab">給与・勤務の補足</span>
           <input data-k="f-pay-note" class="ff-noteinput" placeholder="任意：給与や勤務条件についての補足"></div>
+        <div class="q" style="margin-top:14px"><div class="qt">その他補足事項</div>
+          <textarea data-k="f-other-note" style="min-height:120px" placeholder="上記に当てはまらない事項、面接中に出た希望・懸念・特記事項など自由に記入"></textarea></div>
       </div>
     </div>
 
@@ -1043,8 +1094,10 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
         <div class="db-bar">
           <input id="db-search" class="ff-inline" placeholder="氏名・店舗で絞り込み" oninput="renderDB()" style="max-width:240px">
           <span style="flex:1"></span>
+          <button class="btn btn-primary" onclick="refreshDBFromSheet(true)">⇩ スプレッドシートから再取得</button>
           <button class="btn btn-ghost" onclick="exportCSV()">CSV書き出し</button>
         </div>
+        <div id="db-fetch-status" class="axis-desc" style="margin:-2px 0 6px"></div>
         <div id="db-list"></div>
       </div>
     </div>
@@ -1347,15 +1400,15 @@ function toggleMulti(btn,key){
 /* ===== 叶えたい未来：ヒト・モノ・カネ・情報・時間 ===== */
 const FUTURE_AXES=[
  {key:"hito",icon:"人",label:"ヒト",sub:"人間関係・育成・チーム",
-  opts:["尊敬できる上司・経営者のもとで働きたい","信頼し合える仲間と働きたい","チームで協力して成果を出したい","後輩や新人の成長を支えたい","他職種・他部署と連携して働きたい","努力や成果を正当に認めてほしい","風通しよく相談し合える環境で働きたい","頼れる先輩・指導者のもとで学びたい","リーダーとしてチームをまとめたい","お互いを尊重し合える職場で働きたい","良い人間関係の中で働きたい"]},
- {key:"mono",icon:"物",label:"モノ",sub:"仕事・役割・キャリア（やること／なること）",
-  opts:["やりたい仕事・分野に携わりたい","専門的な仕事に携わりたい","幅広い業務を担当したい","裁量を持って自分で進めたい","責任ある役割を任されたい","お客様・患者と深く関わる仕事がしたい","人と接する仕事で力を発揮したい","お客様・患者の役に立つ実感を得たい","役職・管理職になりたい","新規立ち上げ・新しい挑戦をしたい","将来のキャリアの選択肢を広げたい","独立・開業も視野に入れたい","本部・教育など現場以外の道も拓きたい","自分の仕事に誇りを持ちたい"]},
+  opts:["尊敬できる上司・経営者のもとで働きたい","信頼し、互いを尊重し合える仲間と働きたい","困ったときに気軽に相談でき、助け合える環境で働きたい","チームで協力しながら成果を出したい","頼れる先輩のもとで学び、成長していきたい","後輩や新人の成長を支え、育てる役割を担いたい","多職種・他部署と連携しながら働きたい"]},
+ {key:"mono",icon:"物",label:"モノ",sub:"仕事・役割・キャリア",
+  opts:["自分のやりたい分野・専門的な仕事に携わりたい","幅広い業務を経験して視野を広げたい","裁量を持って、責任ある役割を任されたい","役職・管理職として組織を担っていきたい","お客様や患者と深く関わり、直接役に立ちたい","社会や地域の役に立つ、意義のある仕事がしたい","自分の成長を実感できる仕事がしたい","新しい挑戦を通じてキャリアの幅を広げたい","自分の仕事に誇りを持って働きたい"]},
  {key:"kane",icon:"金",label:"カネ",sub:"給与・待遇・福利厚生",
-  opts:["年収を上げたい","安定した収入を得たい","成果や頑張りを給与で評価してほしい","昇給・昇格の見通しを持ちたい","賞与・手当を充実させたい","役職・資格に応じた手当がほしい","退職金・企業年金など将来の備えがほしい","住宅・家賃などの生活補助がほしい","産休・育休など制度を安心して使いたい","長期的に安定した待遇で働きたい"]},
- {key:"joho",icon:"情",label:"情報",sub:"学び・知識・ノウハウ（知ること／学ぶこと）",
-  opts:["専門スキルを伸ばしたい","研修・勉強会で学び続けたい","資格取得を目指したい","専門知識を深めて第一人者になりたい","マネジメントの知識を身につけたい","先輩や上司から実践的に学びたい","業界・最新の動向にふれていたい","明確な評価で自分の現在地を知りたい","会社の方針・将来性を知りたい","フィードバックを受けて成長したい","他店舗・他職種の事例から学びたい","学びを支援する仕組みがほしい"]},
+  opts:["年収を上げていきたい","頑張りや成果を正当に評価してもらいたい","昇給・昇格の見通しを持って働きたい","安定した待遇のもとで長く働きたい","福利厚生が充実した環境で働きたい"]},
+ {key:"joho",icon:"情",label:"情報",sub:"学び・知識・ノウハウ",
+  opts:["専門性を深めて、頼られる存在になりたい","資格取得に挑戦し、キャリアに活かしたい","研修・勉強会を通じて学び続けたい","先輩や他店舗の事例から実践的に学びたい","マネジメントの知識・スキルを身につけたい","フィードバックをもらいながら成長していきたい"]},
  {key:"jikan",icon:"時",label:"時間",sub:"働き方・時間の使い方",
-  opts:["メリハリをつけて働きたい","残業の少ない働き方をしたい","希望休を取りやすい環境で働きたい","有給を取得しやすい職場で働きたい","家庭・育児と両立したい","自分に合った勤務時間で働きたい","長く働き続けたい","プライベートを大切にしたい","介護と両立したい","ライフステージに合わせて働きたい","無理なく続けられる働き方をしたい"]}
+  opts:["残業が少なく、メリハリをつけて働きたい","希望に応じて休みを取りやすい環境で働きたい","急な休みにも対応してもらえる環境で働きたい","通勤しやすい場所で無理なく働きたい","転勤なく、同じ場所で腰を据えて働き続けたい","仕事とプライベートのバランスを大切にしたい","家庭・育児と両立しながら働きたい","ライフステージの変化に合わせて長く働き続けたい"]}
 ];
 function renderFutureAxes(){
   state.future=state.future||{};
@@ -1387,21 +1440,21 @@ function updFutureNote(key,v){
 /* ===== KINOWAの強み（カウンター要素） =====
    axes: 効く分類キー / mbti: 特に刺さる傾向タグ（E,I,S,N,T,F,J,P / 空=全般） */
 const DEFAULT_STRENGTHS=[
- {t:"在宅・施設医療に本格的に関われる",d:"地域の在宅・施設を多数担当。同行からスタートし、主担当・エリア管理まで段階的に任される。",wishes:["mono::やりたい仕事・分野に携わりたい","mono::専門的な仕事に携わりたい","mono::お客様・患者と深く関わる仕事がしたい"]},
- {t:"キャリアパスの柔軟性とスピード感",d:"本人のやりたいことや特性をキャリアに反映させることを大事に。早期登用の実績あり。",wishes:["mono::役職・管理職になりたい","joho::役職・管理職を目指したい","joho::マネジメントの知識を身につけたい"]},
- {t:"1on1コーチング",d:"特性に合わせた関わり方を上司が学んでおり、画一的でない育成。新人の立ち上がりを丁寧に支援。",wishes:["hito::後輩や新人の成長を支えたい","hito::頼れる先輩・指導者のもとで学びたい","joho::先輩や上司から実践的に学びたい"]},
- {t:"多職種連携のチーム医療",d:"医師・看護師・ケアマネと連携。薬剤師としての介在価値は大きい。",wishes:["hito::他職種・他部署と連携して働きたい","hito::チームで協力して成果を出したい","mono::人と接する仕事で力を発揮したい"]},
- {t:"頑張りが反映される明確な評価制度",d:"360度評価・スキルマップ・KPIの3ステップ。成果と昇給が連動し納得感がある。",wishes:["kane::成果や頑張りを給与で評価してほしい","kane::昇給・昇格の見通しを持ちたい","joho::明確な評価で自分の現在地を知りたい"]},
- {t:"複数法人・多店舗で多様なキャリア",d:"グループ内に多様な店舗・法人があり、在宅特化・教育担当・本部など強みに応じた選択肢が広い。",wishes:["mono::将来のキャリアの選択肢を広げたい","mono::本部・教育など現場以外の道も拓きたい","mono::新規立ち上げ・新しい挑戦をしたい"]},
- {t:"家庭・育児と両立しやすい柔軟な働き方",d:"役員を含めて子育て世代が組織の中心。もちろん制度もしっかり整っている。",wishes:["jikan::家庭・育児と両立したい","jikan::自分に合った勤務時間で働きたい","jikan::ライフステージに合わせて働きたい"]},
- {t:"研修・資格取得の支援",d:"専門・認定薬剤師など資格取得を会社が支援。研修はメンバーとのコミュニケーションの上で個別に設定。",wishes:["joho::専門スキルを伸ばしたい","joho::研修・勉強会で学び続けたい","joho::資格取得を目指したい","joho::専門知識を深めて第一人者になりたい"]},
- {t:"風通しの良いフラットな組織文化",d:"役職に関わらず意見を言いやすく、提案が通りやすい。改善アイデアを実行に移せる土壌。",wishes:["hito::風通しよく相談し合える環境で働きたい","hito::お互いを尊重し合える職場で働きたい","hito::良い人間関係の中で働きたい"]},
- {t:"グループの安定基盤と将来性",d:"複数法人による安定した経営基盤。新規出店・事業拡大も続いており、長く安心して働ける。",wishes:["kane::安定した収入を得たい","kane::長期的に安定した待遇で働きたい","joho::会社の方針・将来性を知りたい"]},
- {t:"残業を抑え、休みを取りやすい体制",d:"業務分担と人員配置で残業を抑制。有休も取得しやすく、プライベートを確保しやすい。",wishes:["jikan::残業の少ない働き方をしたい","jikan::有給を取得しやすい職場で働きたい","jikan::メリハリをつけて働きたい","jikan::プライベートを大切にしたい"]},
- {t:"患者と長く深く関われる地域密着型展開",d:"医療と介護の融合により、地域医療を包括的にサポート。",wishes:["mono::お客様・患者と深く関わる仕事がしたい","mono::お客様・患者の役に立つ実感を得たい","hito::尊敬できる上司・経営者のもとで働きたい"]},
- {t:"尊敬できる経営陣と、誇れる仕事",d:"企業出身者も多く在籍しており、固定観念のないフラットな思考。",wishes:["hito::尊敬できる上司・経営者のもとで働きたい","hito::信頼し合える仲間と働きたい","mono::自分の仕事に誇りを持ちたい"]},
- {t:"年収アップを目指せる手当・昇給",d:"役職・資格に応じた手当と、成果に連動した昇給で、着実に年収を上げられる。毎年昇給5％平均を実現。",wishes:["kane::年収を上げたい","kane::役職・資格に応じた手当がほしい","kane::賞与・手当を充実させたい"]},
- {t:"リーダー・新人教育で活躍できる",d:"リーダーシップを発揮できる機会提供。マネージメント研修も充実。",wishes:["hito::リーダーとしてチームをまとめたい","hito::後輩や新人の成長を支えたい","joho::マネジメントの知識を身につけたい"]}
+ {t:"在宅・施設医療に本格的に関われる",d:"地域の在宅・施設を多数担当。同行からスタートし、主担当・エリア管理まで段階的に任される。",wishes:["mono::自分のやりたい分野・専門的な仕事に携わりたい","mono::自分のやりたい分野・専門的な仕事に携わりたい","mono::お客様や患者と深く関わり、直接役に立ちたい"]},
+ {t:"キャリアパスの柔軟性とスピード感",d:"本人のやりたいことや特性をキャリアに反映させることを大事に。早期登用の実績あり。",wishes:["mono::役職・管理職として組織を担っていきたい","mono::役職・管理職として組織を担っていきたい","joho::マネジメントの知識・スキルを身につけたい"]},
+ {t:"1on1コーチング",d:"特性に合わせた関わり方を上司が学んでおり、画一的でない育成。新人の立ち上がりを丁寧に支援。",wishes:["hito::後輩や新人の成長を支え、育てる役割を担いたい","hito::頼れる先輩のもとで学び、成長していきたい","mono::自分の成長を実感できる仕事がしたい"]},
+ {t:"多職種連携のチーム医療",d:"医師・看護師・ケアマネと連携。薬剤師としての介在価値は大きい。",wishes:["hito::多職種・他部署と連携しながら働きたい","hito::チームで協力しながら成果を出したい","mono::お客様や患者と深く関わり、直接役に立ちたい"]},
+ {t:"頑張りが反映される明確な評価制度",d:"360度評価・スキルマップ・KPIの3ステップ。成果と昇給が連動し納得感がある。",wishes:["kane::頑張りや成果を正当に評価してもらいたい","kane::昇給・昇格の見通しを持って働きたい","joho::フィードバックをもらいながら成長していきたい"]},
+ {t:"複数法人・多店舗で多様なキャリア",d:"グループ内に多様な店舗・法人があり、在宅特化・教育担当・本部など強みに応じた選択肢が広い。",wishes:["mono::新しい挑戦を通じてキャリアの幅を広げたい","jikan::通勤しやすい場所で無理なく働きたい","jikan::転勤なく、同じ場所で腰を据えて働き続けたい"]},
+ {t:"家庭・育児と両立しやすい柔軟な働き方",d:"役員を含めて子育て世代が組織の中心。もちろん制度もしっかり整っている。",wishes:["jikan::家庭・育児と両立しながら働きたい","jikan::ライフステージの変化に合わせて長く働き続けたい","jikan::ライフステージの変化に合わせて長く働き続けたい"]},
+ {t:"研修・資格取得の支援",d:"専門・認定薬剤師など資格取得を会社が支援。研修はメンバーとのコミュニケーションの上で個別に設定。",wishes:["joho::専門性を深めて、頼られる存在になりたい","joho::研修・勉強会を通じて学び続けたい","joho::資格取得に挑戦し、キャリアに活かしたい","joho::専門性を深めて、頼られる存在になりたい"]},
+ {t:"風通しの良いフラットな組織文化",d:"役職に関わらず意見を言いやすく、提案が通りやすい。改善アイデアを実行に移せる土壌。",wishes:["hito::信頼し、互いを尊重し合える仲間と働きたい","hito::困ったときに気軽に相談でき、助け合える環境で働きたい","hito::チームで協力しながら成果を出したい"]},
+ {t:"グループの安定基盤と将来性",d:"複数法人による安定した経営基盤。新規出店・事業拡大も続いており、長く安心して働ける。",wishes:["kane::安定した待遇のもとで長く働きたい","kane::福利厚生が充実した環境で働きたい","kane::年収を上げていきたい"]},
+ {t:"残業を抑え、休みを取りやすい体制",d:"業務分担と人員配置で残業を抑制。有休も取得しやすく、プライベートを確保しやすい。",wishes:["jikan::残業が少なく、メリハリをつけて働きたい","jikan::希望に応じて休みを取りやすい環境で働きたい","jikan::急な休みにも対応してもらえる環境で働きたい","jikan::仕事とプライベートのバランスを大切にしたい"]},
+ {t:"患者と長く深く関われる地域密着型展開",d:"医療と介護の融合により、地域医療を包括的にサポート。",wishes:["mono::お客様や患者と深く関わり、直接役に立ちたい","mono::社会や地域の役に立つ、意義のある仕事がしたい","jikan::転勤なく、同じ場所で腰を据えて働き続けたい"]},
+ {t:"尊敬できる経営陣と、誇れる仕事",d:"企業出身者も多く在籍しており、固定観念のないフラットな思考。",wishes:["hito::尊敬できる上司・経営者のもとで働きたい","hito::信頼し、互いを尊重し合える仲間と働きたい","mono::自分の仕事に誇りを持って働きたい"]},
+ {t:"年収アップを目指せる手当・昇給",d:"役職・資格に応じた手当と、成果に連動した昇給で、着実に年収を上げられる。毎年昇給5％平均を実現。",wishes:["kane::年収を上げていきたい","kane::昇給・昇格の見通しを持って働きたい","kane::昇給・昇格の見通しを持って働きたい"]},
+ {t:"リーダー・新人教育で活躍できる",d:"リーダーシップを発揮できる機会提供。マネージメント研修も充実。",wishes:["hito::後輩や新人の成長を支え、育てる役割を担いたい","hito::後輩や新人の成長を支え、育てる役割を担いたい","joho::マネジメントの知識・スキルを身につけたい"]}
 ];
 function getStrengths(){
   if(!state.strengths||!state.strengths.length){
@@ -1616,12 +1669,12 @@ function buildPrintReport(){
   const secMbti=sec('MBTI 所見',field('MBTIガイドを踏まえた所見',t['mbti-note']));
 
   const startStr=(t['f-start-m']?t['f-start-m']+'月 '+(t['f-start-d']||'')+'日頃':'');
-  const condBody=field('希望勤務時間',t['f-hours'])+field('入職希望',startStr)+field('希望年収',t['f-wishsal']);
+  const condBody=field('希望勤務時間',t['f-hours'])+field('入職希望',startStr)+field('希望年収',t['f-wishsal'])+field('その他補足事項',t['f-other-note']);
   const secFut= futList.length ? sec('叶えたい未来',futHtml) : '';
   const secCond= condBody ? sec('希望条件',condBody) : '';
 
   const secCv=sec('職歴・経験',
-    field('経験年数',t['cv-years'])+field('管理薬剤師等の経験',t['cv-mgmt-note'])+field('補足',t['cv-note']));
+    field('経験年数',t['cv-years'])+field('マネジメント経験の補足',t['cv-mgmt-note'])+field('補足',t['cv-note']));
 
   // 記入枠（常に表示）
   const memoNote='<section class="pr-sec"><h2>面接官 所見メモ</h2><div class="pr-note">　</div></section>';
@@ -1688,16 +1741,24 @@ function renderOutput(){
     pool.sort((a,b)=>(usedCount[a.i]||0)-(usedCount[b.i]||0)||a.i-b.i);
     const chosen=pool[0];
     usedCount[chosen.i]=(usedCount[chosen.i]||0)+1;
-    return chosen.s;
+    return chosen;
   }
-  if(wgrid)wgrid.innerHTML=picks.map((p,i)=>{
-    const a=answerFor(p.axis,p.wish);
+  // 同じ強み（応え）が複数の願いに当たる場合は1枚にまとめ、願いを束ねて表示
+  const groups=[];      // {si, s, wishes:[{axis,wish}]}
+  const byStrength={};
+  picks.forEach(p=>{
+    const o=answerFor(p.axis,p.wish);
+    if(byStrength[o.i]==null){byStrength[o.i]=groups.length;groups.push({si:o.i,s:o.s,wishes:[]});}
+    groups[byStrength[o.i]].wishes.push(p);
+  });
+  if(wgrid)wgrid.innerHTML=groups.map((g,i)=>{
+    const wishHtml=g.wishes.map(w=>`<span class="wq"><i class="ic-s ${w.axis}">${AX_ICON[w.axis]}</i>${esc(w.wish)}</span>`).join('');
     return `<div class="wcard" data-i="${i}">
-      <div class="ic ${p.axis}">${AX_ICON[p.axis]}</div>
+      <div class="ic ${g.wishes[0].axis}">${AX_ICON[g.wishes[0].axis]}</div>
       <div class="bd">
-        <div class="wish">${esc(p.wish)}</div>
-        <div class="ans">${esc(a.t)}</div>
-        <div class="desc">${esc(a.d)}</div>
+        <div class="wish-list">${wishHtml}</div>
+        <div class="ans">${esc(g.s.t)}</div>
+        <div class="desc">${esc(g.s.d)}</div>
       </div>
     </div>`;
   }).join('');
@@ -1799,19 +1860,30 @@ function resetStrengths(){
 }
 
 /* ===== 職種連動：経験業務リスト ===== */
-const EXP_PHARMACIST=["外来調剤","在宅","施設","OTC","無菌","かかりつけ","管理薬剤師","ドラッグ併設"];
-const EXP_CLERK=["処方箋受付","処方入力(レセコン)","調剤報酬の算定","レセプト・請求業務","会計・窓口対応","お薬手帳・薬歴の管理","電話・問い合わせ対応","保険資格の確認","在宅事務・書類作成","医薬品の在庫・発注","品出し・ピッキング補助","OTC・物販の接客","管理・リーダー業務"];
+const EXP_PHARMACIST=[
+  "処方監査","調剤（一包化含む）","疑義照会","薬歴記載",
+  "外来の服薬指導","かかりつけ薬剤師","継続的なフォローアップ",
+  "在宅訪問・居宅療養管理指導","施設対応（担当者会議など）","多職種連携（医師・ケアマネ等）",
+  "管理薬剤師","在庫・発注管理","新人・実習生の指導","店舗の数値管理（KPI等）"
+];
+const EXP_CLERK=[
+  "処方箋受付・保険証確認","会計・窓口対応","電話対応・問い合わせ",
+  "処方入力（レセコン）","調剤報酬の算定","レセプト点検・請求","返戻・査定対応",
+  "ピッキング（薬剤の取り揃え）","一包化・分包機の操作","配薬セット（施設・在宅）",
+  "在宅の書類作成・管理","施設との連絡調整","配薬のお届け・訪問同行",
+  "医薬品の在庫管理・発注","新人教育・指導","管理・リーダー業務"
+];
 const EXP_MED=["外来・初再診受付","診療報酬の算定","レセプト・請求業務","会計・窓口対応","電話・問い合わせ対応","保険資格の確認","カルテ・書類管理","予約・案内対応","クラーク業務","在庫・備品管理","管理・リーダー業務"];
 const EXP_SALES=["新規開拓","ルート営業","既存フォロー","提案・企画","契約・交渉","顧客管理","売上管理","チームマネジメント"];
 const EXP_GENERIC=["接客・販売","事務・データ入力","電話・メール応対","在庫・発注管理","スタッフ管理","売上・数値管理","企画・提案","教育・研修"];
 function expListFor(role){
-  if(role==="薬剤師"||role==="管理薬剤師"||role==="管理薬剤師候補") return EXP_PHARMACIST;
+  if(role==="薬剤師") return EXP_PHARMACIST;
   if(role==="調剤事務") return EXP_CLERK;
   if(role==="医療事務") return EXP_MED;
   if(role==="営業") return EXP_SALES;
   return EXP_GENERIC;
 }
-const ROLE_OPTS=["薬剤師","管理薬剤師","医療事務","調剤事務","営業","その他"];
+const ROLE_OPTS=["薬剤師","医療事務","調剤事務","営業","その他"];
 const EMP_OPTS=["正社員","パート・アルバイト","派遣","契約"];
 const YY_OPTS=Array.from({length:31},(_,i)=>i);      // 0〜30年
 const MM_OPTS=Array.from({length:12},(_,i)=>i);      // 0〜11ヶ月
@@ -1829,21 +1901,23 @@ function jobTemplate(idx,job){
     </div>
     <div class="ff-line"><span class="ff-lab">在籍期間</span>
       <select class="yr-sel" onchange="updJob(${idx},'yy',this.value)">
-        <option value=""${!job.yy?' selected':''}>―年</option>
-        ${YY_OPTS.map(y=>`<option value="${y}"${job.yy===y?' selected':''}>${y}年</option>`).join('')}
+        <option value=""${(job.yy===''||job.yy==null)?' selected':''}>―年</option>
+        ${YY_OPTS.map(y=>`<option value="${y}"${String(job.yy)===String(y)?' selected':''}>${y}年</option>`).join('')}
       </select>
       <select class="yr-sel" onchange="updJob(${idx},'mm',this.value)">
-        <option value=""${!job.mm?' selected':''}>―ヶ月</option>
-        ${MM_OPTS.map(m=>`<option value="${m}"${job.mm===m?' selected':''}>${m}ヶ月</option>`).join('')}
+        <option value=""${(job.mm===''||job.mm==null)?' selected':''}>―ヶ月</option>
+        ${MM_OPTS.map(m=>`<option value="${m}"${String(job.mm)===String(m)?' selected':''}>${m}ヶ月</option>`).join('')}
       </select></div>
     <div class="ff-line"><span class="ff-lab">雇用形態</span>
-      <div class="pills">${EMP_OPTS.map(e=>`<button type="button" class="${job.emp===e?'sel':''}" onclick="updJob(${idx},'emp','${e}');renderJobs()">${e}</button>`).join('')}</div></div>
+      <div class="pills">${EMP_OPTS.map(e=>`<button type="button" class="${job.emp===e?'sel':''}" onclick="updJobEmp(${idx},'${e}',this)">${e}</button>`).join('')}</div></div>
     <div class="ff-line"><span class="ff-lab">職種</span>
       <div class="pills">${ROLE_OPTS.map(r=>`<button type="button" class="${job.role===r?'sel':''}" onclick="updJobRole(${idx},'${r}')">${r}</button>`).join('')}</div></div>
     <div class="ff-line"><span class="ff-lab">主な業務</span>
-      <div class="pills multi">${expList.map(e=>`<button type="button" class="${(job.exp||[]).includes(e)?'sel':''}" onclick="updJobMulti(${idx},'exp','${e}')">${e}</button>`).join('')}</div></div>
+      <div class="pills multi">${expList.map(e=>`<button type="button" class="${(job.exp||[]).includes(e)?'sel':''}" onclick="updJobMulti(${idx},'exp','${e}',this)">${e}</button>`).join('')}</div></div>
+    ${((job.role||appRole)==='調剤事務'||(job.role||appRole)==='医療事務')?`<div class="ff-line"><span class="ff-lab">使用歴のあるレセコン</span>
+      <input class="ff-noteinput" value="${esc(job.rececon)}" oninput="updJob(${idx},'rececon',this.value)" placeholder="例：Recepty・調剤メイト・PharnesⅢ・NSIPS など"></div>`:''}
     <div class="ff-line"><span class="ff-lab">退職理由</span>
-      <div class="pills multi">${QUIT_OPTS.map(q=>`<button type="button" class="${(job.quit||[]).includes(q)?'sel':''}" onclick="updJobMulti(${idx},'quit','${q}')">${q}</button>`).join('')}</div></div>
+      <div class="pills multi">${QUIT_OPTS.map(q=>`<button type="button" class="${(job.quit||[]).includes(q)?'sel':''}" onclick="updJobMulti(${idx},'quit','${q}',this)">${q}</button>`).join('')}</div></div>
     <div class="ff-line"><span class="ff-lab">理由の補足</span>
       <input class="ff-noteinput" value="${esc(job.quitnote)}" oninput="updJob(${idx},'quitnote',this.value)" placeholder="任意：退職理由のひとこと補足"></div>
   </div>`;
@@ -1858,11 +1932,17 @@ function renderJobs(){
 function addJob(){state.jobs=state.jobs||[];state.jobs.push({company:'',yy:'',mm:'',emp:'',role:'',exp:[],quit:[],quitnote:''});renderJobs();}
 function delJob(i){state.jobs.splice(i,1);renderJobs();}
 function updJob(i,k,v){state.jobs[i][k]=v;}
+function updJobEmp(i,v,btn){
+  state.jobs[i].emp=v;
+  const wrap=btn.parentElement;
+  wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b===btn));
+}
 function updJobRole(i,r){state.jobs[i].role=r;renderJobs();}
-function updJobMulti(i,k,v){
+function updJobMulti(i,k,v,btn){
   const arr=state.jobs[i][k]||[];const pos=arr.indexOf(v);
   if(pos>=0)arr.splice(pos,1);else arr.push(v);
-  state.jobs[i][k]=arr;renderJobs();
+  state.jobs[i][k]=arr;
+  if(btn)btn.classList.toggle('sel',arr.indexOf(v)>=0); else renderJobs();
 }
 
 /* ===== 相性の見立て（叶えたい未来 × KINOWA） ===== */
@@ -1955,7 +2035,7 @@ function tab(btn,id){
   document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(id==='t-store'){initMasterDraft();renderStrengths();renderHistRows();renderStores();}
-  if(id==='t-db'){renderDB();}
+  if(id==='t-db'){renderDB();refreshDBFromSheet(false);}
 }
 
 /* ===== save / load ===== */
@@ -2087,6 +2167,43 @@ function syncToSheet(rec){
       body:JSON.stringify(rec)});
   }catch(e){/* オフライン等は黙って無視（localStorageには保存済み） */}
 }
+/* GASからスプレッドシートの全候補者を取得（GETはno-corsだと本文が読めないので通常fetch） */
+function fetchFromSheet(){
+  const url=getGasUrl();
+  if(!url)return Promise.resolve({ok:false,records:[]});
+  // GETでカスタムヘッダを付けない＝シンプルリクエストにしてCORSプリフライトを回避
+  return fetch(url,{method:'GET'})
+    .then(r=>r.json())
+    .catch(e=>({ok:false,error:String(e),records:[]}));
+}
+/* スプレッドシートの全レコードを一覧の主データ源として反映。
+   端末のlocalStorageは「送信失敗の保険」なので、スプレッド側にある人はスプレッド版で上書き、
+   スプレッドに無い人（＝未送信でローカルだけに残っている保険分）は残す。 */
+function refreshDBFromSheet(showMsg){
+  const status=document.getElementById('db-fetch-status');
+  if(status)status.textContent='スプレッドシートから取得中…';
+  const p=fetchFromSheet();
+  return Promise.resolve(p).then(res=>{
+    if(!res||!res.ok||!Array.isArray(res.records)){
+      if(status)status.textContent='取得に失敗しました（時間をおいて「再取得」を押してください）。手元に保存済みの分は表示しています。';
+      renderDB();
+      return;
+    }
+    const sheetRecs=res.records;
+    const local=dbAll();
+    // スプレッド側のキー集合
+    const sheetKeys=new Set(sheetRecs.map(r=>recordKey(r.meta||{})));
+    // ローカルのうち、スプレッドに無い分だけ保険として残す
+    const localOnly=local.filter(r=>!sheetKeys.has(recordKey(r.meta||{})));
+    const merged=sheetRecs.concat(localOnly);
+    dbSave(merged);
+    renderDB();
+    if(status){
+      const extra=localOnly.length?`（うち${localOnly.length}件は未送信のためこの端末のみ）`:'';
+      status.textContent=`スプレッドシートから ${sheetRecs.length} 件を取得しました${extra}。`;
+    }
+  });
+}
 function testGasUrl(){
   const url=(document.getElementById('gas-url').value||'').trim();
   const s=document.getElementById('gas-status');
@@ -2106,14 +2223,37 @@ function saveToDB(){
   const meta=collectMeta();
   if(!meta.name){if(!confirm('氏名が未入力です。このまま保存しますか？'))return;}
   const rec={meta, data:{...state}, savedAt:new Date().toISOString()};
+  // まず端末側に保険として保存（送信失敗しても消えないように）
   const arr=dbAll();
   const key=recordKey(meta);
   const idx=arr.findIndex(r=>recordKey(r.meta)===key);
   if(idx>=0)arr[idx]=rec; else arr.push(rec);
   dbSave(arr);renderDB();
+  // スプレッドシートに送信
   syncToSheet(rec);
   const url=getGasUrl();
-  alert('候補者データに保存しました（'+(meta.name||'無名')+'）'+(url?'\n＋ スプレッドシートにも送信しました。':''));
+  alert('候補者データを保存しました（'+(meta.name||'無名')+'）'+(url?'\n＋ スプレッドシートに送信しました。':''));
+  // 送信を反映したスプレッド側から取り直して一覧を最新化（少し待ってから）
+  if(url){setTimeout(()=>{refreshDBFromSheet(false);},1500);}
+}
+function fetchFromSheet(){
+  const url=getGasUrl();
+  const s=document.getElementById('db-fetch-status');
+  if(!url){if(s)s.textContent='連携URLが設定されていません。';return;}
+  if(s)s.textContent='スプレッドシートから取得中…';
+  fetch(url,{method:'GET'})
+    .then(res=>res.json())
+    .then(j=>{
+      if(!j||!j.ok){throw new Error((j&&j.error)||'取得に失敗しました');}
+      const recs=Array.isArray(j.records)?j.records:[];
+      // スプレッドシートの内容で一覧を置き換える（真実の源＝スプレッドシート）
+      dbSave(recs);
+      renderDB();
+      if(s)s.textContent='✓ '+recs.length+'件を取得し、一覧を更新しました。';
+    })
+    .catch(e=>{
+      if(s)s.textContent='取得に失敗しました：'+e.message+'（GAS側のdoGet設置とアクセス権「全員」をご確認ください）';
+    });
 }
 function delDB(i){if(!confirm('この候補者データを削除しますか？'))return;const arr=dbAll();arr.splice(i,1);dbSave(arr);renderDB();}
 function loadFromDB(i){
@@ -2192,6 +2332,8 @@ function exportCSV(){
 /* ===== init ===== */
 buildPotential();buildCompetency();buildMbti();bindText();renderFutureAxes();renderStrengths();renderCounter();
 renderStoreSelect();renderStores();renderHistRows();renderDB();renderQuickAxes();loadGasUrl();
+/* 起動時にスプレッドシートから全候補者を自動取得して一覧を最新化 */
+refreshDBFromSheet(false);
 document.getElementById('c-date').valueAsDate=new Date();
 document.getElementById('c-role').addEventListener('change',renderExpPills);
 renderExpPills();
