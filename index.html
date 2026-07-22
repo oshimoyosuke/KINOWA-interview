@@ -2098,7 +2098,33 @@ function saveMaster(){
   masterDirty=false;updateMasterSaveBar();
   // 反映：応募店舗プルダウン等
   renderStoreSelect();
-  alert('保存しました。OUTPUTや応募店舗に反映されます。');
+  // スプレッドシートにもマスタを送信（全端末で共有）
+  syncMasterToSheet();
+  alert('保存しました。OUTPUTや応募店舗に反映されます。\n＋ スプレッドシートにも送信しました（全端末で共有されます）。');
+}
+/* マスタをGASへ送信（no-cors送信のみ） */
+function syncMasterToSheet(){
+  const url=getGasUrl();if(!url)return;
+  try{
+    fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({kind:'master',master:{strengths:state.strengths,history:state.history,stores:state.stores}})});
+  }catch(e){/* オフライン等は無視（localStorageには保存済み） */}
+}
+/* GASからマスタを取得して反映（起動時） */
+function refreshMasterFromSheet(){
+  const url=getGasUrl();if(!url)return Promise.resolve();
+  return fetch(url+'?master=1',{method:'GET'})
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res||!res.ok||!res.master)return;
+      const m=res.master;
+      let changed=false;
+      if(Array.isArray(m.strengths)&&m.strengths.length){state.strengths=m.strengths;try{localStorage.setItem('kinowa_strengths',JSON.stringify(m.strengths));}catch(_){}changed=true;}
+      if(Array.isArray(m.history)&&m.history.length){state.history=m.history;try{localStorage.setItem('kinowa_history',JSON.stringify(m.history));}catch(_){}changed=true;}
+      if(Array.isArray(m.stores)&&m.stores.length){state.stores=m.stores;try{localStorage.setItem('kinowa_stores',JSON.stringify(m.stores));}catch(_){}changed=true;}
+      if(changed){renderStrengths();renderHistRows&&renderHistRows();renderStoreSelect();}
+    })
+    .catch(e=>{/* 取得失敗時はローカルのまま */});
 }
 function revertMaster(){
   if(!masterDirty){return;}
@@ -2332,6 +2358,8 @@ buildPotential();buildCompetency();buildMbti();bindText();renderFutureAxes();ren
 renderStoreSelect();renderStores();renderHistRows();renderDB();renderQuickAxes();loadGasUrl();
 /* 起動時にスプレッドシートから全候補者を自動取得して一覧を最新化 */
 refreshDBFromSheet(false);
+/* 起動時にスプレッドシートからマスタ（強み・沿革・店舗）を取得して反映 */
+refreshMasterFromSheet();
 document.getElementById('c-date').valueAsDate=new Date();
 document.getElementById('c-role').addEventListener('change',renderExpPills);
 renderExpPills();
