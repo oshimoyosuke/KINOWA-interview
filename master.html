@@ -73,7 +73,8 @@ input.jdate:disabled{opacity:.5}
 .alertbox{border:2px solid #dc2626;background:#fdeaea;padding:11px 14px;margin-bottom:14px;font-size:.84rem;color:#dc2626;font-weight:700}
 .alertbox b{display:block;font-size:.92rem;margin-bottom:2px}
 .infobox{border:2px solid var(--ink);background:var(--mint-l);padding:11px 14px;margin-bottom:16px;font-size:.83rem}
-.infobox b{display:block;font-size:.9rem;margin-bottom:2px}
+.infobox b{display:inline;font-size:.9rem}
+.infobox b:first-child{display:block;margin-bottom:2px}
 .infobox code{font-family:"Chivo",monospace;background:#fff;border:1px solid var(--line-soft);padding:1px 6px;font-size:.82rem}
 .ph4{font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:700;color:var(--sub);letter-spacing:.05em;margin:24px 0 10px}
 .minilink{font-family:"Chivo",sans-serif;font-size:.72rem;font-weight:700;color:var(--teal);text-decoration:none;white-space:nowrap}
@@ -341,13 +342,15 @@ function monthsSince(iso){iso=ymd(iso);if(!iso)return null;const p=iso.split('-'
   const t=new Date();let m=(t.getFullYear()-y)*12+((t.getMonth()+1)-mo);if(t.getDate()<d)m--;return m;}
 function pad2(n){return ('0'+n).slice(-2);}
 // その人の次の配信予定（未送信の最も早い回次）
+const PULSE_MAX_MONTHS=6; // Code.gs の PULSE_MAX_MONTHS と揃える
 function nextDue(p){
   if(!ymd(p.joinDate))return null;
   const m=monthsSince(p.joinDate);
   if(m==null)return null;
   const sentRounds=pulseStatus.filter(x=>x.personId===p.personId).map(x=>String(x.round));
-  if(m>=1&&sentRounds.indexOf(pad2(m))<0)return{months:m,due:addMonths(p.joinDate,m),status:'今日が対象'};
+  if(m>=1&&m<=PULSE_MAX_MONTHS&&sentRounds.indexOf(pad2(m))<0)return{months:m,due:addMonths(p.joinDate,m),status:'今日が対象'};
   const nx=Math.max(1,m+1);
+  if(nx>PULSE_MAX_MONTHS)return{months:null,due:'',status:'配信終了'};
   return{months:nx,due:addMonths(p.joinDate,nx),status:'予定'};
 }
 
@@ -363,13 +366,13 @@ function renderPulse(){
   document.getElementById('pulse-status').textContent=`本日の配信対象 ${todayList.length} 名　／　累計回答率 ${pulseStatus.length?rate+'%':'—'}`;
 
   let h=`<div class="metrics" style="margin-bottom:22px">
-    <div class="metric"><div class="n">${active.length}</div><div class="l">対象者（在籍）</div></div>
+    <div class="metric"><div class="n">${dues.filter(x=>x.d.status!=='配信終了').length}</div><div class="l">配信中（〜6か月）</div></div>
     <div class="metric ${todayList.length?'due':''}"><div class="n">${todayList.length}</div><div class="l">本日の配信対象</div></div>
     <div class="metric ${(noMail.length||noJoin.length)?'alert':'ok'}"><div class="n">${noMail.length+noJoin.length}</div><div class="l">配信できない（未入力）</div></div>
     <div class="metric ok"><div class="n">${pulseStatus.length?rate+'%':'—'}</div><div class="l">累計回答率</div></div>
   </div>`;
 
-  h+=`<div class="infobox"><b>入社日を起点に自動配信します。</b>各自の入社応当日に「入社◯か月」のパルスが届きます（入社1か月後から毎月）。Apps Scriptのトリガーで <code>sendDuePulse</code> を日次実行に設定してください。下のボタンは、手動で今すぐ送りたいときに使います。</div>`;
+  h+=`<div class="infobox"><b>入社日を起点に自動配信します。</b>各自の入社応当日にパルスサーベイが届きます（<b>入社1か月後から6か月まで、毎月</b>）。3問・約30秒。Apps Scriptのトリガーで <code>sendDuePulse</code> を日次実行に設定してください。下のボタンは、手動で今すぐ送りたいときに使います。</div>`;
 
   if(noMail.length||noJoin.length){
     const w=[];
@@ -382,16 +385,18 @@ function renderPulse(){
   h+='<h4 class="ph4">配信スケジュール</h4>';
   if(!dues.length){h+='<div class="empty"><b>対象者がいません</b>個人マスタに入社日を登録すると、ここに配信予定が並びます。</div>';}
   else{
-    dues.sort((a,b)=>(a.d.due||'').localeCompare(b.d.due||''));
+    dues.sort((a,b)=>{const af=a.d.status==='配信終了'?1:0,bf=b.d.status==='配信終了'?1:0;
+      if(af!==bf)return af-bf;return (a.d.due||'').localeCompare(b.d.due||'');});
     h+='<table class="tbl"><thead><tr><th>氏名</th><th>店舗</th><th>入社日</th><th>次の配信</th><th>予定日</th><th>これまでの回答</th></tr></thead><tbody>'
       +dues.map(x=>{
         const mine=pulseStatus.filter(s=>s.personId===x.p.personId);
         const ans=mine.filter(s=>s.status==='回答済').length;
         const hot=x.d.status==='今日が対象';
-        return `<tr><td>${esc(x.p.name||'')}</td><td>${esc(x.p.store||'')}</td>
+        const fin=x.d.status==='配信終了';
+        return `<tr${fin?' style="opacity:.55"':''}><td>${esc(x.p.name||'')}</td><td>${esc(x.p.store||'')}</td>
           <td class="dt">${esc(ymd(x.p.joinDate)||'—')}</td>
-          <td class="st">${esc(roundLabel(pad2(x.d.months)))}</td>
-          <td class="dt" ${hot?'style="color:#d97706;font-weight:700"':''}>${esc(x.d.due||'—')}${hot?'　本日対象':''}</td>
+          <td class="st">${fin?'配信終了（6か月完了）':esc(roundLabel(pad2(x.d.months)))}</td>
+          <td class="dt" ${hot?'style="color:#d97706;font-weight:700"':''}>${fin?'—':esc(x.d.due||'—')}${hot?'　本日対象':''}</td>
           <td class="dt">${mine.length?`${ans} / ${mine.length} 回`:'—'}</td></tr>`;}).join('')
       +'</tbody></table>';
   }

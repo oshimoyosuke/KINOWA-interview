@@ -2,179 +2,199 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>今月のパルスサーベイ｜木の和ホールディングス</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>KINOWA Voices</title>
 <style>
 :root{
-  --ink:#111111; --paper:#fbfaf7; --line-soft:#dcd8cf; --sub:#6b675e;
-  --mint:#00c389; --teal:#00a3b4; --mint-l:#e7f9f1;
-  --grad:linear-gradient(120deg,#00c389,#00a3b4);
-  --warn:#d97706; --dang:#dc2626;
-  --hard:5px 5px 0 #111111; --hard-sm:3px 3px 0 #111111;
+  --ink:#1B2521; --paper:#FBF9F4; --card:#FFFFFF; --line:#E9E5DB; --mute:#9AA39E;
+  --accent:#00A878;
+  --q1:#1F7A5C; --q2:#B5651D; --q3:#3B5C8A;
+  --s5:#00A878; --s4:#4FBF97; --s3:#B9C2BD; --s2:#FF922B; --s1:#FA5252;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;color:var(--ink);background:var(--paper);line-height:1.75;-webkit-font-smoothing:antialiased}
-header{background:var(--paper);border-bottom:2px solid var(--ink)}
-.hwrap{max-width:620px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;gap:12px}
-.logo{font-family:"Instrument Serif",serif;font-size:1.5rem}
-.tag{border:2px solid var(--ink);background:var(--grad);color:#fff;font-size:.68rem;font-weight:800;padding:3px 10px;font-family:"Chivo",sans-serif}
-.wrap{max-width:620px;margin:0 auto;padding:24px 20px 120px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:"Yu Gothic","游ゴシック体",YuGothic,Arial,sans-serif;background:var(--paper);color:var(--ink);
+  line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100dvh}
+.wrap{max-width:520px;margin:0 auto;padding:0 18px 40px;display:flex;flex-direction:column;min-height:100dvh}
 
-.intro{border:2px solid var(--ink);box-shadow:var(--hard);background:#fff;padding:18px 20px;margin-bottom:22px}
-.intro .hi{font-size:1.3rem;font-weight:700}
-.intro .rd{font-family:"Chivo",sans-serif;font-size:.76rem;font-weight:700;color:var(--teal);letter-spacing:.04em}
-.intro p{font-size:.86rem;color:var(--sub);margin-top:8px}
-.note{background:var(--mint-l);border-left:5px solid var(--mint);padding:10px 13px;font-size:.8rem;margin-top:12px}
+.top{padding:16px 0 10px}
+.brand{font-family:Arial,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.14em;color:var(--accent)}
+.pbar{height:4px;background:var(--line);border-radius:99px;margin-top:10px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:99px;width:0;transition:width .35s cubic-bezier(.4,0,.2,1)}
 
-.q{border:2px solid var(--ink);box-shadow:var(--hard-sm);background:#fff;padding:16px 17px;margin-bottom:16px}
-.q .qn{font-family:"Chivo",sans-serif;font-size:.7rem;font-weight:900;color:var(--teal)}
-.q .qt{font-size:1.02rem;font-weight:700;margin:2px 0 4px}
-.q .qd{font-size:.78rem;color:var(--sub);margin-bottom:11px}
-.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.sc{border:2px solid var(--line-soft);background:#fff;padding:11px 3px;text-align:center;cursor:pointer;font-family:inherit}
-.sc:hover{border-color:var(--ink)}
-.sc .num{font-family:"Chivo",sans-serif;font-size:1.15rem;font-weight:900;line-height:1;color:var(--sub)}
-.sc .lb{font-size:.63rem;color:var(--sub);margin-top:4px;line-height:1.35}
-.sc.on{background:var(--ink);border-color:var(--ink)}
-.sc.on .num,.sc.on .lb{color:#fff}
-.opts{display:flex;gap:8px;flex-wrap:wrap}
-.opt{border:2px solid var(--line-soft);background:#fff;padding:7px 14px;font-size:.86rem;font-weight:700;color:var(--sub);cursor:pointer;font-family:inherit}
-.opt:hover{border-color:var(--ink);color:var(--ink)}
-.opt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-textarea{width:100%;border:2px solid var(--line-soft);background:#fff;padding:10px 12px;font-family:inherit;font-size:.9rem;line-height:1.7;resize:vertical}
-textarea:focus{outline:none;border-color:var(--ink)}
+.stage{position:relative;flex:1;overflow:hidden}
+.panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  transition:transform .32s cubic-bezier(.4,0,.2,1),opacity .28s;opacity:0;transform:translateX(28px);pointer-events:none}
+.panel.on{opacity:1;transform:none;pointer-events:auto;position:relative}
+.panel.left{transform:translateX(-28px)}
 
-.savebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--ink);padding:12px 20px}
-.savebar .inner{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:12px}
-.savebar .st{font-size:.8rem;color:var(--sub);font-weight:700;flex:1}
-.btn{border:2px solid var(--ink);background:var(--grad);color:#fff;font-family:"Chivo",sans-serif;font-size:.88rem;font-weight:700;padding:11px 24px;cursor:pointer;box-shadow:var(--hard-sm)}
-.btn:hover:not(:disabled){transform:translate(-1px,-1px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.qbadge{display:inline-block;font-family:Arial,sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  color:#fff;padding:3px 11px;border-radius:99px}
+.b1{background:var(--q1)} .b2{background:var(--q2)} .b3{background:var(--q3)}
+.qt{font-size:1.26rem;font-weight:700;line-height:1.55;margin:12px 0 4px;letter-spacing:.01em}
+.qs{font-size:.82rem;color:var(--mute)}
 
-.msg{border:2px solid var(--ink);box-shadow:var(--hard);background:#fff;padding:34px 24px;text-align:center}
-.msg .ic{font-size:2.4rem;line-height:1}
-.msg h2{font-size:1.3rem;font-weight:700;margin:10px 0 6px}
-.msg p{font-size:.88rem;color:var(--sub)}
-.msg.err{border-color:var(--dang)}
-.hide{display:none}
+.choices{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.ch{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--line);
+  border-radius:18px;padding:11px 15px;cursor:pointer;font-family:inherit;text-align:left;width:100%;
+  transition:border-color .18s,box-shadow .18s,transform .12s;position:relative;overflow:visible}
+.ch:active{transform:scale(.985)}
+.ch .om{width:46px;height:46px;flex:none;display:block}
+.ch .lb{font-size:1rem;font-weight:700}
+.ch .dot{margin-left:auto;width:11px;height:11px;border-radius:50%;background:var(--line);flex:none}
+.ch.on{border-color:currentColor;box-shadow:0 0 0 1.5px currentColor}
+.ch.on .dot{background:currentColor}
+.ch.on .om{animation:wobble .5s ease}
+@keyframes wobble{0%{transform:scale(1)}30%{transform:scale(1.18) rotate(-7deg)}60%{transform:scale(.96) rotate(4deg)}100%{transform:scale(1)}}
+.burst{position:absolute;left:34px;top:50%;width:7px;height:7px;border-radius:50%;background:currentColor;
+  pointer-events:none;animation:burst .55s ease-out forwards}
+@keyframes burst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--bx),var(--by)) scale(.3)}}
+
+.nav{display:flex;align-items:center;gap:12px;padding-top:22px}
+.back{background:none;border:none;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--mute);cursor:pointer;padding:8px 2px}
+.dots{display:flex;gap:6px;margin:0 auto}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.next{background:var(--accent);color:#fff;border:none;border-radius:99px;font-family:inherit;font-size:.9rem;
+  font-weight:700;padding:11px 26px;cursor:pointer}
+.next:disabled{background:var(--line);color:var(--mute);cursor:not-allowed}
+
+.msg{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:30px 22px;text-align:center;margin-top:26px}
+.msg h2{font-size:1.24rem;font-weight:700;margin-bottom:8px}
+.msg p{font-size:.9rem;color:var(--mute)}
+.sum{display:flex;justify-content:center;gap:16px;margin:18px 0 4px}
+.sum .it{text-align:center}
+.sum .om{width:48px;height:48px;display:block;margin:0 auto}
+.sum .cap{font-size:.7rem;color:var(--mute);margin-top:5px}
+
+.foot{font-size:.74rem;color:var(--mute);line-height:1.75;padding-top:22px;border-top:1px solid var(--line);margin-top:26px}
+.foot b{color:var(--ink)}
+.attr{font-size:.68rem;color:var(--mute);margin-top:9px}
+.attr a{color:var(--mute)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <script src="./config.js"></script>
 </head>
 <body>
-<header>
-  <div class="hwrap">
-    <span class="logo">KINOWA</span>
-    <span class="tag">パルスサーベイ</span>
-  </div>
-</header>
-
 <div class="wrap">
-  <div id="screen"><div class="msg"><div class="ic">…</div><h2>読み込み中</h2><p>少しお待ちください。</p></div></div>
-</div>
-
-<div class="savebar hide" id="savebar">
-  <div class="inner">
-    <span class="st" id="save-status">4問すべて選んでください</span>
-    <button class="btn" id="btn-send" onclick="submitAnswer()" disabled>送信する</button>
+  <div class="top">
+    <div class="brand">KINOWA VOICES</div>
+    <div class="pbar"><i id="pbar"></i></div>
   </div>
+  <div class="stage" id="stage"></div>
+  <div class="foot" id="foot"></div>
 </div>
 
 <script>
+const EMOJI={"1F929": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36.0001\" cy=\"36\" r=\"24\" fill=\"#FBD26B\"/><polygon fill=\"#F0A94D\" points=\"25.0424,21.2371 33.0285,20.0364 29.1238,27.1056 32.7335,34.3298 24.8037,32.8007 19.0485,38.4662 18.0524,30.452 10.8857,26.7292 18.1999,23.3052 19.5258,15.3389\"/><polygon fill=\"#F0A94D\" points=\"46.8821,21.2371 38.896,20.0364 42.8007,27.1056 39.191,34.3298 47.1208,32.8007 52.876,38.4662 53.8721,30.452 61.0388,26.7292 53.7246,23.3052 52.3987,15.3389\"/><path fill=\"#E0785A\" d=\"M49.7371,46.356c-1.79,4.27-6.35,7.23-13.7,7.23c-7.41,0-12.03-3.03-13.8-7.36 C24.2671,46.686,37.2171,49.3959,49.7371,46.356z\"/><path fill=\"#FFFFFF\" d=\"M50.6071,41.866c0,1.6-0.29,3.11-0.87,4.49c-12.52,3.04-25.47,0.33-27.5-0.13 c-0.55-1.35-0.83-2.82-0.83-4.36h0.11c0,0,14.81,3.59,28.89,0.07L50.6071,41.866z\"/></g><g/><g/><g/><g><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M50.6071,41.866c0,1.6-0.29,3.11-0.87,4.49c-12.52,3.04-25.47,0.33-27.5-0.13c-0.55-1.35-0.83-2.82-0.83-4.36h0.11 c0,0,14.81,3.59,28.89,0.07L50.6071,41.866z\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M49.7371,46.356 c-1.79,4.27-6.35,7.23-13.7,7.23c-7.41,0-12.03-3.03-13.8-7.36C24.2671,46.686,37.2171,49.3959,49.7371,46.356z\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M50.2271,46.236 c-0.16,0.04-0.33,0.08-0.49,0.12\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M22.2371,46.226 c-0.19-0.05-0.28-0.07-0.28-0.07\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M46.5542,15.5591C43.3932,13.9237,39.8045,13,36,13c-3.9546,0-7.676,0.9979-10.9261,2.7556 c-0.0502,0.0271-0.1002,0.0544-0.1501,0.0819\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M13.1945,32.9954c-0.1283,0.9833-0.1944,1.9862-0.1944,3.0046c0,12.7022,10.2969,23,23,23c12.7022,0,23-10.2978,23-23 c0-1.0073-0.0648-1.9995-0.1903-2.9726\"/><polygon fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" points=\"25.1179,21.2371 33.104,20.0364 29.1993,27.1056 32.809,34.3298 24.8792,32.8007 19.124,38.4662 18.1279,30.452 10.9612,26.7292 18.2754,23.3052 19.6013,15.3389\"/><polygon fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" points=\"46.8821,21.2371 38.896,20.0364 42.8007,27.1056 39.191,34.3298 47.1208,32.8007 52.876,38.4662 53.8721,30.452 61.0388,26.7292 53.7246,23.3052 52.3987,15.3389\"/></g></svg>", "1F60A": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36.0001\" cy=\"36\" r=\"22.9999\" fill=\"#FBD26B\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M45.8147,45.2268a15.4294,15.4294,0,0,1-19.6294,0\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M31.6941,33.4036a4.7262,4.7262,0,0,0-8.6382,0\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M48.9441,33.4036a4.7262,4.7262,0,0,0-8.6382,0\"/></g></svg>", "1F914": "<svg class=\"om\" viewBox=\"0 0 72 72\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36\" cy=\"36.2\" r=\"24\" fill=\"#FBD26B\"/><path fill=\"#FBD26B\" d=\"M19.1,62.3c-0.3-1.2-0.4-2.4-0.3-3.6c0.2-1.1,2.3-6.5,2.7-7.3s1.4-4.5,2.4-4.8c1-0.3,1.2,0.1,1.1,0.7 S24.4,55,24.4,55l9.4-2.8c0,0,7.7-1.9,7.9-1c2.1,2-5.4,4.5-7.5,4.4c0,0,1.1,0.6,0.9,1.3s-0.8,1.2-1,1.2s0.5,0.5,0.6,1.4 c0.9,1.8-2.8,2.3-2.8,2.3c1.3-0.2,3.3,2.1,0.1,2.7c-1,0.3-4.8,1.4-4.8,1.4s-3.3,1.2-5.2-0.1C20.8,65,19.7,63.8,19.1,62.3z\"/></g><g><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M28.9,44.5c2.4-0.7,11.9,0.5,14.1,2.1\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M22.4,22.5c1.3-0.9,2.8-1.3,4.4-1.1c1.6,0,3.1,0.6,4.2,1.7\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M51.1,26.5c-2.7-0.7-5.5-0.8-8.2-0.3\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M42,58.4c12.3-3.3,19.5-15.9,16.2-28.2S42.3,10.7,30,14c-10,2.7-17,11.8-17,22.2c0,4.6,1.4,9.2,4,13\"/><path d=\"M31,30.7c0,1.7-1.3,3-3,3s-3-1.3-3-3s1.3-3,3-3S31,29,31,30.7\"/><path d=\"M48,33.7c0,1.7-1.3,3-3,3s-3-1.3-3-3s1.3-3,3-3S48,32,48,33.7\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M19.7,56.7c-1,1.6-1.2,3.7-0.5,5.5c1.1,3.3,4,5.2,7.2,4.2l4.9-1.4l1-0.3c0.8-0.2,1.3-1.1,1.1-1.8l0,0 c-0.2-0.5-0.6-0.9-1.2-1l1.2-0.3c0.8-0.2,1.3-1.1,1.1-1.8c-0.2-0.5-0.6-1-1.2-1.1l1.2-0.4c0.8-0.2,1.3-1.1,1.1-1.8 c-0.1-0.5-0.5-0.9-1-1l6.4-1.9c0.8-0.2,1.3-1.1,1.1-1.8s-1.1-1.3-1.8-1.1l0,0l-10.2,3l-5.1,1.5l0.6-7.8c0.1-0.9-1.5-1.2-2.1,0.2 L19.7,56.7z\"/></g></svg>", "1F635-200D-1F4AB": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><path transform=\"translate(0 0)\" fill=\"#FBD26B\" d=\"M36,12.9583a23,23,0,1,0,23,23h0A23.026,23.026,0,0,0,36,12.9583Z\"/></g><g><circle cx=\"36\" cy=\"35.9583\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><path transform=\"translate(0 0)\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.8828\" d=\"M35.7778,43.6811a4.1686,4.1686,0,1,0,.0005,0Z\"/><g><g><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M41.27,30.9367a5.4893,5.4893,0,1,1,10.9786,0\"/><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M44.93,30.9367a1.83,1.83,0,0,1,3.66,0\"/></g><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M41.27,30.9367a7.3149,7.3149,0,0,0,7.3107,7.3191h.0084\"/><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M44.93,30.9367a3.66,3.66,0,0,0,7.319.121q.001-.06,0-.121\"/></g><g><g><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M19.3155,30.9367a5.4893,5.4893,0,0,1,10.9786,0\"/><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M22.975,30.9367a1.83,1.83,0,0,1,3.66,0\"/></g><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M19.3155,30.9367a7.3149,7.3149,0,0,0,7.3107,7.3191h.0084\"/><path transform=\"translate(0 0)\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M22.975,30.9367a3.66,3.66,0,1,0,7.3191.1148q.0009-.0573,0-.1148\"/></g></g></svg>", "1F61E": "<svg class=\"om\" viewBox=\"0 0 72 72\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"#FBD26B\" d=\"m12 36a24 24 0 1 0 24-24 24.027 24.027 0 0 0-24 24z\"/></g><g fill=\"none\" stroke=\"#1B2521\" stroke-width=\"1.5\"><circle cx=\"36\" cy=\"36\" r=\"23\" stroke-miterlimit=\"10\"/><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m42.786 49.6a12.449 12.449 0 0 0-6.8422-1.8532 10.389 10.389 0 0 0-6.1578 1.8532\"/><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m51.422 39.497a7.4028 7.4028 0 0 1-5.3048-0.3243 7.4 7.4 0 0 1-4.11-3.4111\"/><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m21.185 39.487a8.44 8.44 0 0 0 9.413-3.7176\"/></g></svg>", "1F604": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"#FBD26B\"/><path fill=\"#fff\" d=\"M50.595,41.64a11.5554,11.5554,0,0,1-.87,4.49c-12.49,3.03-25.43.34-27.49-.13a11.4347,11.4347,0,0,1-.83-4.36h.11s14.8,3.59,28.89.07Z\"/><path fill=\"#E0785A\" d=\"M49.7251,46.13c-1.79,4.27-6.35,7.23-13.69,7.23-7.41,0-12.03-3.03-13.8-7.36C24.2951,46.47,37.235,49.16,49.7251,46.13Z\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M50.595,41.64a11.5554,11.5554,0,0,1-.87,4.49c-12.49,3.03-25.43.34-27.49-.13a11.4347,11.4347,0,0,1-.83-4.36h.11s14.8,3.59,28.89.07Z\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M49.7251,46.13c-1.79,4.27-6.35,7.23-13.69,7.23-7.41,0-12.03-3.03-13.8-7.36C24.2951,46.47,37.235,49.16,49.7251,46.13Z\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M31.6941,32.4036a4.7262,4.7262,0,0,0-8.6382,0\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M48.9441,32.4036a4.7262,4.7262,0,0,0-8.6382,0\"/></g></svg>", "1F642": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36.0001\" cy=\"36\" r=\"22.9999\" fill=\"#FBD26B\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M45.8149,44.9293 c-2.8995,1.6362-6.2482,2.5699-9.8149,2.5699s-6.9153-0.9336-9.8149-2.5699\"/><path d=\"M30,31c0,1.6568-1.3448,3-3,3c-1.6553,0-3-1.3433-3-3c0-1.6552,1.3447-3,3-3C28.6552,28,30,29.3448,30,31\"/><path d=\"M48,31c0,1.6568-1.3447,3-3,3s-3-1.3433-3-3c0-1.6552,1.3447-3,3-3S48,29.3448,48,31\"/></g></svg>", "1F636": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"#FBD26B\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><path d=\"M30,31c0,1.6568-1.3448,3-3,3c-1.6553,0-3-1.3433-3-3c0-1.6552,1.3447-3,3-3C28.6552,28,30,29.3448,30,31\"/><path d=\"M48,31c0,1.6568-1.3447,3-3,3s-3-1.3433-3-3c0-1.6552,1.3447-3,3-3S48,29.3448,48,31\"/></g></svg>", "1F614": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"#FBD26B\" d=\"M36,13c-12.6823,0-23,10.3177-23,23c0,12.6822,10.3177,23,23,23c12.6822,0,23-10.3178,23-23 C59,23.3177,48.6822,13,36,13z\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><line x1=\"27\" x2=\"45\" y1=\"46\" y2=\"46\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M23,33.0774c0.4132,0.344,2.2456,1.7915,4.9091,1.6364c2.1608-0.1259,3.61-1.2333,4.0909-1.6364\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M41,33.0774c0.4132,0.344,2.2456,1.7915,4.9091,1.6364c2.1608-0.1259,3.61-1.2333,4.0909-1.6364\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M19.9385,27.2501c0.4872,0.2275,2.6277,1.1608,5.1639,0.3327c2.0576-0.6718,3.1771-2.1117,3.5396-2.6239\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M52.642,27.2501c-0.4872,0.2275-2.6277,1.1608-5.1639,0.3327c-2.0576-0.6718-3.1771-2.1117-3.5396-2.6239\"/></g></svg>", "1FAE5": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"35.9773\" cy=\"35.9583\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-dasharray=\"0 0 0 0 0 0 5.1598 5.1598\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/></g><g><circle cx=\"35.93\" cy=\"36.0066\" r=\"23.4291\" fill=\"#fff\"/><circle cx=\"35.9773\" cy=\"35.9583\" r=\"23\" fill=\"none\" stroke=\"#F0A94D\" stroke-dasharray=\"0 0 0 0 0 0 5.1598 5.1598\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/></g><g><path d=\"m29.9772,32.9583c0,1.6569-1.3431,3-3,3s-3-1.3431-3-3,1.3431-3,3-3c1.6566.0006,2.9994,1.3434,3,3\"/><path d=\"m47.9772,32.9583c0,1.6569-1.3431,3-3,3s-3-1.3431-3-3,1.3431-3,3-3c1.6566.0006,2.9994,1.3434,3,3\"/><line x1=\"29.9772\" x2=\"41.9772\" y1=\"43.7964\" y2=\"43.7964\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/></g></svg>", "1F634": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><circle cx=\"36\" cy=\"36\" r=\"24\" fill=\"#FBD26B\"/><circle cx=\"36\" cy=\"48.1435\" r=\"3.4042\" fill=\"#FFFFFF\"/></g><g/><g/><g/><g><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M44.7693,14.7308c-0.3678-0.1518-0.7405-0.2944-1.1176-0.4274C41.258,13.4592,38.6826,13,36,13c-12.7031,0-23,10.2969-23,23 c0,12.7022,10.2969,23,23,23c12.7022,0,23-10.2978,23-23c0-2.8236-0.5088-5.5284-1.4397-8.0276\"/><circle cx=\"36\" cy=\"48.1435\" r=\"3.4042\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M50.1652,32.8593c-3.1758,2.3436-7.4563,2.061-10,0\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"M31.8348,32.8593c-3.1758,2.3436-7.4563,2.061-10,0\"/><path d=\"M44.8748,24.0258h-2.6162c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l1.7607-3.082 h-0.8926c-0.5527,0-1-0.4478-1-1s0.4473-1,1-1h2.6162c0.3564,0,0.6855,0.1899,0.8652,0.498 c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-1.7607,3.082h0.8926c0.5527,0,1,0.4478,1,1S45.4275,24.0258,44.8748,24.0258z\"/><path d=\"M51.0184,20.0258h-3.7598c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l2.9043-5.082 h-2.0361c-0.5527,0-1-0.4478-1-1s0.4473-1,1-1h3.7598c0.3564,0,0.6855,0.1899,0.8652,0.498 c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-2.9044,5.082h2.0361c0.5527,0,1,0.4478,1,1S51.5711,20.0258,51.0184,20.0258z\"/><path d=\"M59.1609,25.0258h-4.9023c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l4.0469-7.082 h-3.1787c-0.5527,0-1-0.4478-1-1s0.4473-1,1-1h4.9023c0.3564,0,0.6855,0.1899,0.8652,0.498 c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-4.0469,7.082h3.1787c0.5527,0,1,0.4478,1,1S59.7137,25.0258,59.1609,25.0258z\"/></g><g><path fill=\"#6FA8C4\" stroke=\"#6FA8C4\" stroke-miterlimit=\"10\" stroke-width=\"0.075\" d=\"M44.8748,24.0258h-2.6162 c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l1.7607-3.082h-0.8926c-0.5527,0-1-0.4478-1-1 s0.4473-1,1-1h2.6162c0.3564,0,0.6855,0.1899,0.8652,0.498c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-1.7607,3.082h0.8926 c0.5527,0,1,0.4478,1,1S45.4275,24.0258,44.8748,24.0258z\"/><path fill=\"#6FA8C4\" stroke=\"#6FA8C4\" stroke-miterlimit=\"10\" stroke-width=\"0.075\" d=\"M51.0184,20.0258h-3.7598 c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l2.9043-5.082h-2.0361c-0.5527,0-1-0.4478-1-1 s0.4473-1,1-1h3.7598c0.3564,0,0.6855,0.1899,0.8652,0.498c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-2.9044,5.082h2.0361 c0.5527,0,1,0.4478,1,1S51.5711,20.0258,51.0184,20.0258z\"/><path fill=\"#6FA8C4\" stroke=\"#6FA8C4\" stroke-miterlimit=\"10\" stroke-width=\"0.075\" d=\"M59.1609,25.0258h-4.9023 c-0.3564,0-0.6855-0.1899-0.8652-0.498c-0.1787-0.3086-0.1797-0.6885-0.0029-0.998l4.0469-7.082h-3.1787c-0.5527,0-1-0.4478-1-1 s0.4473-1,1-1h4.9023c0.3564,0,0.6855,0.1899,0.8652,0.498c0.1787,0.3086,0.1797,0.6885,0.0029,0.998l-4.0469,7.082h3.1787 c0.5527,0,1,0.4478,1,1S59.7137,25.0258,59.1609,25.0258z\"/></g></svg>", "1F971": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><path d=\"M35.9772,30.4187A10.9345,10.9345,0,0,0,25.0986,43.074a2.5,2.5,0,0,1,1.3786-.4414,2.5356,2.5356,0,0,1,2.3448,1.4746,39.3435,39.3435,0,0,1,2.6435-5.2178,3.39,3.39,0,0,1,2.6651-1.9629,2.4872,2.4872,0,0,1,1.4521.4073c1.2295-1.5811,2.6338-1.69,3.6338-1.1846a3.3452,3.3452,0,0,1,1.7051,2.76,2.554,2.554,0,0,1,.83.2011,2.3206,2.3206,0,0,1,1.4755,2.2735,5.8368,5.8368,0,0,1-.6005,2.5029,2.6279,2.6279,0,0,1,.6005.77,4.0262,4.0262,0,0,1-.12,3.6875l-.8525,1.6123c-.0711.2164-.1292.4324-.19.6486a11.01,11.01,0,0,0-6.0874-20.1867Z\"/></g><g><circle cx=\"36.0043\" cy=\"35.3184\" r=\"23.9004\" fill=\"#FBD26B\"/><path fill=\"#FBD26B\" d=\"M35.6039,66.3682c-.0225,0-.0459-.001-.0684-.003l-9.6992-.6992a.95.95,0,0,1-.8633-1.1338c.5381-2.6924.9893-4.709,1.23-5.792l.001-.0019c-.1533-.3145-.3066-.6406-.46-.9658-.1963-.418-.3925-.836-.59-1.23-.2061-.4112-.6358-1.2686-1.2969-8.64-.2021-2.0176-.1514-3.48.7246-4.5029a2.4611,2.4611,0,0,1,1.9219-.9326,2.5354,2.5354,0,0,1,2.3447,1.4746,39.3438,39.3438,0,0,1,2.6436-5.2178,3.39,3.39,0,0,1,2.665-1.9629,2.4882,2.4882,0,0,1,1.4522.4072c1.23-1.581,2.6338-1.69,3.6338-1.1845a3.345,3.345,0,0,1,1.705,2.76,2.5531,2.5531,0,0,1,.83.2012,2.32,2.32,0,0,1,1.4756,2.2735,5.8357,5.8357,0,0,1-.6006,2.5029,2.6265,2.6265,0,0,1,.6006.77,4.0262,4.0262,0,0,1-.12,3.6875l-.8526,1.6123c-.2158.6582-.3769,1.3184-.5332,1.959l-.122.498a21.71,21.71,0,0,1-2.39,6.5274,5.8081,5.8081,0,0,1-1.625,1.9775c-.0683.0664-.1338.1279-.1953.1865a1.7238,1.7238,0,0,0-.29.3076l-.0723.4434a36.5458,36.5458,0,0,0-.5019,3.7861.95.95,0,0,1-.9483.8907Z\"/><path d=\"M35.9772,30.4187A10.9345,10.9345,0,0,0,25.0986,43.074a2.5,2.5,0,0,1,1.3786-.4414,2.5356,2.5356,0,0,1,2.3448,1.4746,39.3435,39.3435,0,0,1,2.6435-5.2178,3.39,3.39,0,0,1,2.6651-1.9629,2.4872,2.4872,0,0,1,1.4521.4073c1.2295-1.5811,2.6338-1.69,3.6338-1.1846a3.3452,3.3452,0,0,1,1.7051,2.76,2.554,2.554,0,0,1,.83.2011,2.3206,2.3206,0,0,1,1.4755,2.2735,5.8368,5.8368,0,0,1-.6005,2.5029,2.6279,2.6279,0,0,1,.6005.77,4.0262,4.0262,0,0,1-.12,3.6875l-.8525,1.6123c-.0711.2164-.1292.4324-.19.6486a11.01,11.01,0,0,0-6.0874-20.1867Z\"/></g><g><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M42.8042,57.3184a22.9792,22.9792,0,1,0-28.8-15.2,23.7912,23.7912,0,0,0,7.1,10.8\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M23.1042,26.0684c4.4-.1,7.9-1.4,8.8-3.1\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M48.9042,26.0684c-4.4-.1-7.9-1.4-8.8-3.1\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M25.9042,64.7184c.6-3,1.1-5.2,1.3-6.1-.4-.8-.8-1.7-1.2-2.5-.2-.4-.6-1.6-1.2-8.3-.2-2-.1-3.1.5-3.8a1.5628,1.5628,0,0,1,1.2-.6c1.3,0,1.7,1.2,2,2.4l.1.3.2.6a39.4783,39.4783,0,0,1,3.5-7.5c1.8-3,3.5-.6,3.5-.6,2.2-4.1,5-.8,4,1.3a1.9811,1.9811,0,0,1,1.6-.1,1.4158,1.4158,0,0,1,.9,1.4,5.2848,5.2848,0,0,1-.9,2.8,2.1889,2.1889,0,0,1,1,.9,3.0777,3.0777,0,0,1-.1,2.8l-.9,1.7c-.3.9-.5,1.8-.7,2.6a20.7835,20.7835,0,0,1-2.3,6.3,4.7436,4.7436,0,0,1-1.4,1.7c-.4.4-.7.6-.8,1a42.7765,42.7765,0,0,0-.6,4.4\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M26.2418,43.4453a10.001,10.001,0,1,1,15.0545,6.31\"/></g></svg>", "1F616": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"#FBD26B\" d=\"M36,13.1161c-12.6823,0-23,10.3177-23,23c0,12.6822,10.3177,23,23,23c12.6822,0,23-10.3178,23-23 C59,23.4338,48.6822,13.1161,36,13.1161z\"/></g><g/><g/><g/><g><circle cx=\"36\" cy=\"36\" r=\"23\" fill=\"none\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"m23.64 27.87 7.928 2.431-7.862 3.248\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-miterlimit=\"10\" stroke-width=\"1.5\" d=\"m48.36 27.87-7.928 2.431 7.862 3.248\"/><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"m23.93 44.39 3.533-2.896 3.931 5.55 4.608-4.044 4.608 4.044 3.944-5.55 3.532 2.905v-0.0107\"/></g></svg>", "1F480": "<svg class=\"om\" viewBox=\"0 0 72 72\" xmlns=\"http://www.w3.org/2000/svg\"><g><path fill=\"#FFFFFF\" d=\"M41.1835,14.216c-1.6784-0.5099-3.4229-0.7694-5.177-0.77h-0.036c-1.2518,0.0041-2.5,0.1334-3.726,0.386 c-4.3415,0.9348-8.1984,3.4083-10.859,6.964c-2.0244,2.6542-3.3639,5.7662-3.9,9.061c-1.0764,6.1694,0.6871,12.4953,4.8,17.218 l0.133,0.149c1.055,1.19,2.5,2.82,2.5,4.554l-0.022,4.988c0,0.5523-0.4477,1-1,1l0,0c2.2224,1.1344,4.5781,1.9863,7.012,2.536 c3.8115,0.8585,7.7771,0.7502,11.536-0.315C45.6595,44.81,44.8105,28.958,41.1835,14.216z\"/><path fill=\"#DAD6CC\" d=\"M48.8895,18.863c-2.1471-2.1598-4.794-3.7563-7.706-4.648c3.627,14.742,4.476,30.595,1.258,45.766 c1.9461-0.5441,3.8246-1.3059,5.6-2.271c-0.5501,0.0023-1.0009-0.436-1.014-0.986l-0.069-4.943c0-1.65,1.4-3.191,2.421-4.317 c0.145-0.159,0.283-0.311,0.407-0.453c7.0513-8.1923,6.6643-20.4171-0.891-28.147L48.8895,18.863z\"/><path fill=\"#3A423E\" d=\"M27.8635,36.364c-2.4853,0-4.5,2.0147-4.5,4.5s2.0147,4.5,4.5,4.5s4.5-2.0147,4.5-4.5 S30.3488,36.364,27.8635,36.364z\"/><path fill=\"#3A423E\" d=\"M44.2115,36.364c-2.4853,0-4.5,2.0147-4.5,4.5s2.0147,4.5,4.5,4.5s4.5-2.0147,4.5-4.5 S46.6968,36.364,44.2115,36.364z\"/></g><g/><g/><g/><g><path fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" d=\"M48.0235,56.664 l-0.069-4.944c0-1.45,1.649-3.035,2.58-4.1c3.4344-3.9474,5.3151-9.0097,5.291-14.242c0-11.6-8.894-21.006-19.856-20.983 c-1.3183,0.0041-2.6329,0.1405-3.924,0.407c-7.89,1.618-14.177,8.457-15.548,16.842c-1.1269,6.4665,0.7263,13.0961,5.043,18.041 c0.917,1.037,2.382,2.62,2.382,4.04l-0.022,4.983\"/><line x1=\"27.8645\" x2=\"27.8645\" y1=\"55.002\" y2=\"59.782\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><line x1=\"33.5785\" x2=\"33.5785\" y1=\"56.067\" y2=\"60.848\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><line x1=\"44.2125\" x2=\"44.2125\" y1=\"55.002\" y2=\"59.782\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><line x1=\"39.0275\" x2=\"39.0275\" y1=\"56.067\" y2=\"60.848\" fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\"/><polyline fill=\"none\" stroke=\"#1B2521\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"1.5\" points=\"33.0365,52.209 35.9685,46.36 39.4735,52.209\"/><circle cx=\"27.8645\" cy=\"40.817\" r=\"5\" fill=\"none\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/><circle cx=\"44.2125\" cy=\"40.817\" r=\"5\" fill=\"none\" stroke=\"#1B2521\" stroke-miterlimit=\"10\" stroke-width=\"1.5\"/></g></svg>"};
+
 const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
 function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS_URL)||'';if(c)return c;}catch(_){}
 try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
+/* 設問定義（引き継ぎ資料 §2.2 の確定仕様） */
 const QUESTIONS=[
- {id:'work',t:'いまの仕事に、手ごたえを感じていますか',d:'任されている内容や、できるようになったことについて',
-  labels:['ほとんど感じない','あまり','ふつう','わりと感じる','強く感じる']},
- {id:'relation',t:'職場の人に、困りごとを相談できていますか',d:'聞ける相手がいるか、聞きやすい空気があるか',
-  labels:['できていない','あまり','ふつう','わりとできる','よくできる']},
- {id:'condition',t:'この1か月、心身の調子はどうでしたか',d:'睡眠・疲れ・気持ちの余裕をあわせて',
-  labels:['かなり悪い','やや悪い','ふつう','わりと良い','とても良い']}
+ {id:'q1',badge:'Q1',cls:'b1',color:'var(--q1)',t:'この1か月、仕事に手応えはありましたか？',s:'いまの実感でお答えください',
+  opts:[{v:5,e:'1F929',l:'つかめてきた'},{v:4,e:'1F60A',l:'まあまあ'},{v:3,e:'1F914',l:'まだ手探り'},
+        {v:2,e:'1F635-200D-1F4AB',l:'精一杯'},{v:1,e:'1F61E',l:'手応えがない'}]},
+ {id:'q2',badge:'Q2',cls:'b2',color:'var(--q2)',t:'この1か月、職場の人に相談しやすかったですか？',s:'相談できる相手がいるか、話しかけやすいか',
+  opts:[{v:5,e:'1F604',l:'気軽に話せる'},{v:4,e:'1F642',l:'相談できる'},{v:3,e:'1F636',l:'相談していない'},
+        {v:2,e:'1F614',l:'話しかけづらい'},{v:1,e:'1FAE5',l:'誰にも言えていない'}]},
+ {id:'q3',badge:'Q3',cls:'b3',color:'var(--q3)',t:'この1か月、よく眠れていますか？',s:'睡眠の量と質をあわせて',
+  opts:[{v:5,e:'1F634',l:'ぐっすり'},{v:4,e:'1F642',l:'だいたい眠れる'},{v:3,e:'1F971',l:'寝足りない'},
+        {v:2,e:'1F616',l:'寝つけない'},{v:1,e:'1F480',l:'ほとんど眠れない'}]}
 ];
-const INTENT=['続けたい','どちらとも言えない','迷いがある'];
+const SCORE_COLOR={5:'var(--s5)',4:'var(--s4)',3:'var(--s3)',2:'var(--s2)',1:'var(--s1)'};
 
-let token='',info=null;
-const ans={work:'',relation:'',condition:'',intent:'',comment:''};
+const FOOT_NOTE='回答は<b>人事が確認します</b>。店長には点数ではなく、必要な場合のフォロー依頼として伝わります。';
+const ATTR='絵文字：<a href="https://openmoji.org" target="_blank" rel="noopener">OpenMoji</a>（CC BY-SA 4.0）を改変して使用';
+
+let token='',info=null,step=0;
+const ans={q1:'',q2:'',q3:''};
 
 function start(){
   token=new URLSearchParams(location.search).get('t')||'';
-  if(!token){showErr('リンクが正しくありません','メールに記載されたリンクから開いてください。');return;}
+  document.getElementById('foot').innerHTML=FOOT_NOTE+'<div class="attr">'+ATTR+'</div>';
+  if(!token){showMsg('リンクが正しくありません','メールに記載されたリンクから開いてください。');return;}
   fetch(getGasUrl()+'?t='+encodeURIComponent(token)).then(r=>r.json()).then(res=>{
-    if(!res||!res.ok){showErr('リンクが無効です','有効期限切れか、リンクが正しくない可能性があります。人事までご連絡ください。');return;}
+    if(!res||!res.ok){showMsg('リンクが無効です','有効期限切れか、リンクが正しくない可能性があります。人事までご連絡ください。');return;}
     info=res;
-    if(res.answered){showDone('回答は受け付け済みです','今月分のご回答をいただいています。ありがとうございました。');return;}
-    renderForm();
-  }).catch(e=>showErr('通信エラー','時間をおいて、もう一度お試しください。'));
+    if(res.answered){showMsg('回答は受け付け済みです','今回分のご回答をいただいています。ありがとうございました。');return;}
+    render();
+  }).catch(()=>showMsg('通信エラー','時間をおいて、もう一度お試しください。'));
 }
 
-function renderForm(){
-  const r=String(info.round||'');
-  const rd=/^\d{1,2}$/.test(r)?('入社'+(+r)+'か月'):(r.replace('-','年')+'月');
-  let h=`<div class="intro">
-    <div class="rd">${esc(rd)} のパルスサーベイ</div>
-    <div class="hi">${esc(info.name||'')} さん</div>
-    <p>4問だけです。1分ほどで終わります。深く考えず、いまの実感でお答えください。</p>
-    <div class="note">回答はお名前とともに人事が確認します。困りごとを早く把握して手を打つために使うもので、<b>人事評価には使いません。</b></div>
-  </div>`;
-  QUESTIONS.forEach((q,i)=>{
-    h+=`<div class="q"><div class="qn">Q${i+1}</div><div class="qt">${esc(q.t)}</div><div class="qd">${esc(q.d)}</div>
-      <div class="scale">${[1,2,3,4,5].map(n=>
-        `<button class="sc ${ans[q.id]==n?'on':''}" onclick="pick('${q.id}',${n})">
-          <div class="num">${n}</div><div class="lb">${esc(q.labels[n-1])}</div></button>`).join('')}</div></div>`;
-  });
-  h+=`<div class="q"><div class="qn">Q4</div><div class="qt">これからも、ここで続けていきたいですか</div>
-    <div class="qd">いまの気持ちに近いものを選んでください</div>
-    <div class="opts">${INTENT.map(o=>`<button class="opt ${ans.intent===o?'on':''}" onclick="pickIntent('${esc(o)}')">${esc(o)}</button>`).join('')}</div></div>`;
-  h+=`<div class="q"><div class="qn">FREE</div><div class="qt">伝えておきたいことがあれば（任意）</div>
-    <div class="qd">困っていること、助かっていること、提案。何でもかまいません。</div>
-    <textarea rows="4" placeholder="空欄のままでも送信できます" oninput="setComment(this.value)">${esc(ans.comment)}</textarea></div>`;
-  document.getElementById('screen').innerHTML=h;
-  document.getElementById('savebar').classList.remove('hide');
-  updateBar();
+function roundLabel(r){const s=String(r||'');return /^\d{1,2}$/.test(s)?('入社'+(+s)+'か月'):s;}
+
+function render(){
+  const stage=document.getElementById('stage');
+  const q=QUESTIONS[step];
+  const total=QUESTIONS.length;
+  document.getElementById('pbar').style.width=((step)/total*100)+'%';
+  stage.innerHTML=`<div class="panel on" style="color:${q.color}">
+    <div><span class="qbadge ${q.cls}">${q.badge}</span></div>
+    <div class="qt">${esc(q.t)}</div><div class="qs">${esc(q.s)}</div>
+    <div class="choices">${q.opts.map((o,i)=>`
+      <button class="ch ${ans[q.id]==o.v?'on':''}" style="color:${SCORE_COLOR[o.v]}" onclick="choose('${q.id}',${o.v},this)">
+        ${EMOJI[o.e]||''}<span class="lb">${esc(o.l)}</span><span class="dot"></span>
+      </button>`).join('')}</div>
+    <div class="nav">
+      ${step>0?'<button class="back" onclick="go(-1)">← 戻る</button>':'<span style="width:60px"></span>'}
+      <div class="dots">${QUESTIONS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div>
+      <button class="next" id="next" ${ans[q.id]?'':'disabled'} onclick="go(1)">${step===total-1?'送信':'次へ'}</button>
+    </div></div>`;
 }
 
-function pick(id,n){ans[id]=n;renderForm();}
-function pickIntent(v){ans.intent=v;renderForm();}
-function setComment(v){ans.comment=v;}
-function ready(){return ans.work&&ans.relation&&ans.condition&&ans.intent;}
-function updateBar(){
-  const b=document.getElementById('btn-send');
-  const s=document.getElementById('save-status');
-  const n=[ans.work,ans.relation,ans.condition,ans.intent].filter(Boolean).length;
-  b.disabled=!ready();
-  s.textContent=ready()?'送信できます':`あと ${4-n} 問`;
+function choose(id,v,el){
+  ans[id]=v;
+  try{if(navigator.vibrate)navigator.vibrate(12);}catch(_){}
+  el.parentNode.querySelectorAll('.ch').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  for(let i=0;i<7;i++){
+    const p=document.createElement('span');p.className='burst';
+    const a=Math.PI*2*i/7;
+    p.style.setProperty('--bx',(Math.cos(a)*34).toFixed(0)+'px');
+    p.style.setProperty('--by',(Math.sin(a)*34).toFixed(0)+'px');
+    el.appendChild(p);setTimeout(()=>p.remove(),600);
+  }
+  const n=document.getElementById('next');if(n)n.disabled=false;
+  setTimeout(()=>{if(step<QUESTIONS.length-1){go(1);}},380);
+}
+
+function go(d){
+  if(d>0&&!ans[QUESTIONS[step].id])return;
+  if(d>0&&step===QUESTIONS.length-1){submitAnswer();return;}
+  step=Math.max(0,Math.min(QUESTIONS.length-1,step+d));
+  render();window.scrollTo(0,0);
 }
 
 function submitAnswer(){
-  if(!ready())return;
-  const b=document.getElementById('btn-send');b.disabled=true;
-  document.getElementById('save-status').textContent='送信中…';
+  const n=document.getElementById('next');if(n){n.disabled=true;n.textContent='送信中…';}
+  document.getElementById('pbar').style.width='100%';
   fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
     body:JSON.stringify({kind:'pulse',action:'answer',token:token,answers:ans})})
     .then(r=>r.json()).then(res=>{
-      if(res&&res.ok){
-        document.getElementById('savebar').classList.add('hide');
-        showDone('ありがとうございました','回答を受け付けました。気になる点があれば、人事から個別にご連絡します。');
-      }else{
-        b.disabled=false;
-        document.getElementById('save-status').textContent='送信に失敗しました';
-        alert('送信に失敗しました。時間をおいてお試しください。');
-      }
-    }).catch(e=>{b.disabled=false;document.getElementById('save-status').textContent='通信エラー';alert('通信エラー：'+e);});
+      if(res&&res.ok){showDone();}
+      else{if(n){n.disabled=false;n.textContent='送信';}alert('送信に失敗しました。時間をおいてお試しください。');}
+    }).catch(e=>{if(n){n.disabled=false;n.textContent='送信';}alert('通信エラー：'+e);});
 }
 
-function showDone(t,p){document.getElementById('screen').innerHTML=
-  `<div class="msg"><div class="ic">✓</div><h2>${esc(t)}</h2><p>${esc(p)}</p></div>`;
-  document.getElementById('savebar').classList.add('hide');}
-function showErr(t,p){document.getElementById('screen').innerHTML=
-  `<div class="msg err"><div class="ic">!</div><h2>${esc(t)}</h2><p>${esc(p)}</p></div>`;
-  document.getElementById('savebar').classList.add('hide');}
+function showDone(){
+  const sum=QUESTIONS.map(q=>{const o=q.opts.find(x=>x.v==ans[q.id]);
+    return `<div class="it">${EMOJI[o.e]||''}<div class="cap">${esc(o.l)}</div></div>`;}).join('');
+  document.getElementById('stage').innerHTML=`<div class="panel on"><div class="msg">
+    <h2>ありがとうございました</h2>
+    <p>${esc(info&&info.name?info.name+' さんの回答を受け付けました。':'回答を受け付けました。')}</p>
+    <div class="sum">${sum}</div>
+  </div></div>`;
+  window.scrollTo(0,0);
+}
 
+function showMsg(t,p){
+  document.getElementById('stage').innerHTML=
+   `<div class="panel on"><div class="msg"><h2>${esc(t)}</h2><p>${esc(p)}</p></div></div>`;
+  document.getElementById('pbar').style.width='0%';
+}
 start();
 </script>
 </body>

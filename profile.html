@@ -102,6 +102,9 @@ select.pick:focus,input:focus{outline:none}
 .pcell.p4{background:var(--mint-l);color:var(--mint)}
 .pcell.p3{background:#fff;color:var(--sub)}
 .pcell.p1{background:var(--dang-l);color:var(--dang)}
+.pcell.p2{background:var(--warn-l);color:var(--warn)}
+.warnbox{background:var(--warn-l);border-left:5px solid var(--warn);padding:9px 13px;font-size:.84rem;font-weight:700;color:var(--warn);margin-bottom:12px}
+.pnote{font-size:.76rem;color:var(--sub);margin-top:10px}
 .pcell.p0{color:var(--line-soft)}
 .follow{background:var(--dang-l);border-left:5px solid var(--dang);padding:8px 12px;font-size:.84rem;font-weight:700;margin-top:7px}
 .pend{font-size:.83rem;color:var(--sub);font-weight:700}
@@ -268,7 +271,7 @@ function answersHtml(rec){
 function roundLabelP(r){const s=String(r||'');
   if(/^\d{1,2}$/.test(s))return (+s)+'か月';
   return s.replace('-','/').slice(2);}
-const PULSE_Q=[{k:'work',t:'仕事の手ごたえ'},{k:'relation',t:'相談のしやすさ'},{k:'condition',t:'心身の調子'}];
+const PULSE_Q=[{k:'q1',t:'Q1 手応え'},{k:'q2',t:'Q2 相談しやすさ'},{k:'q3',t:'Q3 睡眠'}];
 function pulsesOf(pid){return pulses.filter(x=>x.personId===pid).sort((a,b)=>String(a.round).localeCompare(String(b.round)));}
 function pulseHtml(p){
   const list=pulsesOf(p.personId);
@@ -279,18 +282,13 @@ function pulseHtml(p){
       const cl=v>=4?'p4':(v===3?'p3':(v>0?'p1':'p0'));
       return `<td class="pcell ${cl}">${v>0?v:'—'}</td>`;}).join('');
     return `<tr><th>${q.t}</th>${cells}</tr>`;});
-  const intent=`<tr><th>継続の意向</th>${list.map(x=>{
-    const v=x.intent||'';const cl=v==='続けたい'?'p4':(v==='迷いがある'?'p1':'p3');
-    return `<td class="pcell ${v?cl:'p0'}" style="font-size:.72rem">${esc(v||'—')}</td>`;}).join('')}</tr>`;
-  const comments=list.filter(x=>String(x.comment||'').trim())
-    .map(x=>`<div class="quote"><span class="ph">${esc(/^\d{1,2}$/.test(String(x.round))?('入社'+(+x.round)+'か月'):String(x.round).replace('-','年')+'月')}</span>「${esc(x.comment)}」</div>`).join('');
   const latest=list[list.length-1];
   const low=PULSE_Q.filter(q=>+(latest[q.k]||0)>0&&+(latest[q.k]||0)<=2).map(q=>q.t);
   return `<div class="sec"><h3>パルスサーベイ<span class="sub">${list.length} 回分</span></h3><div class="body">
     ${low.length?`<div class="follow" style="margin-top:0;margin-bottom:12px">直近で低い項目：${esc(low.join('、'))}</div>`:''}
     <div style="overflow-x:auto"><table class="ptbl"><thead><tr><th></th>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
-    <tbody>${rows.join('')}${intent}</tbody></table></div>
-    ${comments?`<div style="margin-top:13px">${comments}</div>`:''}
+    <tbody>${rows.join('')}</tbody></table></div>
+    <div class="pnote">5＝良い／1＝悪い。</div>
   </div></div>`;
 }
 
