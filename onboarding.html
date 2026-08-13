@@ -134,7 +134,7 @@ input.dt,input.txt{max-width:260px}
     <div class="metric hot"><div class="n" id="m-over">–</div><div class="l">期限超過</div></div>
     <div class="metric due"><div class="n" id="m-due">–</div><div class="l">実施時期（今月）</div></div>
     <div class="metric ok"><div class="n" id="m-done">–</div><div class="l">実施済み</div></div>
-    <div class="metric"><div class="n" id="m-risk">–</div><div class="l">定着リスク 中・高</div></div>
+    <div class="metric"><div class="n" id="m-risk">–</div><div class="l">離職リスク 中・高</div></div>
   </div>
 
   <div class="bar">
@@ -366,7 +366,7 @@ function renderForm(){
   });
 
   html+='<div class="sec"><h3>まとめ（毎回共通）</h3><div class="body">'+
-    qHtml({id:'__risk',type:'radio',label:'定着リスクの見立て',opts:[['低','g'],['中','y'],['高','r']],_top:'risk'})+
+    qHtml({id:'__risk',type:'radio',label:'離職リスクの見立て',hint:'この方が辞める可能性を面談者としてどう見るか。高＝早期に手を打つ必要あり。',opts:[['低','g'],['中','y'],['高','r']],_top:'risk'})+
     qHtml({id:'__follow',type:'radio',label:'フォローの要否',opts:[['不要','g'],['要','r']],_top:'followSel'})+
     `<div class="q"><label>フォロー内容・誰が動くか</label><textarea rows="2" oninput="setF('followNote',this.value)">${esc(data.followNote||'')}</textarea></div>`+
     `<div class="q"><label>本人の言葉</label><div class="hint">要約せず、印象に残った発言をそのまま残してください。</div><textarea rows="3" oninput="setF('freeVoice',this.value)">${esc(data.freeVoice||'')}</textarea></div>`+
@@ -432,7 +432,7 @@ function pickWish(i,lb){
 function saveRecord(){
   if(!cur)return;
   if(!cur.data.heldDate){alert('実施日を入力してください。');return;}
-  if(!cur.data.risk){if(!confirm('定着リスクの見立てが未選択です。このまま保存しますか？'))return;}
+  if(!cur.data.risk){if(!confirm('離職リスクの見立てが未選択です。このまま保存しますか？'))return;}
   const btn=document.getElementById('btn-save');btn.disabled=true;
   document.getElementById('save-status').textContent='保存中…';
   fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
