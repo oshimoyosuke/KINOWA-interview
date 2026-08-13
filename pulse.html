@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今月のパルスサーベイ｜木の和ホールディングス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111111; --paper:#fbfaf7; --line-soft:#dcd8cf; --sub:#6b675e;
+  --mint:#00c389; --teal:#00a3b4; --mint-l:#e7f9f1;
+  --grad:linear-gradient(120deg,#00c389,#00a3b4);
+  --warn:#d97706; --dang:#dc2626;
+  --hard:5px 5px 0 #111111; --hard-sm:3px 3px 0 #111111;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;color:var(--ink);background:var(--paper);line-height:1.75;-webkit-font-smoothing:antialiased}
+header{background:var(--paper);border-bottom:2px solid var(--ink)}
+.hwrap{max-width:620px;margin:0 auto;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.logo{font-family:"Instrument Serif",serif;font-size:1.5rem}
+.tag{border:2px solid var(--ink);background:var(--grad);color:#fff;font-size:.68rem;font-weight:800;padding:3px 10px;font-family:"Chivo",sans-serif}
+.wrap{max-width:620px;margin:0 auto;padding:24px 20px 120px}
+
+.intro{border:2px solid var(--ink);box-shadow:var(--hard);background:#fff;padding:18px 20px;margin-bottom:22px}
+.intro .hi{font-size:1.3rem;font-weight:700}
+.intro .rd{font-family:"Chivo",sans-serif;font-size:.76rem;font-weight:700;color:var(--teal);letter-spacing:.04em}
+.intro p{font-size:.86rem;color:var(--sub);margin-top:8px}
+.note{background:var(--mint-l);border-left:5px solid var(--mint);padding:10px 13px;font-size:.8rem;margin-top:12px}
+
+.q{border:2px solid var(--ink);box-shadow:var(--hard-sm);background:#fff;padding:16px 17px;margin-bottom:16px}
+.q .qn{font-family:"Chivo",sans-serif;font-size:.7rem;font-weight:900;color:var(--teal)}
+.q .qt{font-size:1.02rem;font-weight:700;margin:2px 0 4px}
+.q .qd{font-size:.78rem;color:var(--sub);margin-bottom:11px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sc{border:2px solid var(--line-soft);background:#fff;padding:11px 3px;text-align:center;cursor:pointer;font-family:inherit}
+.sc:hover{border-color:var(--ink)}
+.sc .num{font-family:"Chivo",sans-serif;font-size:1.15rem;font-weight:900;line-height:1;color:var(--sub)}
+.sc .lb{font-size:.63rem;color:var(--sub);margin-top:4px;line-height:1.35}
+.sc.on{background:var(--ink);border-color:var(--ink)}
+.sc.on .num,.sc.on .lb{color:#fff}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{border:2px solid var(--line-soft);background:#fff;padding:7px 14px;font-size:.86rem;font-weight:700;color:var(--sub);cursor:pointer;font-family:inherit}
+.opt:hover{border-color:var(--ink);color:var(--ink)}
+.opt.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+textarea{width:100%;border:2px solid var(--line-soft);background:#fff;padding:10px 12px;font-family:inherit;font-size:.9rem;line-height:1.7;resize:vertical}
+textarea:focus{outline:none;border-color:var(--ink)}
+
+.savebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--ink);padding:12px 20px}
+.savebar .inner{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.savebar .st{font-size:.8rem;color:var(--sub);font-weight:700;flex:1}
+.btn{border:2px solid var(--ink);background:var(--grad);color:#fff;font-family:"Chivo",sans-serif;font-size:.88rem;font-weight:700;padding:11px 24px;cursor:pointer;box-shadow:var(--hard-sm)}
+.btn:hover:not(:disabled){transform:translate(-1px,-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+.msg{border:2px solid var(--ink);box-shadow:var(--hard);background:#fff;padding:34px 24px;text-align:center}
+.msg .ic{font-size:2.4rem;line-height:1}
+.msg h2{font-size:1.3rem;font-weight:700;margin:10px 0 6px}
+.msg p{font-size:.88rem;color:var(--sub)}
+.msg.err{border-color:var(--dang)}
+.hide{display:none}
+</style>
+<script src="./config.js"></script>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <span class="logo">KINOWA</span>
+    <span class="tag">パルスサーベイ</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="screen"><div class="msg"><div class="ic">…</div><h2>読み込み中</h2><p>少しお待ちください。</p></div></div>
+</div>
+
+<div class="savebar hide" id="savebar">
+  <div class="inner">
+    <span class="st" id="save-status">4問すべて選んでください</span>
+    <button class="btn" id="btn-send" onclick="submitAnswer()" disabled>送信する</button>
+  </div>
+</div>
+
+<script>
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
+function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS_URL)||'';if(c)return c;}catch(_){}
+try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const QUESTIONS=[
+ {id:'work',t:'いまの仕事に、手ごたえを感じていますか',d:'任されている内容や、できるようになったことについて',
+  labels:['ほとんど感じない','あまり','ふつう','わりと感じる','強く感じる']},
+ {id:'relation',t:'職場の人に、困りごとを相談できていますか',d:'聞ける相手がいるか、聞きやすい空気があるか',
+  labels:['できていない','あまり','ふつう','わりとできる','よくできる']},
+ {id:'condition',t:'この1か月、心身の調子はどうでしたか',d:'睡眠・疲れ・気持ちの余裕をあわせて',
+  labels:['かなり悪い','やや悪い','ふつう','わりと良い','とても良い']}
+];
+const INTENT=['続けたい','どちらとも言えない','迷いがある'];
+
+let token='',info=null;
+const ans={work:'',relation:'',condition:'',intent:'',comment:''};
+
+function start(){
+  token=new URLSearchParams(location.search).get('t')||'';
+  if(!token){showErr('リンクが正しくありません','メールに記載されたリンクから開いてください。');return;}
+  fetch(getGasUrl()+'?t='+encodeURIComponent(token)).then(r=>r.json()).then(res=>{
+    if(!res||!res.ok){showErr('リンクが無効です','有効期限切れか、リンクが正しくない可能性があります。人事までご連絡ください。');return;}
+    info=res;
+    if(res.answered){showDone('回答は受け付け済みです','今月分のご回答をいただいています。ありがとうございました。');return;}
+    renderForm();
+  }).catch(e=>showErr('通信エラー','時間をおいて、もう一度お試しください。'));
+}
+
+function renderForm(){
+  const rd=(info.round||'').replace('-','年')+'月';
+  let h=`<div class="intro">
+    <div class="rd">${esc(rd)} のパルスサーベイ</div>
+    <div class="hi">${esc(info.name||'')} さん</div>
+    <p>4問だけです。1分ほどで終わります。深く考えず、いまの実感でお答えください。</p>
+    <div class="note">回答はお名前とともに人事が確認します。困りごとを早く把握して手を打つために使うもので、<b>人事評価には使いません。</b></div>
+  </div>`;
+  QUESTIONS.forEach((q,i)=>{
+    h+=`<div class="q"><div class="qn">Q${i+1}</div><div class="qt">${esc(q.t)}</div><div class="qd">${esc(q.d)}</div>
+      <div class="scale">${[1,2,3,4,5].map(n=>
+        `<button class="sc ${ans[q.id]==n?'on':''}" onclick="pick('${q.id}',${n})">
+          <div class="num">${n}</div><div class="lb">${esc(q.labels[n-1])}</div></button>`).join('')}</div></div>`;
+  });
+  h+=`<div class="q"><div class="qn">Q4</div><div class="qt">これからも、ここで続けていきたいですか</div>
+    <div class="qd">いまの気持ちに近いものを選んでください</div>
+    <div class="opts">${INTENT.map(o=>`<button class="opt ${ans.intent===o?'on':''}" onclick="pickIntent('${esc(o)}')">${esc(o)}</button>`).join('')}</div></div>`;
+  h+=`<div class="q"><div class="qn">FREE</div><div class="qt">伝えておきたいことがあれば（任意）</div>
+    <div class="qd">困っていること、助かっていること、提案。何でもかまいません。</div>
+    <textarea rows="4" placeholder="空欄のままでも送信できます" oninput="setComment(this.value)">${esc(ans.comment)}</textarea></div>`;
+  document.getElementById('screen').innerHTML=h;
+  document.getElementById('savebar').classList.remove('hide');
+  updateBar();
+}
+
+function pick(id,n){ans[id]=n;renderForm();}
+function pickIntent(v){ans.intent=v;renderForm();}
+function setComment(v){ans.comment=v;}
+function ready(){return ans.work&&ans.relation&&ans.condition&&ans.intent;}
+function updateBar(){
+  const b=document.getElementById('btn-send');
+  const s=document.getElementById('save-status');
+  const n=[ans.work,ans.relation,ans.condition,ans.intent].filter(Boolean).length;
+  b.disabled=!ready();
+  s.textContent=ready()?'送信できます':`あと ${4-n} 問`;
+}
+
+function submitAnswer(){
+  if(!ready())return;
+  const b=document.getElementById('btn-send');b.disabled=true;
+  document.getElementById('save-status').textContent='送信中…';
+  fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({kind:'pulse',action:'answer',token:token,answers:ans})})
+    .then(r=>r.json()).then(res=>{
+      if(res&&res.ok){
+        document.getElementById('savebar').classList.add('hide');
+        showDone('ありがとうございました','回答を受け付けました。気になる点があれば、人事から個別にご連絡します。');
+      }else{
+        b.disabled=false;
+        document.getElementById('save-status').textContent='送信に失敗しました';
+        alert('送信に失敗しました。時間をおいてお試しください。');
+      }
+    }).catch(e=>{b.disabled=false;document.getElementById('save-status').textContent='通信エラー';alert('通信エラー：'+e);});
+}
+
+function showDone(t,p){document.getElementById('screen').innerHTML=
+  `<div class="msg"><div class="ic">✓</div><h2>${esc(t)}</h2><p>${esc(p)}</p></div>`;
+  document.getElementById('savebar').classList.add('hide');}
+function showErr(t,p){document.getElementById('screen').innerHTML=
+  `<div class="msg err"><div class="ic">!</div><h2>${esc(t)}</h2><p>${esc(p)}</p></div>`;
+  document.getElementById('savebar').classList.add('hide');}
+
+start();
+</script>
+</body>
+</html>
