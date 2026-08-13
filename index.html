@@ -28,6 +28,9 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 .logo{display:flex;align-items:center;gap:11px;font-weight:400;font-size:1.5rem;letter-spacing:0;font-family:"Instrument Serif",serif}
 .logo .mark{width:34px;height:34px;border-radius:50%;background:var(--grad);
   display:grid;place-items:center;color:#fff;font-weight:800;font-size:1rem;font-family:"Chivo",sans-serif}
+.hd-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hublink{border:2px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:700;padding:7px 13px;box-shadow:3px 3px 0 #111;white-space:nowrap}
+.hublink:hover{transform:translate(-1px,-1px)}
 .mode-switch{display:flex;background:transparent;border:2px solid var(--ink);border-radius:0;padding:0}
 .mode-switch button{border:0;background:transparent;padding:9px 16px;border-radius:0;font-weight:700;
   font-size:.88rem;cursor:pointer;color:var(--ink);transition:.15s}
@@ -431,6 +434,19 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 .db-meta{font-size:.82rem;color:var(--sub)}
 .db-sum{font-size:.82rem;color:var(--ink);flex:1;text-align:right;min-width:160px}
 .db-detail{display:none;padding:0 14px 14px;border-top:1.5px solid var(--line-soft)}
+.stbadge{display:inline-block;font-family:"Chivo",sans-serif;font-size:.64rem;font-weight:700;border:2px solid var(--ink);padding:1px 7px;margin-left:9px;vertical-align:middle;background:#fff}
+.stbadge.s-入社確定{background:#00c389;color:#fff;border-color:#00c389}
+.stbadge.s-内定{background:#e7f9f1;color:#00a3b4}
+.stbadge.s-見送り{background:#f1efe9;color:#6b675e}
+.stbadge.s-未設定{border-style:dashed;color:#6b675e}
+.pidbadge{display:inline-block;font-family:"Chivo",sans-serif;font-size:.64rem;font-weight:900;color:#00a3b4;margin-left:7px;vertical-align:middle}
+.db-status{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:12px 0 10px}
+.db-status-l{font-size:.76rem;font-weight:700;color:var(--sub);margin-right:4px}
+.stbtn{border:2px solid #dcd8cf;background:#fff;color:#6b675e;font-family:inherit;font-size:.79rem;font-weight:700;padding:5px 12px;cursor:pointer}
+.stbtn:hover{border-color:var(--ink);color:var(--ink)}
+.stbtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.db-hint{background:#e7f9f1;border-left:5px solid #00c389;padding:8px 12px;font-size:.78rem;font-weight:700;margin-bottom:11px}
+.db-hint a{color:#00a3b4;margin-left:6px}
 .db-card.open .db-detail{display:block}
 .db-actions{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
 .db-actions .btn{padding:8px 16px;font-size:.85rem}
@@ -628,9 +644,12 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 <header>
   <div class="hd">
     <div class="logo"><span class="mark">K</span> KINOWA 採用面接システム</div>
-    <div class="mode-switch">
-      <button id="m-int" class="active" onclick="setMode('int')">INPUT</button>
-      <button id="m-cand" onclick="setMode('cand')">OUTPUT</button>
+    <div class="hd-right">
+      <div class="mode-switch">
+        <button id="m-int" class="active" onclick="setMode('int')">INPUT</button>
+        <button id="m-cand" onclick="setMode('cand')">OUTPUT</button>
+      </div>
+      <a class="hublink" href="./master.html" title="マスターシステム">◀ マスター</a>
     </div>
   </div>
 </header>
@@ -654,6 +673,14 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
         </select></div>
       <div class="fld"><label>面接日</label><input id="c-date" type="date"></div>
       <div class="fld"><label>面接官</label><input id="c-iv" placeholder="氏名"></div>
+      <div class="fld"><label>選考ステータス</label>
+        <select id="c-status">
+          <option value="応募">応募</option>
+          <option value="選考中">選考中</option>
+          <option value="内定">内定</option>
+          <option value="入社確定">入社確定</option>
+          <option value="見送り">見送り</option>
+        </select></div>
     </div>
   </div>
 
@@ -2037,7 +2064,7 @@ function tab(btn,id){
 }
 
 /* ===== save / load ===== */
-function collectMeta(){return{name:cv('c-name'),store:cv('c-store'),role:cv('c-role'),mbti:cv('c-mbti'),date:cv('c-date'),iv:cv('c-iv')};}
+function collectMeta(){return{name:cv('c-name'),store:cv('c-store'),role:cv('c-role'),mbti:cv('c-mbti'),date:cv('c-date'),iv:cv('c-iv'),status:cv('c-status'),personId:(window._loadedPersonId||'')};}
 function cv(id){const el=document.getElementById(id);return el?el.value:'';}
 function saveJSON(){
   const data={meta:collectMeta(),...state};
@@ -2052,7 +2079,7 @@ document.getElementById('loadfile').onchange=e=>{
 };
 function loadJSON(){document.getElementById('loadfile').click();}
 function applyData(d){
-  if(d.meta){['name','store','role','mbti','date','iv'].forEach(k=>{const el=document.getElementById('c-'+k);if(el&&d.meta[k]!=null)el.value=d.meta[k];});}
+  if(d.meta){['name','store','role','mbti','date','iv','status'].forEach(k=>{const el=document.getElementById('c-'+k);if(el&&d.meta[k]!=null)el.value=d.meta[k];});window._loadedPersonId=(d.meta.personId||'');}
   state.text=d.text||{};state.choice=d.choice||{};state.multi=d.multi||{};state.jobs=d.jobs||[];state.fit=d.fit||[];state.future=d.future||{};state.strengths=d.strengths||[];state.mbti=d.mbti||(d.meta&&d.meta.mbti)||'';
   state.potential=d.potential||{};state.competency=d.competency||{};
   document.querySelectorAll('textarea[data-k],input[data-k]').forEach(t=>{if(state.text[t.dataset.k]!=null)t.value=state.text[t.dataset.k];});
@@ -2279,6 +2306,17 @@ function fetchFromSheet(){
       if(s)s.textContent='取得に失敗しました：'+e.message+'（GAS側のdoGet設置とアクセス権「全員」をご確認ください）';
     });
 }
+// 一覧から選考ステータスだけを変更して即保存（スプレッドシートにも反映）
+function setStatus(i,st){
+  const arr=dbAll();const r=arr[i];if(!r)return;
+  if((r.meta.status||'')===st)return;
+  if(st==='入社確定'&&!confirm(`${r.meta.name||'この候補者'} さんを「入社確定」にします。\nマスターシステムの入社処理に表示され、personId の発番対象になります。`))return;
+  r.meta.status=st;r.savedAt=new Date().toISOString();
+  arr[i]=r;dbSave(arr);renderDB();
+  syncToSheet(r);
+  const s=document.getElementById('db-fetch-status');
+  if(s)s.textContent=`「${r.meta.name||'無名'}」を ${st} に変更し、スプレッドシートに送信しました。`;
+}
 function delDB(i){if(!confirm('この候補者データを削除しますか？'))return;const arr=dbAll();arr.splice(i,1);dbSave(arr);renderDB();}
 function loadFromDB(i){
   const arr=dbAll();const r=arr[i];if(!r)return;
@@ -2313,11 +2351,17 @@ function renderDB(){
     const gi=idx;
     return `<div class="db-card">
       <div class="db-row" onclick="this.parentElement.classList.toggle('open')">
-        <div class="db-name">${esc(r.meta.name||'(無名)')}</div>
+        <div class="db-name">${esc(r.meta.name||'(無名)')}<span class="stbadge s-${esc(r.meta.status||'未設定')}">${esc(r.meta.status||'未設定')}</span>${r.meta.personId?`<span class="pidbadge">${esc(r.meta.personId)}</span>`:''}</div>
         <div class="db-meta">${esc(r.meta.store||'')}　${esc(r.meta.date||'')}</div>
         <div class="db-sum">${esc(summaryLine(r))}</div>
       </div>
       <div class="db-detail">
+        <div class="db-status">
+          <span class="db-status-l">選考ステータス</span>
+          ${['応募','選考中','内定','入社確定','見送り'].map(st=>
+            `<button class="stbtn ${(r.meta.status||'')===st?'on':''}" onclick="setStatus(${gi},'${st}')">${st}</button>`).join('')}
+        </div>
+        ${(r.meta.status==='入社確定')?'<div class="db-hint">マスターシステムの「入社処理」に表示されます。入社日を入れて personId を発番してください。<a href="./master.html">マスターを開く →</a></div>':''}
         <div class="db-actions">
           <button class="btn btn-ghost" onclick="loadFromDB(${gi})">読込（編集・印刷）</button>
           <button class="btn btn-ghost" onclick="delDB(${gi})">削除</button>
