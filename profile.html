@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINOWA 個人プロファイル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111111; --paper:#fbfaf7; --line:#111111; --line-soft:#dcd8cf;
+  --sub:#6b675e;
+  --mint:#00c389; --teal:#00a3b4; --mint-l:#e7f9f1;
+  --grad:linear-gradient(120deg,#00c389,#00a3b4);
+  --warn:#d97706; --warn-l:#fdf1de;
+  --dang:#dc2626; --dang-l:#fdeaea;
+  --hard:5px 5px 0 #111111; --hard-sm:3px 3px 0 #111111;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased}
+header{background:var(--paper);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:50}
+.hwrap{max-width:1080px;margin:0 auto;padding:16px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-family:"Instrument Serif",serif;font-size:1.7rem;font-weight:400}
+.tag{border:2px solid var(--ink);background:var(--grad);color:#fff;font-size:.72rem;font-weight:800;padding:3px 11px;font-family:"Chivo",sans-serif;letter-spacing:.04em}
+.hublink{margin-left:auto;border:2px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:700;padding:7px 13px;box-shadow:var(--hard-sm);white-space:nowrap}
+.hublink:hover{transform:translate(-1px,-1px)}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 22px 90px}
+.lead{font-size:.95rem;color:var(--sub);margin-bottom:22px;max-width:660px}
+.lead b{color:var(--ink);font-weight:700}
+
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.bar .status{font-size:.83rem;color:var(--sub);font-weight:700;flex:1;min-width:160px}
+select.pick,input.search{border:2px solid var(--ink);background:#fff;padding:8px 12px;font-family:inherit;font-size:.88rem;box-shadow:var(--hard-sm);max-width:320px}
+select.pick:focus,input:focus{outline:none}
+.btn{border:2px solid var(--ink);background:#fff;color:var(--ink);font-family:"Chivo",sans-serif;font-size:.82rem;font-weight:700;padding:8px 15px;cursor:pointer;box-shadow:var(--hard-sm);text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(-1px,-1px)}
+
+.hero{border:2px solid var(--ink);box-shadow:var(--hard);background:#fff;padding:20px 22px;margin-bottom:22px}
+.hero .pid{font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:900;color:var(--teal);letter-spacing:.04em}
+.hero .nm{font-size:1.9rem;font-weight:700;line-height:1.25;margin-top:2px}
+.hero .meta{font-size:.86rem;color:var(--sub);margin-top:5px}
+.hero .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:2px solid var(--ink);margin-top:16px}
+.kpi{padding:11px 13px;border-right:2px solid var(--ink)}
+.kpi:last-child{border-right:none}
+.kpi .l{font-size:.7rem;color:var(--sub);font-weight:700}
+.kpi .v{font-family:"Chivo",sans-serif;font-size:1.3rem;font-weight:900;line-height:1.2;margin-top:2px}
+.kpi .v.sm{font-size:.98rem;font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700}
+.kpi.r低 .v{color:var(--mint)} .kpi.r中 .v{color:var(--warn)} .kpi.r高 .v{color:var(--dang)}
+
+.sec{border:2px solid var(--ink);box-shadow:var(--hard-sm);background:#fff;margin-bottom:20px}
+.sec>h3{background:var(--ink);color:#fff;font-size:.86rem;font-weight:700;padding:9px 15px;display:flex;align-items:center;gap:10px}
+.sec>h3 .sub{font-weight:400;font-size:.74rem;opacity:.8}
+.sec .body{padding:16px 17px}
+.none{color:var(--sub);font-size:.85rem;font-weight:700;border:2px dashed var(--line-soft);padding:16px;text-align:center}
+
+.pots{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.pot .ph{display:flex;align-items:baseline;gap:8px;font-size:.86rem;font-weight:700}
+.pot .pv{font-family:"Chivo",sans-serif;font-weight:900;margin-left:auto;color:var(--teal)}
+.pot .track{height:13px;border:2px solid var(--ink);background:var(--line-soft);margin-top:5px;position:relative}
+.pot .fill{height:100%;background:var(--grad)}
+.pot .pd{font-size:.72rem;color:var(--sub);margin-top:3px}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:2px solid var(--line-soft);background:#fff;font-size:.79rem;font-weight:700;padding:4px 10px}
+.chip.on{background:var(--mint-l);border-color:var(--mint)}
+
+.wrow{border:2px solid var(--line-soft);padding:10px 12px;margin-bottom:8px}
+.wrow .wt{font-size:.85rem;font-weight:700}
+.wa{font-family:"Chivo",sans-serif;font-size:.63rem;font-weight:900;color:#fff;background:var(--teal);padding:1px 7px;margin-right:7px}
+.wlv{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap}
+.lv{font-size:.72rem;font-weight:700;padding:2px 9px;border:2px solid var(--line-soft);color:var(--sub)}
+.lv.on実現している{background:var(--mint);color:#fff;border-color:var(--mint)}
+.lv.onこれから{background:var(--warn-l);color:var(--warn);border-color:var(--warn)}
+.lv.on難しそう{background:var(--dang-l);color:var(--dang);border-color:var(--dang)}
+.lv .ph{font-family:"Chivo",sans-serif;font-size:.62rem;opacity:.75;margin-right:4px}
+
+.tl{position:relative;padding-left:22px}
+.tl:before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line-soft)}
+.ev{position:relative;margin-bottom:18px}
+.ev:last-child{margin-bottom:0}
+.ev:before{content:"";position:absolute;left:-21px;top:6px;width:12px;height:12px;border:2px solid var(--ink);background:#fff}
+.ev.done:before{background:var(--mint);border-color:var(--mint)}
+.ev.over:before{background:var(--dang);border-color:var(--dang)}
+.ev .eh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ev .et{font-size:.95rem;font-weight:700}
+.ev .ed{font-family:"Chivo",sans-serif;font-size:.75rem;color:var(--sub)}
+.rb{font-size:.68rem;font-weight:700;padding:1px 8px;border:2px solid var(--ink)}
+.rb.低{background:var(--mint-l);color:var(--mint);border-color:var(--mint)}
+.rb.中{background:var(--warn-l);color:var(--warn);border-color:var(--warn)}
+.rb.高{background:var(--dang-l);color:var(--dang);border-color:var(--dang)}
+.ev .eb{border-left:3px solid var(--line-soft);padding-left:11px;margin-top:7px}
+.kv{display:grid;grid-template-columns:132px 1fr;gap:4px 12px;font-size:.83rem;margin-top:4px}
+.kv .k{color:var(--sub);font-weight:700}
+.quote{background:var(--mint-l);border-left:5px solid var(--mint);padding:8px 12px;font-size:.84rem;margin-top:7px}
+.follow{background:var(--dang-l);border-left:5px solid var(--dang);padding:8px 12px;font-size:.84rem;font-weight:700;margin-top:7px}
+.pend{font-size:.83rem;color:var(--sub);font-weight:700}
+@media print{.bar,.hublink,header{display:none}.sec{break-inside:avoid;box-shadow:none}}
+@media(max-width:640px){.pots{grid-template-columns:1fr}.hero .kpis{grid-template-columns:1fr 1fr}.kpi{border-bottom:2px solid var(--ink)}}
+</style>
+<script src="./config.js"></script>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <span class="logo">KINOWA Profile</span>
+    <span class="tag">個人プロファイル</span>
+    <a class="hublink" href="./master.html">◀ マスター</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="lead">採用面接での<b>見立て</b>と、入社後に実際どうだったかを一枚で突き合わせます。人物評価の答え合わせをするための画面です。</p>
+
+  <div class="bar">
+    <span class="status" id="status">読み込み中…</span>
+    <select class="pick" id="pick" onchange="showPerson(this.value)"><option value="">— 対象者を選ぶ —</option></select>
+    <button class="btn" onclick="reloadAll()">再取得</button>
+    <button class="btn" onclick="window.print()">印刷</button>
+  </div>
+
+  <div id="body"></div>
+</div>
+
+<script>
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
+function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS_URL)||'';if(c)return c;}catch(_){}
+try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function ymd(v){if(!v)return '';const s=String(v).trim();
+  const m=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if(m)return m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2);
+  if(s.indexOf('T')>0){const d=new Date(s);if(!isNaN(d))return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+  const m2=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  return m2?(m2[1]+'-'+('0'+m2[2]).slice(-2)+'-'+('0'+m2[3]).slice(-2)):s;}
+function addMonths(iso,n){iso=ymd(iso);if(!iso)return '';const d=new Date(iso+'T00:00:00');if(isNaN(d))return '';const day=d.getDate();d.setMonth(d.getMonth()+n);if(d.getDate()<day)d.setDate(0);
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function today(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function monthsSince(iso){iso=ymd(iso);if(!iso)return null;const d=new Date(iso+'T00:00:00');if(isNaN(d))return null;
+  const n=new Date();let m=(n.getFullYear()-d.getFullYear())*12+(n.getMonth()-d.getMonth());if(n.getDate()<d.getDate())m--;return m;}
+
+const POTENTIAL=[
+ {key:"curiosity",t:"好奇心",d:"知りたい・試したい衝動の強さ"},
+ {key:"insight",t:"洞察",d:"物事の奥を掘り下げる深さ"},
+ {key:"engagement",t:"共鳴",d:"人や事に感情で巻き込まれる強さ"},
+ {key:"determination",t:"胆力",d:"退かない意志の強さ"}
+];
+const COMP_LABEL={c1:"本質を見極めて動く",c2:"論理的に筋道を立てて判断する",c3:"優先順位を考えて取捨選択する",c4:"仮説を立てて検証する",c5:"全体を俯瞰して捉える",c6:"原因を掘り下げて特定する",c7:"自ら起点を作って動く",c8:"段取りを設計してから進める",c9:"最後までやり切る",c10:"障害を想定して先回りする",c11:"改善点を見つけて手を打つ",c12:"状況に応じてやり方を変える",c13:"相手の意図を汲んで対応する",c14:"場を読んで関係を調整する",c15:"相手に合わせて伝え方を変える",c16:"対立を捉えて合意に導く",c17:"人を巻き込んで動かす",c18:"相手の成長を考えて関わる",c19:"確認の仕組みでミスを防ぐ",c20:"ルールの意図を理解して守る",c21:"一定の品質で安定して仕上げる",c22:"約束・期限を逆算して守る",c23:"リスクを見積もって備える",c24:"記録を残して次に活かす",c25:"目的から逆算して計画する",c26:"周囲に働きかけて協力を得る",c27:"新しいやり方を取り入れる",c28:"数字で捉えて判断する",c29:"自分の言動を振り返る",c30:"学びを次の行動に変える"};
+const AXIS_LABEL={hito:'ヒト',mono:'モノ',kane:'カネ',joho:'情報',jikan:'時間'};
+const HEAT={strong:'確かに感じた',some:'ある程度',unseen:'まだ見えない',low:'あまり感じない'};
+const PHASES=[{key:'M1',n:1,label:'1か月面談'},{key:'M3',n:3,label:'3か月面談'},{key:'M5',n:5,label:'5か月面談'}];
+const M1_L={gap:'入社前とのギャップ',skill:'業務の習得状況',ask:'聞ける相手',rel:'人間関係の不安',load:'体調・通勤・シフト',explained:'説明済み',gapNote:'ギャップの中身'};
+const M3_L={solo:'任せられる業務',weak:'不安が残る業務',ojt:'教育担当との関係',episode:'乗り越えた場面',intent:'継続の意向',intentNote:'迷いの中身'};
+const M5_L={reach:'6か月想定への到達',goal:'次期の目標',career:'中期キャリア意向',newWish:'新たな希望',request:'本人からの要望'};
+const LABELS=Object.assign({},M1_L,M3_L,M5_L);
+
+let persons=[],records=[],checkins=[],curId='';
+
+function reloadAll(){
+  document.getElementById('status').textContent='取得中…';
+  return fetch(getGasUrl(),{method:'GET'}).then(r=>r.json()).then(res=>{
+    if(!res||!res.ok){document.getElementById('status').textContent='取得に失敗しました。再取得してください。';return;}
+    persons=Array.isArray(res.persons)?res.persons:[];
+    records=Array.isArray(res.records)?res.records:[];
+    checkins=Array.isArray(res.checkins)?res.checkins:[];
+    const sel=document.getElementById('pick');
+    sel.innerHTML='<option value="">— 対象者を選ぶ —</option>'+persons.slice()
+      .sort((a,b)=>(a.personId||'').localeCompare(b.personId||''))
+      .map(p=>`<option value="${esc(p.personId)}">${esc(p.personId)}　${esc(p.name||'')}（${esc(p.store||'')}）</option>`).join('');
+    const q=new URLSearchParams(location.search).get('id')||curId;
+    document.getElementById('status').textContent=`対象者 ${persons.length} 名`;
+    if(q&&persons.some(p=>p.personId===q)){sel.value=q;showPerson(q);}
+    else if(!curId){document.getElementById('body').innerHTML='<div class="none">上の一覧から対象者を選んでください。</div>';}
+    else showPerson(curId);
+  }).catch(e=>{document.getElementById('status').textContent='通信エラー：'+e;});
+}
+
+function candidateOf(p){return records.find(r=>r&&r.meta&&(r.meta.personId===p.personId||((r.meta.name||'')===(p.name||'')&&ymd(r.meta.date)===ymd(p.date))))||null;}
+function wishesOf(c){const f=(c&&c.data&&c.data.future)||{};const out=[];
+  Object.keys(f).forEach(k=>{((f[k]&&f[k].picks)||[]).forEach(w=>out.push({axis:k,wish:w}));});return out;}
+function ivOf(pid,ph){return checkins.find(x=>x.personId===pid&&x.phase===ph)||null;}
+
+function showPerson(pid){
+  curId=pid;const body=document.getElementById('body');
+  if(!pid){body.innerHTML='<div class="none">上の一覧から対象者を選んでください。</div>';return;}
+  const p=persons.find(x=>x.personId===pid);if(!p){body.innerHTML='<div class="none">対象者が見つかりません。</div>';return;}
+  const c=candidateOf(p);
+  const done=PHASES.filter(ph=>ivOf(pid,ph.key));
+  const last=done.length?ivOf(pid,done[done.length-1].key):null;
+  const mo=monthsSince(p.joinDate);
+  body.innerHTML=heroHtml(p,c,done,last,mo)+hireHtml(c)+wishHtml(p,c)+timelineHtml(p);
+}
+
+function heroHtml(p,c,done,last,mo){
+  const risk=last&&last.risk?last.risk:'';
+  return `<div class="hero">
+    <div class="pid">${esc(p.personId)}</div>
+    <div class="nm">${esc(p.name||'（無名）')}</div>
+    <div class="meta">${esc(p.store||'')}　·　${esc(p.role||'')}　·　入社 ${esc(ymd(p.joinDate)||'未設定')}　·　面接 ${esc(ymd(p.date)||'—')}</div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">在籍</div><div class="v">${mo==null?'—':mo+'<span style="font-size:.8rem">か月</span>'}</div></div>
+      <div class="kpi"><div class="l">面談 実施</div><div class="v">${done.length}<span style="font-size:.8rem"> / 3</span></div></div>
+      <div class="kpi r${esc(risk)}"><div class="l">直近の離職リスク</div><div class="v sm">${risk?esc(risk):'—'}</div></div>
+      <div class="kpi"><div class="l">採用時の熱量</div><div class="v sm">${esc((c&&c.data&&c.data.choice&&HEAT[c.data.choice.heat])||'—')}</div></div>
+    </div>
+  </div>`;
+}
+
+function hireHtml(c){
+  if(!c)return `<div class="sec"><h3>採用時の見立て</h3><div class="body"><div class="none">採用面接データが見つかりません。氏名・面接日が個人マスタと一致しているか確認してください。</div></div></div>`;
+  const pot=(c.data&&c.data.potential)||{};
+  const comp=(c.data&&c.data.competency)||{};
+  const t=(c.data&&c.data.text)||{};
+  const ch=(c.data&&c.data.choice)||{};
+  const compKeys=Object.keys(comp).filter(k=>comp[k]);
+  const pots=POTENTIAL.map(x=>{const v=+(pot[x.key]||0);
+    return `<div class="pot"><div class="ph"><b>${x.t}</b><span class="pv">${v>0?v+' / 5':'—'}</span></div>
+      <div class="track"><div class="fill" style="width:${(v/5)*100}%"></div></div>
+      <div class="pd">${x.d}</div></div>`;}).join('');
+  const rows=[];
+  if(c.meta&&c.meta.mbti)rows.push(['MBTI',c.meta.mbti]);
+  if(ch.humanity)rows.push(['人間性',ch.humanity==='ok'?'違和感なし':'違和感あり']);
+  if(t['fut-core'])rows.push(['最も大事にしている未来',t['fut-core']]);
+  if(t['heat-why'])rows.push(['熱量の根拠',t['heat-why']]);
+  if(t['sum-comment'])rows.push(['総合所感',t['sum-comment']]);
+  return `<div class="sec"><h3>採用時の見立て<span class="sub">面接 ${esc(ymd(c.meta&&c.meta.date)||'—')}　面接官 ${esc((c.meta&&c.meta.iv)||'—')}</span></h3><div class="body">
+    <div class="pots">${pots}</div>
+    <div style="margin-top:16px"><div style="font-size:.82rem;font-weight:700;margin-bottom:7px">コンピテンシー　<span style="color:var(--sub)">${compKeys.length} 件該当</span></div>
+    ${compKeys.length?`<div class="chips">${compKeys.map(k=>`<span class="chip on">${esc(COMP_LABEL[k]||k)}</span>`).join('')}</div>`:'<div class="pend">該当なし</div>'}</div>
+    ${rows.length?`<div class="kv" style="margin-top:15px">${rows.map(([k,v])=>`<div class="k">${esc(k)}</div><div>${esc(v)}</div>`).join('')}</div>`:''}
+  </div></div>`;
+}
+
+function wishHtml(p,c){
+  const ws=wishesOf(c);
+  if(!ws.length)return `<div class="sec"><h3>叶えたい未来と、その後</h3><div class="body"><div class="none">採用面接で「叶えたい未来」が記録されていません。</div></div></div>`;
+  const later=[{key:'M3',label:'3M'},{key:'M5',label:'5M'}].map(x=>({label:x.label,rec:ivOf(p.personId,x.key)})).filter(x=>x.rec);
+  const rows=ws.map(w=>{
+    const lv=later.map(x=>{
+      const hit=((x.rec.wishCheck)||[]).find(s=>s.wish===w.wish);
+      if(!hit||!hit.level)return '';
+      return `<span class="lv on${esc(hit.level)}"><span class="ph">${x.label}</span>${esc(hit.level)}</span>`;}).join('');
+    return `<div class="wrow"><div class="wt"><span class="wa">${esc(AXIS_LABEL[w.axis]||w.axis)}</span>${esc(w.wish)}</div>
+      ${lv?`<div class="wlv">${lv}</div>`:'<div class="wlv"><span class="lv">面談での確認はこれから</span></div>'}</div>`;}).join('');
+  return `<div class="sec"><h3>叶えたい未来と、その後<span class="sub">入社時に本人が選んだ ${ws.length} 件</span></h3><div class="body">${rows}</div></div>`;
+}
+
+function answersHtml(rec){
+  const a=rec.answers||{};
+  const ks=Object.keys(a).filter(k=>{const v=a[k];return Array.isArray(v)?v.length:String(v||'').trim();});
+  if(!ks.length)return '';
+  return `<div class="kv">${ks.map(k=>{const v=a[k];
+    return `<div class="k">${esc(LABELS[k]||k)}</div><div>${esc(Array.isArray(v)?v.join('、'):v)}</div>`;}).join('')}</div>`;
+}
+
+function timelineHtml(p){
+  const evs=PHASES.map(ph=>{
+    const rec=ivOf(p.personId,ph.key);
+    const due=ymd(p.joinDate)?addMonths(p.joinDate,ph.n):'';
+    if(rec){
+      return `<div class="ev done">
+        <div class="eh"><span class="et">${ph.label}</span><span class="ed">${esc(ymd(rec.heldDate)||'—')}　面談者 ${esc(rec.interviewer||'—')}</span>
+          ${rec.risk?`<span class="rb ${esc(rec.risk)}">離職リスク ${esc(rec.risk)}</span>`:''}</div>
+        <div class="eb">${answersHtml(rec)}
+          ${rec.freeVoice?`<div class="quote">「${esc(rec.freeVoice)}」</div>`:''}
+          ${rec.comment?`<div class="kv" style="margin-top:6px"><div class="k">面談者所感</div><div>${esc(rec.comment)}</div></div>`:''}
+          ${rec.followNeeded?`<div class="follow">要フォロー：${esc(rec.followNote||'内容未記入')}</div>`:''}
+        </div></div>`;
+    }
+    const over=due&&due<today();
+    return `<div class="ev ${over?'over':''}">
+      <div class="eh"><span class="et" style="color:var(--sub)">${ph.label}</span>
+        <span class="ed">${due?('期日 '+esc(due)):'入社日が未設定のため期日を算出できません'}</span></div>
+      <div class="eb"><span class="pend">${over?'期限を過ぎています。入社後面談から入力してください。':'未実施'}</span></div></div>`;
+  }).join('');
+  return `<div class="sec"><h3>入社後の経過<span class="sub">1 / 3 / 5か月面談</span></h3><div class="body">
+    <div class="tl">${evs}</div>
+    <div style="margin-top:15px"><a class="btn" href="./onboarding.html">入社後面談を入力する →</a></div>
+  </div></div>`;
+}
+
+reloadAll();
+</script>
+</body>
+</html>

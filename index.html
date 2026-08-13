@@ -635,6 +635,7 @@ header{background:var(--paper);border-bottom:2px solid var(--ink);position:stick
 /* 画面では印刷レポートを隠す */
 #print-report{display:none}
 </style>
+<script src="./config.js"></script>
 </head>
 <body>
 
@@ -2202,7 +2203,8 @@ function syncMbtiGrid(){
 /* ===== スプレッドシート連携（GAS Webアプリ） ===== */
 /* コードに埋め込んだ既定URL（全端末で連携済みになる）。画面の設定欄で上書き可能。 */
 const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
-function getGasUrl(){try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
+function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS_URL)||'';if(c)return c;}catch(_){}
+try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function saveGasUrl(){
   const v=(document.getElementById('gas-url').value||'').trim();
   try{localStorage.setItem('kinowa_gas_url',v);}catch(_){}

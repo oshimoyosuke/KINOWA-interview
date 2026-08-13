@@ -114,6 +114,7 @@ input.dt,input.txt{max-width:260px}
 .hide{display:none}
 @media(max-width:640px){.metrics{grid-template-columns:1fr 1fr}.metric{border-bottom:2px solid var(--ink)}.row2{grid-template-columns:1fr}}
 </style>
+<script src="./config.js"></script>
 </head>
 <body>
 <header>
@@ -152,6 +153,7 @@ input.dt,input.txt{max-width:260px}
   <div style="margin-top:40px;border-top:2px solid var(--ink);padding-top:18px">
     <a class="btn" href="./master.html" style="text-decoration:none;display:inline-block">← マスターシステムへ</a>
     <a class="btn" href="./index.html" style="text-decoration:none;display:inline-block;margin-left:8px">採用面接システム</a>
+    <a class="btn" href="./profile.html" style="text-decoration:none;display:inline-block;margin-left:8px">個人プロファイル</a>
   </div>
 </section>
 
@@ -173,7 +175,8 @@ input.dt,input.txt{max-width:260px}
 
 <script>
 const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
-function getGasUrl(){try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
+function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS_URL)||'';if(c)return c;}catch(_){}
+try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function today(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function ymd(v){if(!v)return '';const s=String(v).trim();
@@ -350,7 +353,7 @@ function renderForm(){
   document.getElementById('form-head').innerHTML=`<div class="fhead">
     <div class="ph">${esc(ph.label)}</div>
     <div class="who">${esc(p.name||'')}<span style="font-family:Chivo,sans-serif;font-size:.8rem;color:var(--teal);margin-left:10px">${esc(p.personId)}</span></div>
-    <div class="sub">${esc(p.store||'')}　·　${esc(p.role||'')}　·　入社 ${esc(p.joinDate||'未設定')}　·　面談期日 ${esc(cur.due||'—')}</div>
+    <div class="sub">${esc(p.store||'')}　·　${esc(p.role||'')}　·　入社 ${esc(p.joinDate||'未設定')}　·　面談期日 ${esc(cur.due||'—')}　·　<a href="./profile.html?id=${esc(p.personId)}" style="color:var(--teal);font-weight:700">プロファイルを見る →</a></div>
     <div class="aim">${esc(ph.aim)}</div></div>`;
 
   let html='<div class="sec"><h3>実施情報</h3><div class="body"><div class="row2">'+
