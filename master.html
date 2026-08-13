@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KINOWA マスターシステム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Instrument+Serif:ital@0;1&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111111; --paper:#fbfaf7; --line:#111111; --line-soft:#dcd8cf;
+  --sub:#6b675e; --bg:#fbfaf7;
+  --mint:#00c389; --teal:#00a3b4; --mint-l:#e7f9f1;
+  --grad:linear-gradient(120deg,#00c389,#00a3b4);
+  --warn:#d97706; --warn-l:#fdf1de;
+  --hard:5px 5px 0 #111111; --hard-sm:3px 3px 0 #111111;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased}
+header{background:var(--paper);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:50}
+.hwrap{max-width:1080px;margin:0 auto;padding:16px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-family:"Instrument Serif",serif;font-size:1.7rem;font-weight:400}
+.logo b{font-weight:400}
+.tag{border:2px solid var(--ink);background:var(--grad);color:#fff;font-size:.72rem;font-weight:800;padding:3px 11px;font-family:"Chivo",sans-serif;letter-spacing:.04em}
+.phase{margin-left:auto;font-size:.76rem;color:var(--sub);font-weight:700;font-family:"Chivo",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 22px 90px}
+.lead{font-size:.95rem;color:var(--sub);margin-bottom:24px;max-width:640px}
+.lead b{color:var(--ink);font-weight:700}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);border:2px solid var(--ink);box-shadow:var(--hard);margin-bottom:30px;background:#fff}
+.metric{padding:18px 20px;border-right:2px solid var(--ink)}
+.metric:last-child{border-right:none}
+.metric .n{font-family:"Chivo",sans-serif;font-size:2.1rem;font-weight:900;line-height:1}
+.metric .l{font-size:.78rem;color:var(--sub);font-weight:700;margin-top:5px}
+.metric.hot .n{color:var(--warn)}
+.metric.ok .n{color:var(--teal)}
+.metric.alert .n{color:#dc2626}
+
+.tabs{display:flex;border:2px solid var(--ink);width:fit-content;margin-bottom:22px}
+.tabbtn{border:none;background:#fff;font-family:"Chivo",sans-serif;font-size:.86rem;font-weight:700;color:var(--sub);padding:9px 20px;cursor:pointer;border-right:2px solid var(--ink)}
+.tabbtn:last-child{border-right:none}
+.tabbtn.active{background:var(--ink);color:#fff}
+
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.bar .status{font-size:.83rem;color:var(--sub);font-weight:700;flex:1;min-width:180px}
+input.search{border:2px solid var(--ink);background:#fff;padding:8px 12px;font-family:inherit;font-size:.86rem;max-width:250px;box-shadow:var(--hard-sm)}
+input.search:focus{outline:none;transform:translate(-1px,-1px)}
+.btn{border:2px solid var(--ink);background:#fff;color:var(--ink);font-family:"Chivo",sans-serif;font-size:.82rem;font-weight:700;padding:8px 15px;cursor:pointer;box-shadow:var(--hard-sm)}
+.btn:hover:not(:disabled){transform:translate(-1px,-1px)}
+.btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #111}
+.btn.issue{background:var(--grad);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.pcard{border:2px solid var(--ink);background:#fff;box-shadow:var(--hard-sm);padding:16px 17px;display:flex;flex-direction:column;gap:12px}
+.pcard.issued{background:var(--mint-l)}
+.pcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pcard .nm{font-size:1.12rem;font-weight:700;line-height:1.3}
+.pcard .meta{font-size:.8rem;color:var(--sub);margin-top:3px}
+.state{font-family:"Chivo",sans-serif;font-size:.68rem;font-weight:700;padding:3px 9px;border:2px solid var(--ink);white-space:nowrap}
+.state.wait{background:var(--warn-l);color:var(--warn)}
+.state.done{background:var(--mint);color:#fff}
+.pcard .idrow{display:flex;align-items:center;gap:10px;border-top:2px dashed var(--line-soft);padding-top:11px}
+.pid{font-family:"Chivo",sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.02em}
+.pid.none{color:var(--sub);font-weight:700;font-size:.85rem;letter-spacing:0}
+.jrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.78rem;font-weight:700;color:var(--sub)}
+input.jdate{border:2px solid var(--ink);background:#fff;padding:5px 9px;font-family:inherit;font-size:.82rem;box-shadow:var(--hard-sm)}
+input.jdate:focus{outline:none}
+input.jdate.miss{border-color:#dc2626;background:#fdeaea}
+input.jdate:disabled{opacity:.5}
+.alertbox{border:2px solid #dc2626;background:#fdeaea;padding:11px 14px;margin-bottom:14px;font-size:.84rem;color:#dc2626;font-weight:700}
+.alertbox b{display:block;font-size:.92rem;margin-bottom:2px}
+
+.tbl{width:100%;border-collapse:collapse;border:2px solid var(--ink);box-shadow:var(--hard);background:#fff}
+.tbl th,.tbl td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line-soft)}
+.tbl thead th{background:var(--ink);color:#fff;font-family:"Chivo",sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--mint-l)}
+.tbl .pid{font-size:.92rem}
+.tbl .st{font-size:.74rem;font-weight:700;color:var(--teal)}
+.tbl .dt{font-family:"Chivo",sans-serif;font-size:.76rem;color:var(--sub)}
+
+.empty{border:2px dashed var(--line-soft);background:#fff;padding:38px 20px;text-align:center;color:var(--sub);font-size:.9rem;font-weight:700}
+.empty b{display:block;font-size:1.05rem;color:var(--ink);margin-bottom:6px}
+
+.nav{margin-top:44px;border-top:2px solid var(--ink);padding-top:20px}
+.nav h3{font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:700;color:var(--sub);letter-spacing:.05em;margin-bottom:12px}
+.navrow{display:flex;gap:12px;flex-wrap:wrap}
+.navlink{border:2px solid var(--ink);background:#fff;padding:11px 16px;text-decoration:none;color:var(--ink);font-weight:700;font-size:.88rem;box-shadow:var(--hard-sm)}
+.navlink:hover{transform:translate(-1px,-1px)}
+.navlink.soon{border-style:dashed;border-color:var(--line-soft);color:var(--sub);box-shadow:none;pointer-events:none}
+.navlink .s{font-family:"Chivo",sans-serif;font-size:.66rem;font-weight:700;color:var(--warn);margin-left:6px}
+.hide{display:none}
+@media(max-width:560px){.metrics{grid-template-columns:1fr} .metric{border-right:none;border-bottom:2px solid var(--ink)} .metric:last-child{border-bottom:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <span class="logo"><b>KINOWA</b> Master</span>
+    <span class="tag">個人の分析ハブ</span>
+    <span class="phase">PHASE 1 — personId発番</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="lead">採用面接 → 面談 → パルスを、一人ひとりの <b>personId</b> で一本の線に束ねる統合ハブ。入社が確定した候補者に personId を発番し、個人マスタに登録します。</p>
+
+  <div class="metrics">
+    <div class="metric hot"><div class="n" id="m-wait">–</div><div class="l">発番待ち（入社確定）</div></div>
+    <div class="metric ok"><div class="n" id="m-done">–</div><div class="l">発番済み</div></div>
+    <div class="metric"><div class="n" id="m-total">–</div><div class="l">個人マスタ登録数</div></div>
+    <div class="metric alert"><div class="n" id="m-iv">–</div><div class="l">面談 期限超過</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tabbtn active" id="tab-issue" onclick="showTab('issue')">入社処理</button>
+    <button class="tabbtn" id="tab-list" onclick="showTab('list')">個人マスタ一覧</button>
+  </div>
+
+  <section id="pane-issue">
+    <div class="bar">
+      <span class="status" id="issue-status">読み込み中…</span>
+      <input class="search" id="issue-search" placeholder="氏名・店舗で絞り込み" oninput="renderIssue()">
+      <button class="btn" onclick="reloadAll()">再取得</button>
+    </div>
+    <div id="issue-body"></div>
+  </section>
+
+  <section id="pane-list" class="hide">
+    <div class="bar">
+      <span class="status" id="list-status">—</span>
+      <input class="search" id="list-search" placeholder="氏名・personIdで絞り込み" oninput="renderList()">
+      <button class="btn" onclick="reloadAll()">再取得</button>
+    </div>
+    <div id="list-body"></div>
+  </section>
+
+  <div class="nav">
+    <h3>SYSTEMS</h3>
+    <div class="navrow">
+      <a class="navlink" href="./index.html">採用面接システム</a>
+      <a class="navlink" href="./onboarding.html">入社後面談</a>
+      <span class="navlink soon">個人プロファイル<span class="s">PHASE 3</span></span>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
+function getGasUrl(){try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+let records=[], persons=[], checkins=[];
+function joinOf(pid){const p=persons.find(x=>x.personId===pid);return p?(p.joinDate||''):'';}
+function addMonths(iso,n){if(!iso)return '';const d=new Date(iso+'T00:00:00');if(isNaN(d))return '';const day=d.getDate();d.setMonth(d.getMonth()+n);if(d.getDate()<day)d.setDate(0);return d.toISOString().slice(0,10);}
+function overdueCount(){
+  const today=new Date().toISOString().slice(0,10);let n=0;
+  persons.forEach(p=>{if(!p.joinDate)return;[1,3,5].forEach(m=>{
+    const key='M'+m;const done=checkins.some(x=>x.personId===p.personId&&x.phase===key);
+    if(done)return;if(addMonths(p.joinDate,m)<today)n++;});});
+  return n;
+}
+function personIdByCandidate(name,date){const p=persons.find(x=>(x.name||'')===name&&(x.date||'')===date);return p?p.personId:'';}
+
+function reloadAll(){
+  const url=getGasUrl();
+  document.getElementById('issue-status').textContent='取得中…';
+  return fetch(url,{method:'GET'}).then(r=>r.json()).then(res=>{
+    if(!res||!res.ok){document.getElementById('issue-status').textContent='取得に失敗しました。時間をおいて再取得してください。';return;}
+    records=Array.isArray(res.records)?res.records:[];
+    persons=Array.isArray(res.persons)?res.persons:[];
+    checkins=Array.isArray(res.checkins)?res.checkins:[];
+    renderMetrics();renderIssue();renderList();
+    document.getElementById('issue-status').textContent=`候補者 ${records.length} 件 ／ 個人マスタ ${persons.length} 件`;
+  }).catch(e=>{document.getElementById('issue-status').textContent='通信エラー：'+e;});
+}
+
+function confirmedRows(){return records.map(r=>r.meta||{}).filter(m=>m.status==='入社確定');}
+
+function renderMetrics(){
+  const rows=confirmedRows();
+  let done=0;
+  rows.forEach(m=>{if(m.personId||personIdByCandidate(m.name,m.date))done++;});
+  document.getElementById('m-wait').textContent=rows.length-done;
+  document.getElementById('m-done').textContent=done;
+  document.getElementById('m-total').textContent=persons.length;
+  document.getElementById('m-iv').textContent=overdueCount();
+}
+
+function renderIssue(){
+  const q=(document.getElementById('issue-search').value||'').trim();
+  const body=document.getElementById('issue-body');
+  let rows=confirmedRows();
+  if(q)rows=rows.filter(m=>(m.name||'').includes(q)||(m.store||'').includes(q));
+  if(!rows.length){body.innerHTML='<div class="empty"><b>発番待ちはありません</b>採用面接システムで「入社確定」にした候補者がここに並びます。</div>';return;}
+  rows.sort((a,b)=>{const ai=(a.personId||personIdByCandidate(a.name,a.date))?1:0;const bi=(b.personId||personIdByCandidate(b.name,b.date))?1:0;return ai-bi;});
+  body.innerHTML='<div class="grid">'+rows.map((m,ix)=>{
+    const pid=m.personId||personIdByCandidate(m.name,m.date);
+    const issued=!!pid;
+    const uid='c'+ix;
+    return `<div class="pcard ${issued?'issued':''}">
+      <div class="top">
+        <div><div class="nm">${esc(m.name||'（無名）')}</div>
+          <div class="meta">${esc(m.store||'')}　·　${esc(m.role||'')}　·　面接 ${esc(m.date||'—')}</div></div>
+        <span class="state ${issued?'done':'wait'}">${issued?'発番済':'発番待ち'}</span>
+      </div>
+      <div class="idrow">
+        ${issued
+          ? `<span class="pid">${esc(pid)}</span><span class="jrow" style="margin-left:auto">入社日 ${esc(joinOf(pid)||'未設定')}</span>`
+          : `<div style="width:100%">
+               <div class="jrow" style="margin-bottom:9px">入社日
+                 <input class="jdate" type="date" id="jd-${esc(uid)}">
+                 <span style="font-weight:400">面談期日の自動算出に使います</span></div>
+               <div style="display:flex;align-items:center;gap:10px">
+                 <span class="pid none">personId 未発番</span>
+                 <button class="btn issue" style="margin-left:auto" onclick="issue('${esc(m.name)}','${esc(m.date)}','${esc(m.store)}','${esc(m.role)}','jd-${esc(uid)}')">発番する</button>
+               </div>
+             </div>`}
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function renderList(){
+  const q=(document.getElementById('list-search').value||'').trim();
+  const body=document.getElementById('list-body');
+  let rows=persons.slice();
+  if(q)rows=rows.filter(p=>(p.name||'').includes(q)||(p.personId||'').includes(q));
+  document.getElementById('list-status').textContent=`${persons.length} 件登録`;
+  if(!rows.length){body.innerHTML='<div class="empty"><b>まだ登録がありません</b>入社処理タブで personId を発番すると、ここに記録されます。</div>';return;}
+  rows.sort((a,b)=>(a.personId||'').localeCompare(b.personId||''));
+  const miss=rows.filter(p=>!p.joinDate).length;
+  body.innerHTML=(miss?`<div class="alertbox"><b>入社日が未設定の方が ${miss} 名います。</b>入社日がないと 1/3/5か月面談の期日を算出できません。下の欄に入力すると即座に保存されます。</div>`:'')
+    +`<table class="tbl"><thead><tr>
+    <th>personId</th><th>氏名</th><th>店舗</th><th>職種</th><th>入社日（編集可）</th><th>状態</th><th>発番日</th>
+    </tr></thead><tbody>`+rows.map(p=>`<tr>
+    <td><span class="pid">${esc(p.personId)}</span></td><td>${esc(p.name)}</td>
+    <td>${esc(p.store)}</td><td>${esc(p.role)}</td>
+    <td><input class="jdate ${p.joinDate?'':'miss'}" type="date" value="${esc(p.joinDate||'')}" onchange="setJoinDate('${esc(p.personId)}',this)"></td>
+    <td class="st">${esc(p.status)}</td><td class="dt">${esc((p.issuedAt||'').slice(0,10))}</td>
+    </tr>`).join('')+'</tbody></table>';
+}
+
+// 個人マスタ一覧から入社日を直接更新（入社日変更・後追い入力に対応）
+function setJoinDate(pid,el){
+  const v=el.value||'';
+  const p=persons.find(x=>x.personId===pid);
+  const prev=p?(p.joinDate||''):'';
+  if(v===prev)return;
+  if(prev&&!confirm(`${p.name} さんの入社日を ${prev} → ${v||'（未設定）'} に変更します。\n面談期日はすべて再計算されます。よろしいですか？`)){el.value=prev;return;}
+  el.disabled=true;
+  fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({kind:'person',action:'update',person:{personId:pid,joinDate:v}})})
+    .then(r=>r.json()).then(res=>{
+      el.disabled=false;
+      if(res&&res.ok){
+        if(p)p.joinDate=v;
+        el.classList.toggle('miss',!v);
+        document.getElementById('list-status').textContent=`入社日を更新しました（${pid}）`;
+        renderMetrics();
+      }else{el.value=prev;alert('更新に失敗しました。'+((res&&res.error)||''));}
+    }).catch(e=>{el.disabled=false;el.value=prev;alert('通信エラー：'+e);});
+}
+
+function issue(name,date,store,role,jdId){
+  const el=jdId?document.getElementById(jdId):null;
+  const joinDate=el?el.value:'';
+  if(!joinDate){if(!confirm(`入社日が未入力です。入社日がないと 1/3/5か月面談の期日を自動算出できません。\nこのまま発番しますか？`))return;}
+  else if(!confirm(`${name} さんに personId を発番し、個人マスタに登録します。（入社日 ${joinDate}）`))return;
+  const url=getGasUrl();
+  const payload={kind:'person',action:'issue',person:{name,date,store,role,joinDate:joinDate,status:'入社確定'}};
+  fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(r=>r.json()).then(res=>{
+      if(res&&res.ok&&res.personId){alert(`発番しました：${res.personId}`);reloadAll();}
+      else{alert('発番に失敗しました。'+((res&&res.error)||''));}
+    }).catch(e=>alert('通信エラー：'+e));
+}
+
+function showTab(t){
+  document.getElementById('tab-issue').classList.toggle('active',t==='issue');
+  document.getElementById('tab-list').classList.toggle('active',t==='list');
+  document.getElementById('pane-issue').classList.toggle('hide',t!=='issue');
+  document.getElementById('pane-list').classList.toggle('hide',t!=='list');
+}
+reloadAll();
+</script>
+</body>
+</html>
