@@ -68,6 +68,7 @@ input.search:focus{outline:none;transform:translate(-1px,-1px)}
 input.jdate{border:2px solid var(--ink);background:#fff;padding:5px 9px;font-family:inherit;font-size:.82rem;box-shadow:var(--hard-sm)}
 input.jdate:focus{outline:none}
 input.jdate.miss{border-color:#dc2626;background:#fdeaea}
+input.jdate.mail{min-width:190px}
 input.jdate:disabled{opacity:.5}
 .alertbox{border:2px solid #dc2626;background:#fdeaea;padding:11px 14px;margin-bottom:14px;font-size:.84rem;color:#dc2626;font-weight:700}
 .alertbox b{display:block;font-size:.92rem;margin-bottom:2px}
@@ -120,6 +121,7 @@ input.jdate:disabled{opacity:.5}
   <div class="tabs">
     <button class="tabbtn active" id="tab-issue" onclick="showTab('issue')">入社処理</button>
     <button class="tabbtn" id="tab-list" onclick="showTab('list')">個人マスタ一覧</button>
+    <button class="tabbtn" id="tab-pulse" onclick="showTab('pulse')">パルス配信</button>
   </div>
 
   <section id="pane-issue">
@@ -140,12 +142,21 @@ input.jdate:disabled{opacity:.5}
     <div id="list-body"></div>
   </section>
 
+  <section id="pane-pulse" class="hide">
+    <div class="bar">
+      <span class="status" id="pulse-status">—</span>
+      <button class="btn" onclick="sendPulse(true)">配信対象を確認</button>
+      <button class="btn issue" onclick="sendPulse(false)">今月分を配信する</button>
+    </div>
+    <div id="pulse-body"></div>
+  </section>
+
   <div class="nav">
     <h3>SYSTEMS</h3>
     <div class="navrow">
       <a class="navlink" href="./index.html">採用面接システム</a>
       <a class="navlink" href="./onboarding.html">入社後面談</a>
-      <span class="navlink soon">パルスサーベイ<span class="s">次フェーズ</span></span>
+      <a class="navlink" href="#" onclick="showTab('pulse');window.scrollTo(0,0);return false;">パルス配信</a>
       <a class="navlink" href="./profile.html">個人プロファイル</a>
     </div>
   </div>
@@ -157,7 +168,7 @@ function getGasUrl(){try{const c=(window.KINOWA_CONFIG&&window.KINOWA_CONFIG.GAS
 try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-let records=[], persons=[], checkins=[];
+let records=[], persons=[], checkins=[], pulseStatus=[], pulses=[];
 function joinOf(pid){const p=persons.find(x=>x.personId===pid);return p?(p.joinDate||''):'';}
 function addMonths(iso,n){iso=ymd(iso);if(!iso)return '';const d=new Date(iso+'T00:00:00');if(isNaN(d))return '';const day=d.getDate();d.setMonth(d.getMonth()+n);if(d.getDate()<day)d.setDate(0);
   return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
@@ -185,7 +196,9 @@ function reloadAll(){
     records=Array.isArray(res.records)?res.records:[];
     persons=Array.isArray(res.persons)?res.persons:[];
     checkins=Array.isArray(res.checkins)?res.checkins:[];
-    renderMetrics();renderIssue();renderList();
+    pulseStatus=Array.isArray(res.pulseStatus)?res.pulseStatus:[];
+    pulses=Array.isArray(res.pulses)?res.pulses:[];
+    renderMetrics();renderIssue();renderList();renderPulse();
     document.getElementById('issue-status').textContent=`最終取得 ${nowHM()}`;
   }).catch(e=>{document.getElementById('issue-status').textContent='通信エラー：'+e;});
 }
@@ -245,13 +258,18 @@ function renderList(){
   if(!rows.length){body.innerHTML='<div class="empty"><b>まだ登録がありません</b>入社処理タブで personId を発番すると、ここに並びます。入社日の入力欄も発番後に表示されます。</div>';return;}
   rows.sort((a,b)=>(a.personId||'').localeCompare(b.personId||''));
   const miss=rows.filter(p=>!p.joinDate).length;
-  body.innerHTML=(miss?`<div class="alertbox"><b>入社日が未設定の方が ${miss} 名います。</b>入社日がないと 1/3/5か月面談の期日を算出できません。下の欄に入力すると即座に保存されます。</div>`:'')
+  const missMail=rows.filter(p=>!p.email).length;
+  const warns=[];
+  if(miss)warns.push(`入社日が未設定：${miss} 名（1/3/5か月面談の期日を算出できません）`);
+  if(missMail)warns.push(`メールアドレスが未登録：${missMail} 名（パルスサーベイを配信できません）`);
+  body.innerHTML=(warns.length?`<div class="alertbox"><b>入力が必要な項目があります。</b>${warns.join('<br>')}<br>下の欄に入力すると即座に保存されます。</div>`:'')
     +`<table class="tbl"><thead><tr>
-    <th>personId</th><th>氏名</th><th>店舗</th><th>職種</th><th>入社日（編集可）</th><th>状態</th><th></th>
+    <th>personId</th><th>氏名</th><th>店舗</th><th>職種</th><th>入社日（編集可）</th><th>メールアドレス（編集可）</th><th>状態</th><th></th>
     </tr></thead><tbody>`+rows.map(p=>`<tr>
     <td><span class="pid">${esc(p.personId)}</span></td><td>${esc(p.name)}</td>
     <td>${esc(p.store)}</td><td>${esc(p.role)}</td>
     <td><input class="jdate ${p.joinDate?'':'miss'}" type="date" value="${esc(p.joinDate||'')}" onchange="setJoinDate('${esc(p.personId)}',this)"></td>
+    <td><input class="jdate mail ${p.email?'':'miss'}" type="email" placeholder="パルス配信に必要" value="${esc(p.email||'')}" onchange="setEmail('${esc(p.personId)}',this)"></td>
     <td class="st">${esc(p.status)}</td><td><a class="minilink" href="./profile.html?id=${esc(p.personId)}">プロファイル →</a></td>
     </tr>`).join('')+'</tbody></table>';
 }
@@ -277,6 +295,26 @@ function setJoinDate(pid,el){
     }).catch(e=>{el.disabled=false;el.value=prev;alert('通信エラー：'+e);});
 }
 
+// メールアドレスを直接更新（パルス配信の宛先）
+function setEmail(pid,el){
+  const v=(el.value||'').trim();
+  const p=persons.find(x=>x.personId===pid);
+  const prev=p?(p.email||''):'';
+  if(v===prev)return;
+  if(v&&v.indexOf('@')<0){alert('メールアドレスの形式が正しくありません。');el.value=prev;return;}
+  el.disabled=true;
+  fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({kind:'person',action:'update',person:{personId:pid,email:v}})})
+    .then(r=>r.json()).then(res=>{
+      el.disabled=false;
+      if(res&&res.ok){
+        if(p)p.email=v;
+        el.classList.toggle('miss',!v);
+        document.getElementById('list-status').textContent=`メールアドレスを更新しました（${pid}）`;
+      }else{el.value=prev;alert('更新に失敗しました。'+((res&&res.error)||''));}
+    }).catch(e=>{el.disabled=false;el.value=prev;alert('通信エラー：'+e);});
+}
+
 function issue(name,date,store,role,jdId){
   const el=jdId?document.getElementById(jdId):null;
   const joinDate=el?el.value:'';
@@ -291,11 +329,72 @@ function issue(name,date,store,role,jdId){
     }).catch(e=>alert('通信エラー：'+e));
 }
 
+function curRound(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);}
+function roundLabel(r){return String(r||'').replace('-','年')+'月';}
+
+function renderPulse(){
+  const body=document.getElementById('pulse-body');
+  const round=curRound();
+  const active=persons.filter(p=>(p.status||'')!=='退職');
+  const withMail=active.filter(p=>p.email);
+  const sentThis=pulseStatus.filter(x=>x.round===round);
+  const ansThis=sentThis.filter(x=>x.status==='回答済');
+  const rate=sentThis.length?Math.round(ansThis.length/sentThis.length*100):0;
+  document.getElementById('pulse-status').textContent=`${roundLabel(round)}　配信 ${sentThis.length} / 回答 ${ansThis.length}`;
+
+  let h=`<div class="metrics" style="margin-bottom:22px">
+    <div class="metric"><div class="n">${active.length}</div><div class="l">配信対象（在籍）</div></div>
+    <div class="metric ${withMail.length<active.length?'hot':'ok'}"><div class="n">${active.length-withMail.length}</div><div class="l">メール未登録</div></div>
+    <div class="metric ok"><div class="n">${ansThis.length}</div><div class="l">今月の回答</div></div>
+    <div class="metric"><div class="n">${sentThis.length?rate+'%':'—'}</div><div class="l">今月の回答率</div></div>
+  </div>`;
+
+  if(active.length-withMail.length>0){
+    h+=`<div class="alertbox"><b>メールアドレスが未登録の方がいます。</b>個人マスタ一覧タブで登録してください。未登録の方には配信されません。</div>`;
+  }
+
+  // 回次ごとの一覧
+  const rounds=[...new Set(pulseStatus.map(x=>x.round))].sort().reverse();
+  if(!rounds.length){
+    h+='<div class="empty"><b>まだ配信していません</b>「今月分を配信する」を押すと、メールアドレスが登録されている在籍者に回答リンクを送ります。</div>';
+  }else{
+    h+='<table class="tbl"><thead><tr><th>回次</th><th>配信</th><th>回答</th><th>回答率</th><th>未回答の方</th></tr></thead><tbody>'
+      +rounds.map(r=>{
+        const s=pulseStatus.filter(x=>x.round===r);
+        const a=s.filter(x=>x.status==='回答済');
+        const yet=s.filter(x=>x.status!=='回答済').map(x=>x.name).filter(Boolean);
+        return `<tr><td class="pid">${esc(roundLabel(r))}</td><td>${s.length}</td><td>${a.length}</td>
+          <td class="st">${s.length?Math.round(a.length/s.length*100)+'%':'—'}</td>
+          <td style="font-size:.8rem;color:var(--sub)">${yet.length?esc(yet.join('、')):'—'}</td></tr>`;
+      }).join('')+'</tbody></table>';
+  }
+  body.innerHTML=h;
+}
+
+function sendPulse(dryRun){
+  const round=curRound();
+  if(!dryRun&&!confirm(`${roundLabel(round)} のパルスサーベイを配信します。\nメールアドレスが登録されている在籍者に、回答リンクをメールで送信します。\n（すでに今月配信済みの方には送りません）`))return;
+  document.getElementById('pulse-status').textContent=dryRun?'確認中…':'配信中…';
+  fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({kind:'pulse',action:'send',round:round,dryRun:!!dryRun})})
+    .then(r=>r.json()).then(res=>{
+      if(!res||!res.ok){alert('失敗しました。'+((res&&res.error)||''));return;}
+      const x=res.result||{};
+      const lines=[];
+      lines.push(dryRun?`配信対象：${x.sent} 名`:`配信しました：${x.sent} 名`);
+      if(x.skipped)lines.push(`今月配信済みのため対象外：${x.skipped} 名`);
+      if((x.noEmail||[]).length)lines.push(`メール未登録で送れません：${x.noEmail.join('、')}`);
+      if((x.failed||[]).length)lines.push(`送信エラー：${x.failed.join(' / ')}`);
+      alert(lines.join('\n'));
+      if(!dryRun)reloadAll();else document.getElementById('pulse-status').textContent=lines[0];
+    }).catch(e=>alert('通信エラー：'+e));
+}
+
 function showTab(t){
-  document.getElementById('tab-issue').classList.toggle('active',t==='issue');
-  document.getElementById('tab-list').classList.toggle('active',t==='list');
-  document.getElementById('pane-issue').classList.toggle('hide',t!=='issue');
-  document.getElementById('pane-list').classList.toggle('hide',t!=='list');
+  ['issue','list','pulse'].forEach(k=>{
+    document.getElementById('tab-'+k).classList.toggle('active',t===k);
+    document.getElementById('pane-'+k).classList.toggle('hide',t!==k);
+  });
 }
 reloadAll();
 </script>
