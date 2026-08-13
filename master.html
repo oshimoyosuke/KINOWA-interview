@@ -170,6 +170,7 @@ function ymd(v){if(!v)return '';const s=String(v).trim();
   if(s.indexOf('T')>0){const d=new Date(s);if(!isNaN(d))return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
   const m2=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
   return m2?(m2[1]+'-'+('0'+m2[2]).slice(-2)+'-'+('0'+m2[3]).slice(-2)):s;}
+function nowHM(){const d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
 function personIdByCandidate(name,date){const d=ymd(date);const p=persons.find(x=>(x.name||'')===name&&ymd(x.date)===d);return p?p.personId:'';}
 
 function reloadAll(){
@@ -181,7 +182,7 @@ function reloadAll(){
     persons=Array.isArray(res.persons)?res.persons:[];
     checkins=Array.isArray(res.checkins)?res.checkins:[];
     renderMetrics();renderIssue();renderList();
-    document.getElementById('issue-status').textContent=`候補者 ${records.length} 件 ／ 個人マスタ ${persons.length} 件`;
+    document.getElementById('issue-status').textContent=`最終取得 ${nowHM()}`;
   }).catch(e=>{document.getElementById('issue-status').textContent='通信エラー：'+e;});
 }
 
@@ -236,7 +237,7 @@ function renderList(){
   const body=document.getElementById('list-body');
   let rows=persons.slice();
   if(q)rows=rows.filter(p=>(p.name||'').includes(q)||(p.personId||'').includes(q));
-  document.getElementById('list-status').textContent=`${persons.length} 件登録`;
+  document.getElementById('list-status').textContent=`最終取得 ${nowHM()}`;
   if(!rows.length){body.innerHTML='<div class="empty"><b>まだ登録がありません</b>入社処理タブで personId を発番すると、ここに並びます。入社日の入力欄も発番後に表示されます。</div>';return;}
   rows.sort((a,b)=>(a.personId||'').localeCompare(b.personId||''));
   const miss=rows.filter(p=>!p.joinDate).length;
