@@ -175,8 +175,15 @@ input.dt,input.txt{max-width:260px}
 const DEFAULT_GAS_URL='https://script.google.com/macros/s/AKfycbxMhh1XVTGVhOhlYEOFVU3jNxQ4lk4igP7Df3OKn0gjuW09qzavkr6LJcixTfoUUj6H/exec';
 function getGasUrl(){try{const v=localStorage.getItem('kinowa_gas_url');return (v!=null&&v!=='')?v:DEFAULT_GAS_URL;}catch(_){return DEFAULT_GAS_URL;}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function today(){const d=new Date();return d.toISOString().slice(0,10);}
-function addMonths(iso,n){if(!iso)return '';const d=new Date(iso+'T00:00:00');if(isNaN(d))return '';const day=d.getDate();d.setMonth(d.getMonth()+n);if(d.getDate()<day)d.setDate(0);return d.toISOString().slice(0,10);}
+function today(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function ymd(v){if(!v)return '';const s=String(v).trim();
+  const m=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if(m)return m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2);
+  if(s.indexOf('T')>0){const d=new Date(s);if(!isNaN(d))return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+  const m2=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  return m2?(m2[1]+'-'+('0'+m2[2]).slice(-2)+'-'+('0'+m2[3]).slice(-2)):s;}
+function addMonths(iso,n){iso=ymd(iso);if(!iso)return '';const d=new Date(iso+'T00:00:00');if(isNaN(d))return '';const day=d.getDate();d.setMonth(d.getMonth()+n);if(d.getDate()<day)d.setDate(0);
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
 function daysBetween(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000);}
 
 const AXIS_LABEL={hito:'ヒト',mono:'モノ',kane:'カネ',joho:'情報',jikan:'時間'};
@@ -246,7 +253,7 @@ function reloadAll(){
 }
 
 function ivOf(pid,ph){return checkins.find(x=>x.personId===pid&&x.phase===ph)||null;}
-function candidateOf(p){return records.find(r=>r&&r.meta&&(r.meta.personId===p.personId||((r.meta.name||'')===(p.name||'')&&(r.meta.date||'')===(p.date||''))))||null;}
+function candidateOf(p){return records.find(r=>r&&r.meta&&(r.meta.personId===p.personId||((r.meta.name||'')===(p.name||'')&&ymd(r.meta.date)===ymd(p.date))))||null;}
 function wishesOf(p){
   const c=candidateOf(p);if(!c)return [];
   const f=(c.data&&c.data.future)||c.future||{};const out=[];
@@ -257,7 +264,7 @@ function wishesOf(p){
 function slotState(p,ph){
   const rec=ivOf(p.personId,ph.key);
   if(rec)return{s:'done',rec:rec,due:rec.dueDate||''};
-  if(!p.joinDate)return{s:'nodate',rec:null,due:''};
+  if(!ymd(p.joinDate))return{s:'nodate',rec:null,due:''};
   const due=addMonths(p.joinDate,ph.n);
   const d=daysBetween(today(),due);
   if(d<0)return{s:'over',rec:null,due:due,d:d};
