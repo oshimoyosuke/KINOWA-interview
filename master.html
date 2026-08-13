@@ -72,6 +72,10 @@ input.jdate.mail{min-width:190px}
 input.jdate:disabled{opacity:.5}
 .alertbox{border:2px solid #dc2626;background:#fdeaea;padding:11px 14px;margin-bottom:14px;font-size:.84rem;color:#dc2626;font-weight:700}
 .alertbox b{display:block;font-size:.92rem;margin-bottom:2px}
+.infobox{border:2px solid var(--ink);background:var(--mint-l);padding:11px 14px;margin-bottom:16px;font-size:.83rem}
+.infobox b{display:block;font-size:.9rem;margin-bottom:2px}
+.infobox code{font-family:"Chivo",monospace;background:#fff;border:1px solid var(--line-soft);padding:1px 6px;font-size:.82rem}
+.ph4{font-family:"Chivo",sans-serif;font-size:.78rem;font-weight:700;color:var(--sub);letter-spacing:.05em;margin:24px 0 10px}
 .minilink{font-family:"Chivo",sans-serif;font-size:.72rem;font-weight:700;color:var(--teal);text-decoration:none;white-space:nowrap}
 .minilink:hover{text-decoration:underline}
 
@@ -145,8 +149,8 @@ input.jdate:disabled{opacity:.5}
   <section id="pane-pulse" class="hide">
     <div class="bar">
       <span class="status" id="pulse-status">—</span>
-      <button class="btn" onclick="sendPulse(true)">配信対象を確認</button>
-      <button class="btn issue" onclick="sendPulse(false)">今月分を配信する</button>
+      <button class="btn" onclick="sendPulse(true)">本日の対象を確認</button>
+      <button class="btn issue" onclick="sendPulse(false)">いま手動で配信する</button>
     </div>
     <div id="pulse-body"></div>
   </section>
@@ -329,61 +333,101 @@ function issue(name,date,store,role,jdId){
     }).catch(e=>alert('通信エラー：'+e));
 }
 
-function curRound(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);}
-function roundLabel(r){return String(r||'').replace('-','年')+'月';}
+function roundLabel(r){const s=String(r||'');
+  if(/^\d{1,2}$/.test(s))return '入社'+(+s)+'か月';
+  return s.replace('-','年')+'月';}
+function monthsSince(iso){iso=ymd(iso);if(!iso)return null;const p=iso.split('-');
+  const y=+p[0],mo=+p[1],d=+p[2];if(!y||!mo||!d)return null;
+  const t=new Date();let m=(t.getFullYear()-y)*12+((t.getMonth()+1)-mo);if(t.getDate()<d)m--;return m;}
+function pad2(n){return ('0'+n).slice(-2);}
+// その人の次の配信予定（未送信の最も早い回次）
+function nextDue(p){
+  if(!ymd(p.joinDate))return null;
+  const m=monthsSince(p.joinDate);
+  if(m==null)return null;
+  const sentRounds=pulseStatus.filter(x=>x.personId===p.personId).map(x=>String(x.round));
+  if(m>=1&&sentRounds.indexOf(pad2(m))<0)return{months:m,due:addMonths(p.joinDate,m),status:'今日が対象'};
+  const nx=Math.max(1,m+1);
+  return{months:nx,due:addMonths(p.joinDate,nx),status:'予定'};
+}
 
 function renderPulse(){
   const body=document.getElementById('pulse-body');
-  const round=curRound();
   const active=persons.filter(p=>(p.status||'')!=='退職');
-  const withMail=active.filter(p=>p.email);
-  const sentThis=pulseStatus.filter(x=>x.round===round);
-  const ansThis=sentThis.filter(x=>x.status==='回答済');
-  const rate=sentThis.length?Math.round(ansThis.length/sentThis.length*100):0;
-  document.getElementById('pulse-status').textContent=`${roundLabel(round)}　配信 ${sentThis.length} / 回答 ${ansThis.length}`;
+  const noMail=active.filter(p=>!p.email);
+  const noJoin=active.filter(p=>!ymd(p.joinDate));
+  const dues=active.map(p=>({p:p,d:nextDue(p)})).filter(x=>x.d);
+  const todayList=dues.filter(x=>x.d.status==='今日が対象');
+  const answered=pulseStatus.filter(x=>x.status==='回答済').length;
+  const rate=pulseStatus.length?Math.round(answered/pulseStatus.length*100):0;
+  document.getElementById('pulse-status').textContent=`本日の配信対象 ${todayList.length} 名　／　累計回答率 ${pulseStatus.length?rate+'%':'—'}`;
 
   let h=`<div class="metrics" style="margin-bottom:22px">
-    <div class="metric"><div class="n">${active.length}</div><div class="l">配信対象（在籍）</div></div>
-    <div class="metric ${withMail.length<active.length?'hot':'ok'}"><div class="n">${active.length-withMail.length}</div><div class="l">メール未登録</div></div>
-    <div class="metric ok"><div class="n">${ansThis.length}</div><div class="l">今月の回答</div></div>
-    <div class="metric"><div class="n">${sentThis.length?rate+'%':'—'}</div><div class="l">今月の回答率</div></div>
+    <div class="metric"><div class="n">${active.length}</div><div class="l">対象者（在籍）</div></div>
+    <div class="metric ${todayList.length?'due':''}"><div class="n">${todayList.length}</div><div class="l">本日の配信対象</div></div>
+    <div class="metric ${(noMail.length||noJoin.length)?'alert':'ok'}"><div class="n">${noMail.length+noJoin.length}</div><div class="l">配信できない（未入力）</div></div>
+    <div class="metric ok"><div class="n">${pulseStatus.length?rate+'%':'—'}</div><div class="l">累計回答率</div></div>
   </div>`;
 
-  if(active.length-withMail.length>0){
-    h+=`<div class="alertbox"><b>メールアドレスが未登録の方がいます。</b>個人マスタ一覧タブで登録してください。未登録の方には配信されません。</div>`;
+  h+=`<div class="infobox"><b>入社日を起点に自動配信します。</b>各自の入社応当日に「入社◯か月」のパルスが届きます（入社1か月後から毎月）。Apps Scriptのトリガーで <code>sendDuePulse</code> を日次実行に設定してください。下のボタンは、手動で今すぐ送りたいときに使います。</div>`;
+
+  if(noMail.length||noJoin.length){
+    const w=[];
+    if(noJoin.length)w.push(`入社日が未設定：${noJoin.map(p=>esc(p.name)).join('、')}`);
+    if(noMail.length)w.push(`メール未登録：${noMail.map(p=>esc(p.name)).join('、')}`);
+    h+=`<div class="alertbox"><b>この方には配信されません。</b>${w.join('<br>')}<br>個人マスタ一覧タブで入力してください。</div>`;
   }
 
-  // 回次ごとの一覧
-  const rounds=[...new Set(pulseStatus.map(x=>x.round))].sort().reverse();
-  if(!rounds.length){
-    h+='<div class="empty"><b>まだ配信していません</b>「今月分を配信する」を押すと、メールアドレスが登録されている在籍者に回答リンクを送ります。</div>';
-  }else{
+  // 配信予定表
+  h+='<h4 class="ph4">配信スケジュール</h4>';
+  if(!dues.length){h+='<div class="empty"><b>対象者がいません</b>個人マスタに入社日を登録すると、ここに配信予定が並びます。</div>';}
+  else{
+    dues.sort((a,b)=>(a.d.due||'').localeCompare(b.d.due||''));
+    h+='<table class="tbl"><thead><tr><th>氏名</th><th>店舗</th><th>入社日</th><th>次の配信</th><th>予定日</th><th>これまでの回答</th></tr></thead><tbody>'
+      +dues.map(x=>{
+        const mine=pulseStatus.filter(s=>s.personId===x.p.personId);
+        const ans=mine.filter(s=>s.status==='回答済').length;
+        const hot=x.d.status==='今日が対象';
+        return `<tr><td>${esc(x.p.name||'')}</td><td>${esc(x.p.store||'')}</td>
+          <td class="dt">${esc(ymd(x.p.joinDate)||'—')}</td>
+          <td class="st">${esc(roundLabel(pad2(x.d.months)))}</td>
+          <td class="dt" ${hot?'style="color:#d97706;font-weight:700"':''}>${esc(x.d.due||'—')}${hot?'　本日対象':''}</td>
+          <td class="dt">${mine.length?`${ans} / ${mine.length} 回`:'—'}</td></tr>`;}).join('')
+      +'</tbody></table>';
+  }
+
+  // 回次別の回答率
+  const rounds=[...new Set(pulseStatus.map(x=>String(x.round)))].sort();
+  if(rounds.length){
+    h+='<h4 class="ph4">回次別の回答状況</h4>';
     h+='<table class="tbl"><thead><tr><th>回次</th><th>配信</th><th>回答</th><th>回答率</th><th>未回答の方</th></tr></thead><tbody>'
       +rounds.map(r=>{
-        const s=pulseStatus.filter(x=>x.round===r);
+        const s=pulseStatus.filter(x=>String(x.round)===r);
         const a=s.filter(x=>x.status==='回答済');
         const yet=s.filter(x=>x.status!=='回答済').map(x=>x.name).filter(Boolean);
         return `<tr><td class="pid">${esc(roundLabel(r))}</td><td>${s.length}</td><td>${a.length}</td>
           <td class="st">${s.length?Math.round(a.length/s.length*100)+'%':'—'}</td>
-          <td style="font-size:.8rem;color:var(--sub)">${yet.length?esc(yet.join('、')):'—'}</td></tr>`;
-      }).join('')+'</tbody></table>';
+          <td style="font-size:.8rem;color:var(--sub)">${yet.length?esc(yet.join('、')):'—'}</td></tr>`;}).join('')
+      +'</tbody></table>';
   }
   body.innerHTML=h;
 }
 
 function sendPulse(dryRun){
-  const round=curRound();
-  if(!dryRun&&!confirm(`${roundLabel(round)} のパルスサーベイを配信します。\nメールアドレスが登録されている在籍者に、回答リンクをメールで送信します。\n（すでに今月配信済みの方には送りません）`))return;
+  if(!dryRun&&!confirm('本日、入社応当日を迎えた方にパルスサーベイを配信します。\n（すでに同じ回次で配信済みの方には送りません）'))return;
   document.getElementById('pulse-status').textContent=dryRun?'確認中…':'配信中…';
   fetch(getGasUrl(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body:JSON.stringify({kind:'pulse',action:'send',round:round,dryRun:!!dryRun})})
+    body:JSON.stringify({kind:'pulse',action:'send',dryRun:!!dryRun})})
     .then(r=>r.json()).then(res=>{
       if(!res||!res.ok){alert('失敗しました。'+((res&&res.error)||''));return;}
       const x=res.result||{};
       const lines=[];
-      lines.push(dryRun?`配信対象：${x.sent} 名`:`配信しました：${x.sent} 名`);
-      if(x.skipped)lines.push(`今月配信済みのため対象外：${x.skipped} 名`);
-      if((x.noEmail||[]).length)lines.push(`メール未登録で送れません：${x.noEmail.join('、')}`);
+      lines.push(dryRun?`本日の配信対象：${x.sent} 名`:`配信しました：${x.sent} 名`);
+      (x.targets||[]).forEach(t=>lines.push(`　・${t.name}（入社${t.months}か月／応当日 ${t.dueDate}）`));
+      if(x.alreadySent)lines.push(`同じ回次で配信済み：${x.alreadySent} 名`);
+      if(x.notDue)lines.push(`まだ配信時期ではない：${x.notDue} 名`);
+      if((x.noJoinDate||[]).length)lines.push(`入社日が未設定：${x.noJoinDate.join('、')}`);
+      if((x.noEmail||[]).length)lines.push(`メール未登録：${x.noEmail.join('、')}`);
       if((x.failed||[]).length)lines.push(`送信エラー：${x.failed.join(' / ')}`);
       alert(lines.join('\n'));
       if(!dryRun)reloadAll();else document.getElementById('pulse-status').textContent=lines[0];

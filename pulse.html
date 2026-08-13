@@ -113,7 +113,8 @@ function start(){
 }
 
 function renderForm(){
-  const rd=(info.round||'').replace('-','年')+'月';
+  const r=String(info.round||'');
+  const rd=/^\d{1,2}$/.test(r)?('入社'+(+r)+'か月'):(r.replace('-','年')+'月');
   let h=`<div class="intro">
     <div class="rd">${esc(rd)} のパルスサーベイ</div>
     <div class="hi">${esc(info.name||'')} さん</div>
